@@ -1,0 +1,143 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000024001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T14:10:08.662Z",
+      "received_at": "2026-11-13T14:10:09.170Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002401",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2045\nVendor: Tailspin Catering\nTotal: 845.20\nCurrency: USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T14:10:08.663Z",
+      "received_at": "2026-11-13T14:10:09.170Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002401",
+        "output": {
+          "invoice_number": "INV-2045",
+          "vendor": "Tailspin Catering",
+          "total": 845.2,
+          "currency": "USD"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T14:10:08.664Z",
+      "received_at": "2026-11-13T14:10:09.170Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002402",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2045",
+          "vendor": "Tailspin Catering",
+          "total": 845.2,
+          "currency": "USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T14:10:08.868Z",
+      "received_at": "2026-11-13T14:10:09.170Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002402",
+        "output": {
+          "valid": true,
+          "problems": []
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T14:10:08.869Z",
+      "received_at": "2026-11-13T14:10:09.170Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002403",
+        "parent_step_id": null,
+        "name": "submit_invoice",
+        "step_type": "tool_call",
+        "input": {
+          "invoice": {
+            "invoice_number": "INV-2045",
+            "vendor": "Tailspin Catering",
+            "total": 845.2,
+            "currency": "USD"
+          }
+        },
+        "tool_name": "submit_invoice",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T14:10:09.169Z",
+      "received_at": "2026-11-13T14:10:09.670Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002403",
+        "output": {
+          "submission_id": "SUB-INV-2045",
+          "status": "accepted"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000024007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T14:10:09.170Z",
+      "received_at": "2026-11-13T14:10:09.670Z",
+      "payload": {
+        "output": {
+          "status": "processed",
+          "invoice_number": "INV-2045"
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000006001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T09:31:46.082Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000601",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "What is a good retry strategy for rate-limited tools?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T09:31:46.083Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000601",
+        "output": {
+          "query": "what is a good retry strategy for rate-limited tools"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T09:31:46.084Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000602",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "what is a good retry strategy for rate-limited tools",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T09:31:46.405Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000602",
+        "output": {
+          "results": [
+            {
+              "title": "Retry strategies for rate-limited tools",
+              "url": "https://example.test/retry-strategies",
+              "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ],
+          "total": 3
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T09:31:46.406Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000603",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T09:31:46.407Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000603",
+        "output": {
+          "sources": [
+            "Retry strategies for rate-limited tools",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-14T09:31:46.408Z",
+      "received_at": "2026-11-14T09:31:46.590Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000604",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "question": "What is a good retry strategy for rate-limited tools?",
+          "sources": [
+            {
+              "title": "Retry strategies for rate-limited tools",
+              "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T09:31:46.829Z",
+      "received_at": "2026-11-14T09:31:47.090Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000604",
+        "output": {
+          "text": "Based on 3 sources: Exponential backoff with a retry budget keeps rate limits from cascading. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "usage": {
+            "input_tokens": 137,
+            "output_tokens": 62
+          }
+        },
+        "tokens_input": 137,
+        "tokens_output": 62,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000006009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T09:31:46.830Z",
+      "received_at": "2026-11-14T09:31:47.090Z",
+      "payload": {
+        "output": {
+          "answer": "Based on 3 sources: Exponential backoff with a retry budget keeps rate limits from cascading. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "sources": [
+            "Retry strategies for rate-limited tools",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

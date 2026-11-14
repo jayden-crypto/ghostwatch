@@ -1,0 +1,235 @@
+{
+  "id": "inv_0000000000000000000000000000000b",
+  "execution_id": "exe_00000000000000000000000000000048",
+  "status": "completed",
+  "trigger": "manual",
+  "provider": "rule_based",
+  "model": null,
+  "created_at": "2026-11-14T17:59:59.690Z",
+  "completed_at": "2026-11-14T18:00:01.870Z",
+  "error": null,
+  "report": {
+    "summary": "The execution completed. Anomalies raised on it: excessive_retries. The recorded evidence is not sufficient to determine a root cause.",
+    "failing_step_id": null,
+    "root_cause": {
+      "status": "insufficient_evidence",
+      "statement": "No deterministic signature matched this execution and no supported hypothesis is available, so the recorded evidence is not sufficient to name a root cause.",
+      "hypothesis_id": null,
+      "signature": null
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of support-triage ended with status completed after 2219 ms and 5 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_00000000000000000000000000000048",
+            "field": "status",
+            "observed": "completed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "Step 3 retrieve_kb (attempt 2) (tool_call, failed) has no output.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 3 retrieve_kb (attempt 2)",
+            "ref_id": "stp_00000000000000000000000000004803",
+            "field": "output",
+            "observed": null,
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 4 retrieve_kb (attempt 3) (tool_call, completed) returned an object with keys: articles.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 4 retrieve_kb (attempt 3)",
+            "ref_id": "stp_00000000000000000000000000004804",
+            "field": "output",
+            "observed": [
+              "articles"
+            ],
+            "expected": null,
+            "excerpt": "{\"articles\":[{\"id\":\"KB-101\",\"title\":\"How refunds are processed\",\"body\":\"Refunds reach the card in 5-7 days.\"}]}"
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "Step 5 draft_reply (llm_call, completed) returned an object with keys: text, usage.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 5 draft_reply",
+            "ref_id": "stp_00000000000000000000000000004805",
+            "field": "output",
+            "observed": [
+              "text",
+              "usage"
+            ],
+            "expected": null,
+            "excerpt": "{\"text\":\"Thanks for getting in touch. Refunds reach the card in 5-7 days.\",\"usage\":{\"input_tokens\":58,\"output_tokens\":16}}"
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "retrieve_kb was attempted 3 times: attempt 1 failed (RateLimited), attempt 2 failed (RateLimited), attempt 3 completed.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Step 2 retrieve_kb: failed",
+            "ref_id": "stp_00000000000000000000000000004802",
+            "field": "error.message",
+            "observed": "HTTP 429 Too Many Requests",
+            "expected": null,
+            "excerpt": "HTTP 429 Too Many Requests"
+          },
+          {
+            "kind": "step",
+            "label": "Step 3 retrieve_kb (attempt 2): failed",
+            "ref_id": "stp_00000000000000000000000000004803",
+            "field": "error.message",
+            "observed": "HTTP 429 Too Many Requests",
+            "expected": null,
+            "excerpt": "HTTP 429 Too Many Requests"
+          },
+          {
+            "kind": "step",
+            "label": "Step 4 retrieve_kb (attempt 3): completed",
+            "ref_id": "stp_00000000000000000000000000004804",
+            "field": "status",
+            "observed": "completed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "Step 2 retrieve_kb (tool retrieve_kb) reported HTTP status 429.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "HTTP status reported by Step 2 retrieve_kb",
+            "ref_id": "stp_00000000000000000000000000004802",
+            "field": "error.message",
+            "observed": 429,
+            "expected": "below 400",
+            "excerpt": "HTTP 429 Too Many Requests"
+          }
+        ]
+      },
+      {
+        "id": "F7",
+        "statement": "Step 3 retrieve_kb (attempt 2) (tool retrieve_kb) reported HTTP status 429.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "HTTP status reported by Step 3 retrieve_kb (attempt 2)",
+            "ref_id": "stp_00000000000000000000000000004803",
+            "field": "error.message",
+            "observed": 429,
+            "expected": "below 400",
+            "excerpt": "HTTP 429 Too Many Requests"
+          }
+        ]
+      },
+      {
+        "id": "F8",
+        "statement": "The execution is configured to expect these steps to complete: classify, retrieve_kb, draft_reply. Steps that completed: classify, retrieve_kb, draft_reply. Expected steps that did not complete: none.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_00000000000000000000000000000048",
+            "field": "config.expected_steps",
+            "observed": [
+              "classify",
+              "retrieve_kb",
+              "draft_reply"
+            ],
+            "expected": [
+              "classify",
+              "retrieve_kb",
+              "draft_reply"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F9",
+        "statement": "Anomaly excessive_retries (medium) was raised on this execution: 2 retried steps, highest attempt 3.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule excessive_retries.v1 fired",
+            "ref_id": "anm_0000000000000000000000000000000a",
+            "field": "explanation",
+            "observed": "2 retried steps, highest attempt 3",
+            "expected": null,
+            "excerpt": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5."
+          },
+          {
+            "kind": "step",
+            "label": "Step 4 retrieve_kb (attempt 3) is a retry",
+            "ref_id": "stp_00000000000000000000000000004804",
+            "field": "attempt",
+            "observed": 3,
+            "expected": "below 3",
+            "excerpt": null
+          },
+          {
+            "kind": "step",
+            "label": "Step 3 retrieve_kb (attempt 2) is a retry",
+            "ref_id": "stp_00000000000000000000000000004803",
+            "field": "attempt",
+            "observed": 2,
+            "expected": "below 3",
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F10",
+        "statement": "This execution took 2219 ms over 5 steps. Over the last 7 completed runs of support-triage, the median duration is 1145 ms (p95 1212 ms) and the largest step count is 3.",
+        "evidence": [
+          {
+            "kind": "baseline",
+            "label": "This execution compared with 7 completed runs",
+            "ref_id": null,
+            "field": null,
+            "observed": {
+              "duration_ms": 2219,
+              "step_count": 5,
+              "tokens_total": 107
+            },
+            "expected": {
+              "median_duration_ms": 1145,
+              "p95_duration_ms": 1212,
+              "max_step_count": 3,
+              "median_tokens_total": 99
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [],
+    "recommendations": [],
+    "evidence_gaps": [],
+    "relevant_step_ids": []
+  }
+}

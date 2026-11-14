@@ -1,0 +1,139 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000065",
+    "agent_id": "agt_00000000000000000000000000000004",
+    "agent_name": "Ticket Digest",
+    "status": "timed_out",
+    "started_at": "2026-11-13T18:00:00.421Z",
+    "ended_at": "2026-11-13T18:02:24.464Z",
+    "duration_ms": 144043,
+    "step_count": 2,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 1,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": {
+      "type": "TimeoutError",
+      "message": "Execution timed out after 144043 ms.",
+      "stacktrace": null
+    },
+    "input": {
+      "trigger": "cron",
+      "schedule": "0 */6 * * *"
+    },
+    "output": null,
+    "config": {
+      "model": "claude-haiku-5-5",
+      "params": {
+        "batch_size": 20
+      },
+      "expected_steps": [
+        "fetch_tickets",
+        "summarize",
+        "send_digest"
+      ],
+      "timeout_ms": 120000,
+      "schedule": "0 */6 * * *"
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "scheduled"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000008"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000006501",
+      "execution_id": "exe_00000000000000000000000000000065",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "load_schedule",
+      "type": "input",
+      "status": "completed",
+      "started_at": "2026-11-13T18:00:00.422Z",
+      "ended_at": "2026-11-13T18:00:00.424Z",
+      "duration_ms": 2,
+      "offset_ms": 1,
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": {
+        "since": "2026-11-13T12:00:00.421Z",
+        "until": "2026-11-13T18:00:00.421Z"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006502",
+      "execution_id": "exe_00000000000000000000000000000065",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "running",
+      "started_at": "2026-11-13T18:00:00.425Z",
+      "ended_at": null,
+      "duration_ms": null,
+      "offset_ms": 4,
+      "input": {
+        "since": "2026-11-13T12:00:00.421Z",
+        "until": "2026-11-13T18:00:00.421Z"
+      },
+      "output": null,
+      "error": null,
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_00000000000000000000000000000003",
+      "type": "stale_execution",
+      "severity": "high",
+      "status": "acknowledged",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "execution_id": "exe_00000000000000000000000000000065",
+      "detected_at": "2026-11-13T18:02:24.464Z",
+      "rule_id": "stale_execution.v1",
+      "title": "No event for 144,039 ms; marked timed out",
+      "explanation": "The execution was running and sent no event for 144,039 ms (last event received at 2026-11-13T18:00:00.425Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Time since the last event was received",
+          "ref_id": "exe_00000000000000000000000000000065",
+          "field": "last_event_at",
+          "observed": {
+            "last_event_at": "2026-11-13T18:00:00.425Z",
+            "idle_ms": 144039
+          },
+          "expected": {
+            "timeout_ms": 120000
+          },
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 4
+}

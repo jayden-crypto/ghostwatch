@@ -1,0 +1,108 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000028001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:28:40.154Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002801",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000028002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T17:28:40.155Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002801",
+        "output": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000028003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:28:40.156Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002802",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000028004",
+      "seq": 4,
+      "type": "log",
+      "timestamp": "2026-11-14T17:28:40.364Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "level": "warning",
+        "message": "validation skipped: validation service returned HTTP 503",
+        "step_id": "stp_00000000000000000000000000002802"
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000028005",
+      "seq": 5,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T17:28:40.365Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002802",
+        "output": null,
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000028006",
+      "seq": 6,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T17:28:40.366Z",
+      "received_at": "2026-11-14T17:28:40.662Z",
+      "payload": {
+        "output": {
+          "status": "processed",
+          "invoice_number": "INV-2042"
+        }
+      }
+    }
+  ],
+  "total": 6,
+  "limit": 200,
+  "offset": 0
+}

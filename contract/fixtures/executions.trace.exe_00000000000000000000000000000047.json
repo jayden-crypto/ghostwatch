@@ -1,0 +1,154 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000047",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-14T07:15:09.821Z",
+    "ended_at": "2026-11-14T07:15:11.008Z",
+    "duration_ms": 1187,
+    "step_count": 3,
+    "tokens_total": 99,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "Two-factor login keeps rejecting my code."
+    },
+    "output": {
+      "category": "access",
+      "reply": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+      "articles": [
+        "KB-204"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 81,
+    "tokens_output": 18,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004701",
+      "execution_id": "exe_00000000000000000000000000000047",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T07:15:09.822Z",
+      "ended_at": "2026-11-14T07:15:10.299Z",
+      "duration_ms": 477,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "Two-factor login keeps rejecting my code."
+      },
+      "output": {
+        "text": "access",
+        "usage": {
+          "input_tokens": 27,
+          "output_tokens": 2
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 27,
+      "tokens_output": 2,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004702",
+      "execution_id": "exe_00000000000000000000000000000047",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T07:15:10.300Z",
+      "ended_at": "2026-11-14T07:15:10.543Z",
+      "duration_ms": 243,
+      "offset_ms": 479,
+      "input": {
+        "category": "access"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-204",
+            "title": "Resetting two-factor login",
+            "body": "Use a recovery code, then re-enrol."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004703",
+      "execution_id": "exe_00000000000000000000000000000047",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T07:15:10.544Z",
+      "ended_at": "2026-11-14T07:15:11.007Z",
+      "duration_ms": 463,
+      "offset_ms": 723,
+      "input": {
+        "ticket": "Two-factor login keeps rejecting my code.",
+        "articles": [
+          {
+            "id": "KB-204",
+            "title": "Resetting two-factor login",
+            "body": "Use a recovery code, then re-enrol."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+        "usage": {
+          "input_tokens": 54,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 54,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}

@@ -1,0 +1,15 @@
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed.",
+    "details": [
+      {
+        "loc": [
+          "body",
+          "mode"
+        ],
+        "msg": "Input should be 'sandbox' or 'live'"
+      }
+    ]
+  }
+}

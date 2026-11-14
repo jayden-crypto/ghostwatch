@@ -1,0 +1,1841 @@
+{
+  "items": [
+    {
+      "id": "inv_0000000000000000000000000000000a",
+      "execution_id": "exe_00000000000000000000000000000029",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T17:52:06.989Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T17:52:07.153Z",
+      "error": null,
+      "report": {
+        "summary": "The execution failed at Step 2 validate with ValidationUnavailable: validation service returned HTTP 503. The recorded evidence is not sufficient to determine a root cause.",
+        "failing_step_id": "stp_00000000000000000000000000002902",
+        "root_cause": {
+          "status": "insufficient_evidence",
+          "statement": "No deterministic signature matched this execution and no supported hypothesis is available, so the recorded evidence is not sufficient to name a root cause.",
+          "hypothesis_id": null,
+          "signature": null
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of invoice-processor ended with status failed after 214 ms and 2 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000029",
+                "field": "status",
+                "observed": "failed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error ValidationUnavailable: validation service returned HTTP 503.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_00000000000000000000000000000029",
+                "field": "error.message",
+                "observed": "validation service returned HTTP 503",
+                "expected": null,
+                "excerpt": "validation service returned HTTP 503"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 2 validate failed with ValidationUnavailable: validation service returned HTTP 503.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Error raised in Step 2 validate",
+                "ref_id": "stp_00000000000000000000000000002902",
+                "field": "error.message",
+                "observed": "validation service returned HTTP 503",
+                "expected": null,
+                "excerpt": "validation service returned HTTP 503"
+              },
+              {
+                "kind": "step",
+                "label": "End of the stack trace of Step 2 validate",
+                "ref_id": "stp_00000000000000000000000000002902",
+                "field": "error.stacktrace",
+                "observed": "ValidationUnavailable",
+                "expected": null,
+                "excerpt": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 extract_fields (reasoning, completed) returned an object with keys: currency, invoice_number, total, vendor.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 extract_fields",
+                "ref_id": "stp_00000000000000000000000000002901",
+                "field": "output",
+                "observed": [
+                  "currency",
+                  "invoice_number",
+                  "total",
+                  "vendor"
+                ],
+                "expected": null,
+                "excerpt": "{\"invoice_number\":\"INV-2042\",\"vendor\":\"Contoso Cloud\",\"total\":9400,\"currency\":\"USD\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "The execution is configured to expect these steps to complete: extract_fields, validate, submit_invoice. Steps that completed: extract_fields. Expected steps that did not complete: validate, submit_invoice.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000029",
+                "field": "config.expected_steps",
+                "observed": [
+                  "extract_fields"
+                ],
+                "expected": [
+                  "extract_fields",
+                  "validate",
+                  "submit_invoice"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "This execution took 214 ms over 2 steps. Over the last 8 completed runs of invoice-processor, the median duration is 503.5 ms (p95 679 ms) and the largest step count is 4.",
+            "evidence": [
+              {
+                "kind": "baseline",
+                "label": "This execution compared with 8 completed runs",
+                "ref_id": null,
+                "field": null,
+                "observed": {
+                  "duration_ms": 214,
+                  "step_count": 2,
+                  "tokens_total": null
+                },
+                "expected": {
+                  "median_duration_ms": 503.5,
+                  "p95_duration_ms": 679,
+                  "max_step_count": 4,
+                  "median_tokens_total": null
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [],
+        "recommendations": [],
+        "evidence_gaps": [],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000002902"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000009",
+      "execution_id": "exe_0000000000000000000000000000000b",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T17:34:02.164Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T17:34:02.328Z",
+      "error": null,
+      "report": {
+        "summary": "The execution failed at Step 3 parse_results with TypeError: list indices must be integers or slices, not str. The recorded evidence is not sufficient to determine a root cause.",
+        "failing_step_id": "stp_00000000000000000000000000000b03",
+        "root_cause": {
+          "status": "insufficient_evidence",
+          "statement": "No deterministic signature matched this execution and no supported hypothesis is available, so the recorded evidence is not sufficient to name a root cause.",
+          "hypothesis_id": null,
+          "signature": null
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of research-assistant ended with status failed after 8 ms and 3 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_0000000000000000000000000000000b",
+                "field": "status",
+                "observed": "failed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error TypeError: list indices must be integers or slices, not str.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_0000000000000000000000000000000b",
+                "field": "error.message",
+                "observed": "list indices must be integers or slices, not str",
+                "expected": null,
+                "excerpt": "list indices must be integers or slices, not str"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 3 parse_results failed with TypeError: list indices must be integers or slices, not str.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Error raised in Step 3 parse_results",
+                "ref_id": "stp_00000000000000000000000000000b03",
+                "field": "error.message",
+                "observed": "list indices must be integers or slices, not str",
+                "expected": null,
+                "excerpt": "list indices must be integers or slices, not str"
+              },
+              {
+                "kind": "step",
+                "label": "End of the stack trace of Step 3 parse_results",
+                "ref_id": "stp_00000000000000000000000000000b03",
+                "field": "error.stacktrace",
+                "observed": "TypeError",
+                "expected": null,
+                "excerpt": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"data\"][\"results\"]]\nTypeError: list indices must be integers or slices, not str\n"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 plan (reasoning, completed) returned an object with keys: query.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 plan",
+                "ref_id": "stp_00000000000000000000000000000b01",
+                "field": "output",
+                "observed": [
+                  "query"
+                ],
+                "expected": null,
+                "excerpt": "{\"query\":\"how do teams trace what an ai agent did\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "Step 2 web_search (tool_call, completed) returned an object with keys: data, meta.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 web_search",
+                "ref_id": "stp_00000000000000000000000000000b02",
+                "field": "output",
+                "observed": [
+                  "data",
+                  "meta"
+                ],
+                "expected": null,
+                "excerpt": "{\"data\":[{\"title\":\"Agent observability: tracing every step\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs.\"},{\"title\":\"Why silent failures are the hardest agent bugs\",\"url\":\"https://example.test/silent-failures\",\"snippet\":\"An agent can report success while skipping the step that mattered.\"},{\"title\":\"Replaying agent runs against recorded inputs\",\"url\":\"https://example.test/replay\",\"snippet\":\"Deter"
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search. Expected steps that did not complete: parse_results, summarize.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_0000000000000000000000000000000b",
+                "field": "config.expected_steps",
+                "observed": [
+                  "plan",
+                  "web_search"
+                ],
+                "expected": [
+                  "web_search",
+                  "parse_results",
+                  "summarize"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "This execution took 8 ms over 3 steps. Over the last 8 completed runs of research-assistant, the median duration is 787.5 ms (p95 4797 ms) and the largest step count is 4.",
+            "evidence": [
+              {
+                "kind": "baseline",
+                "label": "This execution compared with 8 completed runs",
+                "ref_id": null,
+                "field": null,
+                "observed": {
+                  "duration_ms": 8,
+                  "step_count": 3,
+                  "tokens_total": null
+                },
+                "expected": {
+                  "median_duration_ms": 787.5,
+                  "p95_duration_ms": 4797,
+                  "max_step_count": 4,
+                  "median_tokens_total": 199
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [],
+        "recommendations": [],
+        "evidence_gaps": [],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000000b03"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000008",
+      "execution_id": "exe_00000000000000000000000000000028",
+      "trigger": "auto_anomaly",
+      "created_at": "2026-11-14T17:28:40.404Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T17:28:40.568Z",
+      "error": null,
+      "report": {
+        "summary": "The execution completed. Anomalies raised on it: ghost_completion. The root cause is confirmed by the deterministic signature ghost_completion.",
+        "failing_step_id": null,
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "The agent reported the run as completed, but the recorded steps contradict it: Reported completed, but submit_invoice never completed.",
+          "hypothesis_id": "H1",
+          "signature": "ghost_completion"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of invoice-processor ended with status completed after 213 ms and 2 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000028",
+                "field": "status",
+                "observed": "completed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "Step 1 extract_fields (reasoning, completed) returned an object with keys: currency, invoice_number, total, vendor.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 extract_fields",
+                "ref_id": "stp_00000000000000000000000000002801",
+                "field": "output",
+                "observed": [
+                  "currency",
+                  "invoice_number",
+                  "total",
+                  "vendor"
+                ],
+                "expected": null,
+                "excerpt": "{\"invoice_number\":\"INV-2042\",\"vendor\":\"Contoso Cloud\",\"total\":9400,\"currency\":\"USD\"}"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 2 validate (custom, completed) has no output.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 validate",
+                "ref_id": "stp_00000000000000000000000000002802",
+                "field": "output",
+                "observed": null,
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "The execution is configured to expect these steps to complete: extract_fields, validate, submit_invoice. Steps that completed: extract_fields, validate. Expected steps that did not complete: submit_invoice.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000028",
+                "field": "config.expected_steps",
+                "observed": [
+                  "extract_fields",
+                  "validate"
+                ],
+                "expected": [
+                  "extract_fields",
+                  "validate",
+                  "submit_invoice"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "Anomaly ghost_completion (critical) was raised on this execution: Reported completed, but submit_invoice never completed.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule ghost_completion.v1 fired",
+                "ref_id": "anm_0000000000000000000000000000000e",
+                "field": "explanation",
+                "observed": "Reported completed, but submit_invoice never completed",
+                "expected": null,
+                "excerpt": "The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all."
+              },
+              {
+                "kind": "execution",
+                "label": "Expected step submit_invoice never started",
+                "ref_id": "exe_00000000000000000000000000000028",
+                "field": "config.expected_steps",
+                "observed": [
+                  "extract_fields",
+                  "validate"
+                ],
+                "expected": [
+                  "extract_fields",
+                  "validate",
+                  "submit_invoice"
+                ],
+                "excerpt": null
+              },
+              {
+                "kind": "event",
+                "label": "Warning logged at event 4",
+                "ref_id": "evt_00000000000000000000000000028004",
+                "field": "payload.message",
+                "observed": "validation skipped: validation service returned HTTP 503",
+                "expected": null,
+                "excerpt": "validation skipped: validation service returned HTTP 503"
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "This execution took 213 ms over 2 steps. Over the last 7 completed runs of invoice-processor, the median duration is 509 ms (p95 679 ms) and the largest step count is 4.",
+            "evidence": [
+              {
+                "kind": "baseline",
+                "label": "This execution compared with 7 completed runs",
+                "ref_id": null,
+                "field": null,
+                "observed": {
+                  "duration_ms": 213,
+                  "step_count": 2,
+                  "tokens_total": null
+                },
+                "expected": {
+                  "median_duration_ms": 509,
+                  "p95_duration_ms": 679,
+                  "max_step_count": 4,
+                  "median_tokens_total": null
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "The agent reported the run as completed, but the recorded steps contradict it: Reported completed, but submit_invoice never completed.",
+            "confidence": "high",
+            "reasoning": "Signature ghost_completion: the execution's status is completed and the deterministic ghost_completion rule fired (a step still running, an expected step with no completed step, or no steps at all).",
+            "supporting_fact_ids": [
+              "F5",
+              "F4"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Make the agent fail the run when a required step does not complete, instead of reporting success; check for errors that are caught and ignored before the missing step.",
+            "rationale": "The run's reported outcome and its recorded steps disagree, so the reported outcome is not trustworthy.",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "evidence_gaps": [],
+        "relevant_step_ids": []
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000007",
+      "execution_id": "exe_0000000000000000000000000000000a",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T17:20:14.991Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T17:20:15.155Z",
+      "error": null,
+      "report": {
+        "summary": "The execution failed at Step 3 parse_results with KeyError: 'results'. The root cause is confirmed by the deterministic signature missing_key_in_upstream_output.",
+        "failing_step_id": "stp_00000000000000000000000000000a03",
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) does not contain. That output's keys are: data, meta.",
+          "hypothesis_id": "H1",
+          "signature": "missing_key_in_upstream_output"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of research-assistant ended with status failed after 361 ms and 3 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_0000000000000000000000000000000a",
+                "field": "status",
+                "observed": "failed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error KeyError: 'results'.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_0000000000000000000000000000000a",
+                "field": "error.message",
+                "observed": "'results'",
+                "expected": null,
+                "excerpt": "'results'"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 3 parse_results failed with KeyError: 'results'.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Error raised in Step 3 parse_results",
+                "ref_id": "stp_00000000000000000000000000000a03",
+                "field": "error.message",
+                "observed": "'results'",
+                "expected": null,
+                "excerpt": "'results'"
+              },
+              {
+                "kind": "step",
+                "label": "End of the stack trace of Step 3 parse_results",
+                "ref_id": "stp_00000000000000000000000000000a03",
+                "field": "error.stacktrace",
+                "observed": "KeyError",
+                "expected": null,
+                "excerpt": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 plan (reasoning, completed) returned an object with keys: query.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 plan",
+                "ref_id": "stp_00000000000000000000000000000a01",
+                "field": "output",
+                "observed": [
+                  "query"
+                ],
+                "expected": null,
+                "excerpt": "{\"query\":\"how do teams trace what an ai agent did\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "Step 2 web_search (tool_call, completed) returned an object with keys: data, meta.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 web_search",
+                "ref_id": "stp_00000000000000000000000000000a02",
+                "field": "output",
+                "observed": [
+                  "data",
+                  "meta"
+                ],
+                "expected": null,
+                "excerpt": "{\"data\":[{\"title\":\"Agent observability: tracing every step\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs.\"},{\"title\":\"Why silent failures are the hardest agent bugs\",\"url\":\"https://example.test/silent-failures\",\"snippet\":\"An agent can report success while skipping the step that mattered.\"},{\"title\":\"Replaying agent runs against recorded inputs\",\"url\":\"https://example.test/replay\",\"snippet\":\"Deter"
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search. Expected steps that did not complete: parse_results, summarize.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_0000000000000000000000000000000a",
+                "field": "config.expected_steps",
+                "observed": [
+                  "plan",
+                  "web_search"
+                ],
+                "expected": [
+                  "web_search",
+                  "parse_results",
+                  "summarize"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "This execution took 361 ms over 3 steps. Over the last 8 completed runs of research-assistant, the median duration is 787.5 ms (p95 4797 ms) and the largest step count is 4.",
+            "evidence": [
+              {
+                "kind": "baseline",
+                "label": "This execution compared with 8 completed runs",
+                "ref_id": null,
+                "field": null,
+                "observed": {
+                  "duration_ms": 361,
+                  "step_count": 3,
+                  "tokens_total": null
+                },
+                "expected": {
+                  "median_duration_ms": 787.5,
+                  "p95_duration_ms": 4797,
+                  "max_step_count": 4,
+                  "median_tokens_total": 199
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) does not contain. That output's keys are: data, meta.",
+            "confidence": "high",
+            "reasoning": "Signature missing_key_in_upstream_output: the failing step raised KeyError for 'results' and the nearest preceding tool output has no key 'results'. Both conditions are read directly from the recorded step error and the recorded tool output.",
+            "supporting_fact_ids": [
+              "F3",
+              "F5"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Make parse_results handle the response shape web_search now returns (keys: data, meta), or pin the response format of web_search.",
+            "rationale": "parse_results indexes the key 'results' directly, and the tool's output no longer has it.",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "evidence_gaps": [],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000000a02",
+          "stp_00000000000000000000000000000a03"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000006",
+      "execution_id": "exe_00000000000000000000000000000069",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T14:20:11.109Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T14:20:11.273Z",
+      "error": null,
+      "report": {
+        "summary": "The execution failed at Step 4 fetch_tickets (attempt 3) with HTTPError: HTTP 503 Service Unavailable. The root cause is confirmed by the deterministic signature retry_exhaustion.",
+        "failing_step_id": "stp_00000000000000000000000000006904",
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "fetch_tickets failed on all 3 attempts; the last one (Step 4 fetch_tickets (attempt 3)) failed with HTTPError: HTTP 503 Service Unavailable, and the execution failed.",
+          "hypothesis_id": "H1",
+          "signature": "retry_exhaustion"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of ticket-digest ended with status failed after 13 ms and 4 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000069",
+                "field": "status",
+                "observed": "failed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error HTTPError: HTTP 503 Service Unavailable.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_00000000000000000000000000000069",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 4 fetch_tickets (attempt 3) failed with HTTPError: HTTP 503 Service Unavailable.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Error raised in Step 4 fetch_tickets (attempt 3)",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              },
+              {
+                "kind": "step",
+                "label": "End of the stack trace of Step 4 fetch_tickets (attempt 3)",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "error.stacktrace",
+                "observed": "HTTPError",
+                "expected": null,
+                "excerpt": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 load_schedule (input, completed) returned an object with keys: since, until.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 load_schedule",
+                "ref_id": "stp_00000000000000000000000000006901",
+                "field": "output",
+                "observed": [
+                  "since",
+                  "until"
+                ],
+                "expected": null,
+                "excerpt": "{\"since\":\"2026-11-14T08:20:11.058Z\",\"until\":\"2026-11-14T14:20:11.058Z\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "Step 2 fetch_tickets (retrieval, failed) has no output.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006902",
+                "field": "output",
+                "observed": null,
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Step 3 fetch_tickets (attempt 2) (retrieval, failed) has no output.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 3 fetch_tickets (attempt 2)",
+                "ref_id": "stp_00000000000000000000000000006903",
+                "field": "output",
+                "observed": null,
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "fetch_tickets was attempted 3 times: attempt 1 failed (HTTPError), attempt 2 failed (HTTPError), attempt 3 failed (HTTPError).",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Step 2 fetch_tickets: failed",
+                "ref_id": "stp_00000000000000000000000000006902",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              },
+              {
+                "kind": "step",
+                "label": "Step 3 fetch_tickets (attempt 2): failed",
+                "ref_id": "stp_00000000000000000000000000006903",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              },
+              {
+                "kind": "step",
+                "label": "Step 4 fetch_tickets (attempt 3): failed",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F8",
+            "statement": "Step 2 fetch_tickets (tool fetch_tickets) reported HTTP status 503.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "HTTP status reported by Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006902",
+                "field": "error.message",
+                "observed": 503,
+                "expected": "below 400",
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F9",
+            "statement": "Step 3 fetch_tickets (attempt 2) (tool fetch_tickets) reported HTTP status 503.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "HTTP status reported by Step 3 fetch_tickets (attempt 2)",
+                "ref_id": "stp_00000000000000000000000000006903",
+                "field": "error.message",
+                "observed": 503,
+                "expected": "below 400",
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F10",
+            "statement": "Step 4 fetch_tickets (attempt 3) (tool fetch_tickets) reported HTTP status 503.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "HTTP status reported by Step 4 fetch_tickets (attempt 3)",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "error.message",
+                "observed": 503,
+                "expected": "below 400",
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F11",
+            "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule. Expected steps that did not complete: fetch_tickets, summarize, send_digest.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000069",
+                "field": "config.expected_steps",
+                "observed": [
+                  "load_schedule"
+                ],
+                "expected": [
+                  "fetch_tickets",
+                  "summarize",
+                  "send_digest"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F12",
+            "statement": "Anomaly repeated_tool_failure (high) was raised on this execution: Tool fetch_tickets failed 3 times in one execution.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule repeated_tool_failure.v1 fired",
+                "ref_id": "anm_0000000000000000000000000000000b",
+                "field": "explanation",
+                "observed": "Tool fetch_tickets failed 3 times in one execution",
+                "expected": null,
+                "excerpt": "Tool fetch_tickets has 3 failed steps in this execution. Rule fires at 3 or more failed steps of the same tool in one execution."
+              },
+              {
+                "kind": "step",
+                "label": "Step 2 fetch_tickets failed",
+                "ref_id": "stp_00000000000000000000000000006902",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              },
+              {
+                "kind": "step",
+                "label": "Step 3 fetch_tickets (attempt 2) failed",
+                "ref_id": "stp_00000000000000000000000000006903",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              },
+              {
+                "kind": "step",
+                "label": "Step 4 fetch_tickets (attempt 3) failed",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "error.message",
+                "observed": "HTTP 503 Service Unavailable",
+                "expected": null,
+                "excerpt": "HTTP 503 Service Unavailable"
+              }
+            ]
+          },
+          {
+            "id": "F13",
+            "statement": "Anomaly excessive_retries (medium) was raised on this execution: 2 retried steps, highest attempt 3.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule excessive_retries.v1 fired",
+                "ref_id": "anm_0000000000000000000000000000000c",
+                "field": "explanation",
+                "observed": "2 retried steps, highest attempt 3",
+                "expected": null,
+                "excerpt": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5."
+              },
+              {
+                "kind": "step",
+                "label": "Step 4 fetch_tickets (attempt 3) is a retry",
+                "ref_id": "stp_00000000000000000000000000006904",
+                "field": "attempt",
+                "observed": 3,
+                "expected": "below 3",
+                "excerpt": null
+              },
+              {
+                "kind": "step",
+                "label": "Step 3 fetch_tickets (attempt 2) is a retry",
+                "ref_id": "stp_00000000000000000000000000006903",
+                "field": "attempt",
+                "observed": 2,
+                "expected": "below 3",
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "fetch_tickets failed on all 3 attempts; the last one (Step 4 fetch_tickets (attempt 3)) failed with HTTPError: HTTP 503 Service Unavailable, and the execution failed.",
+            "confidence": "high",
+            "reasoning": "Signature retry_exhaustion: the step was retried, no attempt completed, and the final attempt (attempt 3) failed. The attempt history is read from the recorded steps.",
+            "supporting_fact_ids": [
+              "F7",
+              "F3"
+            ],
+            "contradicting_fact_ids": []
+          },
+          {
+            "id": "H2",
+            "statement": "Step 4 fetch_tickets (attempt 3) (tool fetch_tickets) failed with HTTP status 503.",
+            "confidence": "high",
+            "reasoning": "Signature tool_http_error: the last tool call up to the failing step recorded an HTTP status of 400 or above in its output or error, and that step or a step after it failed the execution.",
+            "supporting_fact_ids": [
+              "F10",
+              "F3"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Find out why fetch_tickets keeps failing before raising its retry budget; add backoff between attempts.",
+            "rationale": "Every one of the 3 attempts failed, so retrying alone did not help.",
+            "hypothesis_id": "H1"
+          },
+          {
+            "id": "R2",
+            "action": "Handle HTTP 503 from fetch_tickets explicitly: retry with backoff if it is transient, otherwise stop with a clear error before later steps run on a bad response.",
+            "rationale": "The run continued or failed on an HTTP 503 response from fetch_tickets.",
+            "hypothesis_id": "H2"
+          }
+        ],
+        "evidence_gaps": [
+          "Only 4 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000006902",
+          "stp_00000000000000000000000000006903",
+          "stp_00000000000000000000000000006904"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000005",
+      "execution_id": "exe_00000000000000000000000000000068",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T12:02:22.096Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T12:02:22.260Z",
+      "error": null,
+      "report": {
+        "summary": "The execution timed out while Step 2 fetch_tickets was running. The root cause is confirmed by the deterministic signature timeout_in_step.",
+        "failing_step_id": "stp_00000000000000000000000000006802",
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+          "hypothesis_id": "H1",
+          "signature": "timeout_in_step"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of ticket-digest ended with status timed_out after 141649 ms and 2 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000068",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error TimeoutError: Execution timed out after 141649 ms..",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_00000000000000000000000000000068",
+                "field": "error.message",
+                "observed": "Execution timed out after 141649 ms.",
+                "expected": null,
+                "excerpt": "Execution timed out after 141649 ms."
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 2 fetch_tickets had started and was still running when the execution timed out.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Status of Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006802",
+                "field": "status",
+                "observed": "running",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 load_schedule (input, completed) returned an object with keys: since, until.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 load_schedule",
+                "ref_id": "stp_00000000000000000000000000006801",
+                "field": "output",
+                "observed": [
+                  "since",
+                  "until"
+                ],
+                "expected": null,
+                "excerpt": "{\"since\":\"2026-11-14T06:00:00.409Z\",\"until\":\"2026-11-14T12:00:00.409Z\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule. Expected steps that did not complete: fetch_tickets, summarize, send_digest.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000068",
+                "field": "config.expected_steps",
+                "observed": [
+                  "load_schedule"
+                ],
+                "expected": [
+                  "fetch_tickets",
+                  "summarize",
+                  "send_digest"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Anomaly repeated_timeouts (high) was raised on this execution: 3 of the last 8 executions timed out.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule repeated_timeouts.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000008",
+                "field": "explanation",
+                "observed": "3 of the last 8 executions timed out",
+                "expected": null,
+                "excerpt": "3 of the last 8 executions of ticket-digest timed out, including this one. Rule fires at 3 or more timeouts in the agent's last 10 executions."
+              },
+              {
+                "kind": "execution",
+                "label": "This execution timed out",
+                "ref_id": "exe_00000000000000000000000000000068",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              },
+              {
+                "kind": "execution",
+                "label": "Earlier timed-out execution",
+                "ref_id": "exe_00000000000000000000000000000066",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              },
+              {
+                "kind": "execution",
+                "label": "Earlier timed-out execution",
+                "ref_id": "exe_00000000000000000000000000000065",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "Anomaly stale_execution (high) was raised on this execution: No event for 141,645 ms; marked timed out.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule stale_execution.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000009",
+                "field": "explanation",
+                "observed": "No event for 141,645 ms; marked timed out",
+                "expected": null,
+                "excerpt": "The execution was running and sent no event for 141,645 ms (last event received at 2026-11-14T12:00:00.413Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out."
+              },
+              {
+                "kind": "execution",
+                "label": "Time since the last event was received",
+                "ref_id": "exe_00000000000000000000000000000068",
+                "field": "last_event_at",
+                "observed": {
+                  "last_event_at": "2026-11-14T12:00:00.413Z",
+                  "idle_ms": 141645
+                },
+                "expected": {
+                  "timeout_ms": 120000
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+            "confidence": "high",
+            "reasoning": "Signature timeout_in_step: the execution's status is timed_out and a step that had started has no completion or failure event.",
+            "supporting_fact_ids": [
+              "F3",
+              "F7"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Put a timeout around fetch_tickets and have it fail with an error instead of hanging.",
+            "rationale": "fetch_tickets is where the run stopped making progress.",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "evidence_gaps": [
+          "Only 4 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000006802"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000004",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "trigger": "auto_anomaly",
+      "created_at": "2026-11-14T11:07:34.568Z",
+      "status": "completed",
+      "provider": "fable",
+      "model": "claude-fable-5-2",
+      "completed_at": "2026-11-14T11:07:43.988Z",
+      "error": null,
+      "report": {
+        "summary": "The execution completed. Anomalies raised on it: duration_spike, token_spike. The root cause given is a hypothesis; it is not confirmed.",
+        "failing_step_id": null,
+        "root_cause": {
+          "status": "probable",
+          "statement": "The web_search tool returned far more content than usual, and that content was passed on to summarize, which inflated the prompt and the answer.",
+          "hypothesis_id": "H1",
+          "signature": null
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of research-assistant ended with status completed after 4797 ms and 4 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000007",
+                "field": "status",
+                "observed": "completed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "Step 2 web_search (tool_call, completed) has an output that was truncated at ingestion (155915 bytes; only a preview is stored).",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 web_search",
+                "ref_id": "stp_00000000000000000000000000000702",
+                "field": "output",
+                "observed": {
+                  "_truncated": true,
+                  "original_bytes": 155915,
+                  "preview": "{\"results\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model "
+                },
+                "expected": null,
+                "excerpt": "{\"_truncated\":true,\"original_bytes\":155915,\"preview\":\"{\\\"results\\\":[{\\\"title\\\":\\\"Agent observability: tracing every step (part 1)\\\",\\\"url\\\":\\\"https://example.test/agent-observability\\\",\\\"snippet\\\":\\\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 3 parse_results (reasoning, completed) returned an object with keys: sources.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 3 parse_results",
+                "ref_id": "stp_00000000000000000000000000000703",
+                "field": "output",
+                "observed": [
+                  "sources"
+                ],
+                "expected": null,
+                "excerpt": "{\"sources\":[\"Agent observability: tracing every step (part 1)\",\"Why silent failures are the hardest agent bugs (part 2)\",\"Retry strategies for rate-limited tools (part 3)\",\"Schema drift in upstream APIs (part 4)\",\"Replaying agent runs against recorded inputs (part 5)\",\"Baselines for agent latency and token use (part 6)\",\"Agent observability: tracing every step (part 7)\",\"Why silent failures are the hardest agent bugs (part 8)\",\"Retry strategies for rate-limited tools (part 9)\",\"Schema drift in u"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 4 summarize (llm_call, completed) has an output that was truncated at ingestion (153164 bytes; only a preview is stored).",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 4 summarize",
+                "ref_id": "stp_00000000000000000000000000000704",
+                "field": "output",
+                "observed": {
+                  "_truncated": true,
+                  "original_bytes": 153164,
+                  "preview": "{\"text\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent m"
+                },
+                "expected": null,
+                "excerpt": "{\"_truncated\":true,\"original_bytes\":153164,\"preview\":\"{\\\"text\\\":\\\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, wit"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search, parse_results, summarize. Expected steps that did not complete: none.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000007",
+                "field": "config.expected_steps",
+                "observed": [
+                  "plan",
+                  "web_search",
+                  "parse_results",
+                  "summarize"
+                ],
+                "expected": [
+                  "web_search",
+                  "parse_results",
+                  "summarize"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Anomaly duration_spike (high) was raised on this execution: Duration 6.1× above baseline.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule duration_spike.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000006",
+                "field": "explanation",
+                "observed": "Duration 6.1× above baseline",
+                "expected": null,
+                "excerpt": "Execution took 4,797 ms. Baseline median for research-assistant is 787.5 ms over 6 runs (p95 815 ms). Rule fires above max(3× median, 1.5× p95) = 2,362.5 ms. Severity is high above 5× median = 3,937.5 ms."
+              },
+              {
+                "kind": "execution",
+                "label": "Duration of this execution",
+                "ref_id": "exe_00000000000000000000000000000007",
+                "field": "duration_ms",
+                "observed": 4797,
+                "expected": 2362.5,
+                "excerpt": null
+              },
+              {
+                "kind": "baseline",
+                "label": "Baseline duration over 6 completed runs",
+                "ref_id": null,
+                "field": "duration_ms",
+                "observed": {
+                  "median": 787.5,
+                  "p95": 815,
+                  "runs": 6
+                },
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "Anomaly token_spike (high) was raised on this execution: Token usage 387.0× above baseline.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule token_spike.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000007",
+                "field": "explanation",
+                "observed": "Token usage 387.0× above baseline",
+                "expected": null,
+                "excerpt": "Execution used 77,018 tokens. Baseline median for research-assistant is 199 tokens over 6 runs (p95 199 tokens). Rule fires above max(2× median, p95) = 398 tokens. Severity is high above 4× median = 796 tokens."
+              },
+              {
+                "kind": "execution",
+                "label": "Token usage of this execution",
+                "ref_id": "exe_00000000000000000000000000000007",
+                "field": "tokens_total",
+                "observed": 77018,
+                "expected": 398,
+                "excerpt": null
+              },
+              {
+                "kind": "baseline",
+                "label": "Baseline token usage over 6 completed runs",
+                "ref_id": null,
+                "field": "tokens_total",
+                "observed": {
+                  "median": 199,
+                  "p95": 199,
+                  "runs": 6
+                },
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F8",
+            "statement": "This execution took 4797 ms over 4 steps. Over the last 6 completed runs of research-assistant, the median duration is 787.5 ms (p95 815 ms) and the largest step count is 4.",
+            "evidence": [
+              {
+                "kind": "baseline",
+                "label": "This execution compared with 6 completed runs",
+                "ref_id": null,
+                "field": null,
+                "observed": {
+                  "duration_ms": 4797,
+                  "step_count": 4,
+                  "tokens_total": 77018
+                },
+                "expected": {
+                  "median_duration_ms": 787.5,
+                  "p95_duration_ms": 815,
+                  "max_step_count": 4,
+                  "median_tokens_total": 199
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "The web_search tool returned far more content than usual, and that content was passed on to summarize, which inflated the prompt and the answer.",
+            "confidence": "medium",
+            "reasoning": "The web_search output was large enough to be truncated at ingestion, the token_spike rule fired on this run, and the run took several times its baseline duration. A much larger search response explains all three, but the full response is not stored, so its size per result cannot be checked.",
+            "supporting_fact_ids": [
+              "F2",
+              "F7",
+              "F8"
+            ],
+            "contradicting_fact_ids": []
+          },
+          {
+            "id": "H2",
+            "statement": "The spike comes from an unusually long question rather than from the search response.",
+            "confidence": "low",
+            "reasoning": "A longer question would raise prompt tokens. Nothing recorded supports a question long enough to account for the increase, and the truncated search output points elsewhere.",
+            "supporting_fact_ids": [
+              "F7"
+            ],
+            "contradicting_fact_ids": [
+              "F2"
+            ]
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Cap what parse_results passes to summarize: limit the number of sources and the length of each snippet.",
+            "rationale": "The prompt is built from every source the search tool returns, so its size is unbounded.",
+            "hypothesis_id": "H1"
+          },
+          {
+            "id": "R2",
+            "action": "Record the size of each tool response as step metadata.",
+            "rationale": "With sizes recorded, growth in a prompt can be attributed to a specific tool call even when the payload is truncated.",
+            "hypothesis_id": null
+          }
+        ],
+        "evidence_gaps": [
+          "At least one step output was larger than 64 KB and is stored only as a preview.",
+          "A hypothesis proposed by claude-fable-5-2 was discarded because it cited fact id(s) that do not exist (F12).",
+          "The full web_search response is not stored, so the number and size of the results it returned cannot be verified."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000000702",
+          "stp_00000000000000000000000000000704"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000003",
+      "execution_id": "exe_00000000000000000000000000000066",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T00:02:07.148Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T00:02:07.312Z",
+      "error": null,
+      "report": {
+        "summary": "The execution timed out while Step 2 fetch_tickets was running. The root cause is confirmed by the deterministic signature timeout_in_step.",
+        "failing_step_id": "stp_00000000000000000000000000006602",
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+          "hypothesis_id": "H1",
+          "signature": "timeout_in_step"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of ticket-digest ended with status timed_out after 126734 ms and 2 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000066",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error TimeoutError: Execution timed out after 126734 ms..",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_00000000000000000000000000000066",
+                "field": "error.message",
+                "observed": "Execution timed out after 126734 ms.",
+                "expected": null,
+                "excerpt": "Execution timed out after 126734 ms."
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 2 fetch_tickets had started and was still running when the execution timed out.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Status of Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006602",
+                "field": "status",
+                "observed": "running",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 load_schedule (input, completed) returned an object with keys: since, until.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 load_schedule",
+                "ref_id": "stp_00000000000000000000000000006601",
+                "field": "output",
+                "observed": [
+                  "since",
+                  "until"
+                ],
+                "expected": null,
+                "excerpt": "{\"since\":\"2026-11-13T18:00:00.376Z\",\"until\":\"2026-11-14T00:00:00.376Z\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule. Expected steps that did not complete: fetch_tickets, summarize, send_digest.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000066",
+                "field": "config.expected_steps",
+                "observed": [
+                  "load_schedule"
+                ],
+                "expected": [
+                  "fetch_tickets",
+                  "summarize",
+                  "send_digest"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Anomaly stale_execution (high) was raised on this execution: No event for 126,730 ms; marked timed out.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule stale_execution.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000004",
+                "field": "explanation",
+                "observed": "No event for 126,730 ms; marked timed out",
+                "expected": null,
+                "excerpt": "The execution was running and sent no event for 126,730 ms (last event received at 2026-11-14T00:00:00.380Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out."
+              },
+              {
+                "kind": "execution",
+                "label": "Time since the last event was received",
+                "ref_id": "exe_00000000000000000000000000000066",
+                "field": "last_event_at",
+                "observed": {
+                  "last_event_at": "2026-11-14T00:00:00.380Z",
+                  "idle_ms": 126730
+                },
+                "expected": {
+                  "timeout_ms": 120000
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+            "confidence": "high",
+            "reasoning": "Signature timeout_in_step: the execution's status is timed_out and a step that had started has no completion or failure event.",
+            "supporting_fact_ids": [
+              "F3",
+              "F6"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Put a timeout around fetch_tickets and have it fail with an error instead of hanging.",
+            "rationale": "fetch_tickets is where the run stopped making progress.",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "evidence_gaps": [
+          "Only 3 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000006602"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000002",
+      "execution_id": "exe_00000000000000000000000000000065",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-13T18:02:24.502Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-13T18:02:24.666Z",
+      "error": null,
+      "report": {
+        "summary": "The execution timed out while Step 2 fetch_tickets was running. The root cause is confirmed by the deterministic signature timeout_in_step.",
+        "failing_step_id": "stp_00000000000000000000000000006502",
+        "root_cause": {
+          "status": "confirmed",
+          "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+          "hypothesis_id": "H1",
+          "signature": "timeout_in_step"
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of ticket-digest ended with status timed_out after 144043 ms and 2 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_00000000000000000000000000000065",
+                "field": "status",
+                "observed": "timed_out",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error TimeoutError: Execution timed out after 144043 ms..",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_00000000000000000000000000000065",
+                "field": "error.message",
+                "observed": "Execution timed out after 144043 ms.",
+                "expected": null,
+                "excerpt": "Execution timed out after 144043 ms."
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 2 fetch_tickets had started and was still running when the execution timed out.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Status of Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006502",
+                "field": "status",
+                "observed": "running",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 1 load_schedule (input, completed) returned an object with keys: since, until.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 1 load_schedule",
+                "ref_id": "stp_00000000000000000000000000006501",
+                "field": "output",
+                "observed": [
+                  "since",
+                  "until"
+                ],
+                "expected": null,
+                "excerpt": "{\"since\":\"2026-11-13T12:00:00.421Z\",\"until\":\"2026-11-13T18:00:00.421Z\"}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule. Expected steps that did not complete: fetch_tickets, summarize, send_digest.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_00000000000000000000000000000065",
+                "field": "config.expected_steps",
+                "observed": [
+                  "load_schedule"
+                ],
+                "expected": [
+                  "fetch_tickets",
+                  "summarize",
+                  "send_digest"
+                ],
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Anomaly stale_execution (high) was raised on this execution: No event for 144,039 ms; marked timed out.",
+            "evidence": [
+              {
+                "kind": "anomaly",
+                "label": "Why rule stale_execution.v1 fired",
+                "ref_id": "anm_00000000000000000000000000000003",
+                "field": "explanation",
+                "observed": "No event for 144,039 ms; marked timed out",
+                "expected": null,
+                "excerpt": "The execution was running and sent no event for 144,039 ms (last event received at 2026-11-13T18:00:00.425Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out."
+              },
+              {
+                "kind": "execution",
+                "label": "Time since the last event was received",
+                "ref_id": "exe_00000000000000000000000000000065",
+                "field": "last_event_at",
+                "observed": {
+                  "last_event_at": "2026-11-13T18:00:00.425Z",
+                  "idle_ms": 144039
+                },
+                "expected": {
+                  "timeout_ms": 120000
+                },
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+            "confidence": "high",
+            "reasoning": "Signature timeout_in_step: the execution's status is timed_out and a step that had started has no completion or failure event.",
+            "supporting_fact_ids": [
+              "F3",
+              "F6"
+            ],
+            "contradicting_fact_ids": []
+          }
+        ],
+        "recommendations": [
+          {
+            "id": "R1",
+            "action": "Put a timeout around fetch_tickets and have it fail with an error instead of hanging.",
+            "rationale": "fetch_tickets is where the run stopped making progress.",
+            "hypothesis_id": "H1"
+          }
+        ],
+        "evidence_gaps": [
+          "Only 3 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000006502"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000001",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-13T06:00:12.573Z",
+      "status": "failed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-13T06:00:12.785Z",
+      "error": {
+        "type": "OperationalError",
+        "message": "The investigation could not be completed; see the backend log.",
+        "stacktrace": null
+      },
+      "report": null
+    }
+  ],
+  "total": 10,
+  "limit": 50,
+  "offset": 0
+}

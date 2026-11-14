@@ -1,0 +1,88 @@
+{
+  "id": "rpl_00000000000000000000000000000002",
+  "original_execution_id": "exe_0000000000000000000000000000000a",
+  "replay_execution_id": "exe_0000000000000000000000000000000b",
+  "mode": "sandbox",
+  "status": "completed",
+  "side_effects_authorized": false,
+  "note": "First attempt at a parser fix.",
+  "requested_at": "2026-11-14T17:34:00.188Z",
+  "claimed_at": "2026-11-14T17:34:01.588Z",
+  "completed_at": "2026-11-14T17:34:02.150Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_0000000000000000000000000000000a",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "status": "failed",
+      "started_at": "2026-11-14T17:20:14.592Z",
+      "ended_at": "2026-11-14T17:20:14.953Z",
+      "duration_ms": 361,
+      "step_count": 3,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": {
+        "type": "KeyError",
+        "message": "'results'",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+      }
+    },
+    "replay": {
+      "id": "exe_0000000000000000000000000000000b",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "status": "failed",
+      "started_at": "2026-11-14T17:34:02.118Z",
+      "ended_at": "2026-11-14T17:34:02.126Z",
+      "duration_ms": 8,
+      "step_count": 3,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": "exe_0000000000000000000000000000000a",
+      "error": {
+        "type": "TypeError",
+        "message": "list indices must be integers or slices, not str",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"data\"][\"results\"]]\nTypeError: list indices must be integers or slices, not str\n"
+      }
+    },
+    "outcome": "different_failure",
+    "duration_delta_ms": -353,
+    "tokens_delta": null,
+    "step_count_delta": 0,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "plan",
+        "original_step_id": "stp_00000000000000000000000000000a01",
+        "replay_step_id": "stp_00000000000000000000000000000b01",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed"
+      },
+      {
+        "ordinal": 2,
+        "name": "web_search",
+        "original_step_id": "stp_00000000000000000000000000000a02",
+        "replay_step_id": "stp_00000000000000000000000000000b02",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed"
+      },
+      {
+        "ordinal": 3,
+        "name": "parse_results",
+        "original_step_id": "stp_00000000000000000000000000000a03",
+        "replay_step_id": "stp_00000000000000000000000000000b03",
+        "change": "unchanged",
+        "original_status": "failed",
+        "replay_status": "failed"
+      }
+    ]
+  }
+}

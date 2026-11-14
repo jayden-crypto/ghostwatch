@@ -1,0 +1,184 @@
+{
+  "id": "inv_00000000000000000000000000000007",
+  "execution_id": "exe_0000000000000000000000000000000a",
+  "trigger": "auto_failure",
+  "created_at": "2026-11-14T17:20:14.991Z",
+  "status": "completed",
+  "provider": "rule_based",
+  "model": null,
+  "completed_at": "2026-11-14T17:20:15.155Z",
+  "error": null,
+  "report": {
+    "summary": "The execution failed at Step 3 parse_results with KeyError: 'results'. The root cause is confirmed by the deterministic signature missing_key_in_upstream_output.",
+    "failing_step_id": "stp_00000000000000000000000000000a03",
+    "root_cause": {
+      "status": "confirmed",
+      "statement": "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) does not contain. That output's keys are: data, meta.",
+      "hypothesis_id": "H1",
+      "signature": "missing_key_in_upstream_output"
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of research-assistant ended with status failed after 361 ms and 3 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_0000000000000000000000000000000a",
+            "field": "status",
+            "observed": "failed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "The execution ended with the error KeyError: 'results'.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Terminal error of the execution",
+            "ref_id": "exe_0000000000000000000000000000000a",
+            "field": "error.message",
+            "observed": "'results'",
+            "expected": null,
+            "excerpt": "'results'"
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 3 parse_results failed with KeyError: 'results'.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Error raised in Step 3 parse_results",
+            "ref_id": "stp_00000000000000000000000000000a03",
+            "field": "error.message",
+            "observed": "'results'",
+            "expected": null,
+            "excerpt": "'results'"
+          },
+          {
+            "kind": "step",
+            "label": "End of the stack trace of Step 3 parse_results",
+            "ref_id": "stp_00000000000000000000000000000a03",
+            "field": "error.stacktrace",
+            "observed": "KeyError",
+            "expected": null,
+            "excerpt": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "Step 1 plan (reasoning, completed) returned an object with keys: query.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 1 plan",
+            "ref_id": "stp_00000000000000000000000000000a01",
+            "field": "output",
+            "observed": [
+              "query"
+            ],
+            "expected": null,
+            "excerpt": "{\"query\":\"how do teams trace what an ai agent did\"}"
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "Step 2 web_search (tool_call, completed) returned an object with keys: data, meta.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 2 web_search",
+            "ref_id": "stp_00000000000000000000000000000a02",
+            "field": "output",
+            "observed": [
+              "data",
+              "meta"
+            ],
+            "expected": null,
+            "excerpt": "{\"data\":[{\"title\":\"Agent observability: tracing every step\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs.\"},{\"title\":\"Why silent failures are the hardest agent bugs\",\"url\":\"https://example.test/silent-failures\",\"snippet\":\"An agent can report success while skipping the step that mattered.\"},{\"title\":\"Replaying agent runs against recorded inputs\",\"url\":\"https://example.test/replay\",\"snippet\":\"Deter"
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search. Expected steps that did not complete: parse_results, summarize.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_0000000000000000000000000000000a",
+            "field": "config.expected_steps",
+            "observed": [
+              "plan",
+              "web_search"
+            ],
+            "expected": [
+              "web_search",
+              "parse_results",
+              "summarize"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F7",
+        "statement": "This execution took 361 ms over 3 steps. Over the last 8 completed runs of research-assistant, the median duration is 787.5 ms (p95 4797 ms) and the largest step count is 4.",
+        "evidence": [
+          {
+            "kind": "baseline",
+            "label": "This execution compared with 8 completed runs",
+            "ref_id": null,
+            "field": null,
+            "observed": {
+              "duration_ms": 361,
+              "step_count": 3,
+              "tokens_total": null
+            },
+            "expected": {
+              "median_duration_ms": 787.5,
+              "p95_duration_ms": 4797,
+              "max_step_count": 4,
+              "median_tokens_total": 199
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "statement": "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) does not contain. That output's keys are: data, meta.",
+        "confidence": "high",
+        "reasoning": "Signature missing_key_in_upstream_output: the failing step raised KeyError for 'results' and the nearest preceding tool output has no key 'results'. Both conditions are read directly from the recorded step error and the recorded tool output.",
+        "supporting_fact_ids": [
+          "F3",
+          "F5"
+        ],
+        "contradicting_fact_ids": []
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "R1",
+        "action": "Make parse_results handle the response shape web_search now returns (keys: data, meta), or pin the response format of web_search.",
+        "rationale": "parse_results indexes the key 'results' directly, and the tool's output no longer has it.",
+        "hypothesis_id": "H1"
+      }
+    ],
+    "evidence_gaps": [],
+    "relevant_step_ids": [
+      "stp_00000000000000000000000000000a02",
+      "stp_00000000000000000000000000000a03"
+    ]
+  }
+}

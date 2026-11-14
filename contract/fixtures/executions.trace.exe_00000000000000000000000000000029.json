@@ -1,0 +1,108 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000029",
+    "agent_id": "agt_00000000000000000000000000000002",
+    "agent_name": "Invoice Processor",
+    "status": "failed",
+    "started_at": "2026-11-14T17:52:06.737Z",
+    "ended_at": "2026-11-14T17:52:06.951Z",
+    "duration_ms": 214,
+    "step_count": 2,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": true,
+    "replay_of": "exe_00000000000000000000000000000028",
+    "error": {
+      "type": "ValidationUnavailable",
+      "message": "validation service returned HTTP 503",
+      "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+    },
+    "input": {
+      "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+    },
+    "output": null,
+    "config": {
+      "model": null,
+      "params": {},
+      "expected_steps": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000002901",
+      "execution_id": "exe_00000000000000000000000000000029",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "extract_fields",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T17:52:06.738Z",
+      "ended_at": "2026-11-14T17:52:06.739Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+      },
+      "output": {
+        "invoice_number": "INV-2042",
+        "vendor": "Contoso Cloud",
+        "total": 9400,
+        "currency": "USD"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002902",
+      "execution_id": "exe_00000000000000000000000000000029",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "validate",
+      "type": "custom",
+      "status": "failed",
+      "started_at": "2026-11-14T17:52:06.740Z",
+      "ended_at": "2026-11-14T17:52:06.950Z",
+      "duration_ms": 210,
+      "offset_ms": 3,
+      "input": {
+        "invoice_number": "INV-2042",
+        "vendor": "Contoso Cloud",
+        "total": 9400,
+        "currency": "USD"
+      },
+      "output": null,
+      "error": {
+        "type": "ValidationUnavailable",
+        "message": "validation service returned HTTP 503",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+      },
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 5
+}

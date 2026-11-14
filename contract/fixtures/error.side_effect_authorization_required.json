@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "side_effect_authorization_required",
+    "message": "A live replay runs tools for real. Set authorize_side_effects to true to confirm.",
+    "details": null
+  }
+}

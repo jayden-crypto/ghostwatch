@@ -1,0 +1,164 @@
+{
+  "id": "inv_00000000000000000000000000000009",
+  "execution_id": "exe_0000000000000000000000000000000b",
+  "trigger": "auto_failure",
+  "created_at": "2026-11-14T17:34:02.164Z",
+  "status": "completed",
+  "provider": "rule_based",
+  "model": null,
+  "completed_at": "2026-11-14T17:34:02.328Z",
+  "error": null,
+  "report": {
+    "summary": "The execution failed at Step 3 parse_results with TypeError: list indices must be integers or slices, not str. The recorded evidence is not sufficient to determine a root cause.",
+    "failing_step_id": "stp_00000000000000000000000000000b03",
+    "root_cause": {
+      "status": "insufficient_evidence",
+      "statement": "No deterministic signature matched this execution and no supported hypothesis is available, so the recorded evidence is not sufficient to name a root cause.",
+      "hypothesis_id": null,
+      "signature": null
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of research-assistant ended with status failed after 8 ms and 3 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_0000000000000000000000000000000b",
+            "field": "status",
+            "observed": "failed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "The execution ended with the error TypeError: list indices must be integers or slices, not str.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Terminal error of the execution",
+            "ref_id": "exe_0000000000000000000000000000000b",
+            "field": "error.message",
+            "observed": "list indices must be integers or slices, not str",
+            "expected": null,
+            "excerpt": "list indices must be integers or slices, not str"
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 3 parse_results failed with TypeError: list indices must be integers or slices, not str.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Error raised in Step 3 parse_results",
+            "ref_id": "stp_00000000000000000000000000000b03",
+            "field": "error.message",
+            "observed": "list indices must be integers or slices, not str",
+            "expected": null,
+            "excerpt": "list indices must be integers or slices, not str"
+          },
+          {
+            "kind": "step",
+            "label": "End of the stack trace of Step 3 parse_results",
+            "ref_id": "stp_00000000000000000000000000000b03",
+            "field": "error.stacktrace",
+            "observed": "TypeError",
+            "expected": null,
+            "excerpt": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"data\"][\"results\"]]\nTypeError: list indices must be integers or slices, not str\n"
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "Step 1 plan (reasoning, completed) returned an object with keys: query.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 1 plan",
+            "ref_id": "stp_00000000000000000000000000000b01",
+            "field": "output",
+            "observed": [
+              "query"
+            ],
+            "expected": null,
+            "excerpt": "{\"query\":\"how do teams trace what an ai agent did\"}"
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "Step 2 web_search (tool_call, completed) returned an object with keys: data, meta.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 2 web_search",
+            "ref_id": "stp_00000000000000000000000000000b02",
+            "field": "output",
+            "observed": [
+              "data",
+              "meta"
+            ],
+            "expected": null,
+            "excerpt": "{\"data\":[{\"title\":\"Agent observability: tracing every step\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs.\"},{\"title\":\"Why silent failures are the hardest agent bugs\",\"url\":\"https://example.test/silent-failures\",\"snippet\":\"An agent can report success while skipping the step that mattered.\"},{\"title\":\"Replaying agent runs against recorded inputs\",\"url\":\"https://example.test/replay\",\"snippet\":\"Deter"
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search. Expected steps that did not complete: parse_results, summarize.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_0000000000000000000000000000000b",
+            "field": "config.expected_steps",
+            "observed": [
+              "plan",
+              "web_search"
+            ],
+            "expected": [
+              "web_search",
+              "parse_results",
+              "summarize"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F7",
+        "statement": "This execution took 8 ms over 3 steps. Over the last 8 completed runs of research-assistant, the median duration is 787.5 ms (p95 4797 ms) and the largest step count is 4.",
+        "evidence": [
+          {
+            "kind": "baseline",
+            "label": "This execution compared with 8 completed runs",
+            "ref_id": null,
+            "field": null,
+            "observed": {
+              "duration_ms": 8,
+              "step_count": 3,
+              "tokens_total": null
+            },
+            "expected": {
+              "median_duration_ms": 787.5,
+              "p95_duration_ms": 4797,
+              "max_step_count": 4,
+              "median_tokens_total": 199
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [],
+    "recommendations": [],
+    "evidence_gaps": [],
+    "relevant_step_ids": [
+      "stp_00000000000000000000000000000b03"
+    ]
+  }
+}

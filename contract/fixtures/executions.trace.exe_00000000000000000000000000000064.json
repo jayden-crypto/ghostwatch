@@ -1,0 +1,298 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000064",
+    "agent_id": "agt_00000000000000000000000000000004",
+    "agent_name": "Ticket Digest",
+    "status": "completed",
+    "started_at": "2026-11-13T12:00:00.398Z",
+    "ended_at": "2026-11-13T12:00:06.995Z",
+    "duration_ms": 6597,
+    "step_count": 8,
+    "tokens_total": 4366,
+    "cost_usd": 0.004734,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "trigger": "cron",
+      "schedule": "0 */6 * * *"
+    },
+    "output": {
+      "tickets": 41,
+      "batches": 3,
+      "delivered": true
+    },
+    "config": {
+      "model": "claude-haiku-5-5",
+      "params": {
+        "batch_size": 20
+      },
+      "expected_steps": [
+        "fetch_tickets",
+        "summarize",
+        "send_digest"
+      ],
+      "timeout_ms": 120000,
+      "schedule": "0 */6 * * *"
+    },
+    "tokens_input": 4274,
+    "tokens_output": 92,
+    "tags": [
+      "scheduled"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000006401",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "load_schedule",
+      "type": "input",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:00.399Z",
+      "ended_at": "2026-11-13T12:00:00.401Z",
+      "duration_ms": 2,
+      "offset_ms": 1,
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": {
+        "since": "2026-11-13T06:00:00.398Z",
+        "until": "2026-11-13T12:00:00.398Z"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006402",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:00.402Z",
+      "ended_at": "2026-11-13T12:00:01.033Z",
+      "duration_ms": 631,
+      "offset_ms": 4,
+      "input": {
+        "since": "2026-11-13T06:00:00.398Z",
+        "until": "2026-11-13T12:00:00.398Z"
+      },
+      "output": {
+        "count": 41,
+        "pages": 3,
+        "first_ticket_ids": [
+          "TCK-88412",
+          "TCK-88413",
+          "TCK-88415"
+        ]
+      },
+      "error": null,
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006403",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "summarize",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:01.034Z",
+      "ended_at": "2026-11-13T12:00:06.770Z",
+      "duration_ms": 5736,
+      "offset_ms": 636,
+      "input": {
+        "tickets": 41,
+        "batch_size": 20
+      },
+      "output": {
+        "batches": 3,
+        "summary_chars": 362
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006404",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": "stp_00000000000000000000000000006403",
+      "ordinal": 4,
+      "depth": 1,
+      "name": "summarize_batch",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:01.035Z",
+      "ended_at": "2026-11-13T12:00:02.784Z",
+      "duration_ms": 1749,
+      "offset_ms": 637,
+      "input": {
+        "batch": 1,
+        "tickets": 20
+      },
+      "output": {
+        "text": "Batch 1: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.",
+        "usage": {
+          "input_tokens": 2088,
+          "output_tokens": 31
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "claude-haiku-5-5",
+      "tokens_input": 2088,
+      "tokens_output": 31,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006405",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": "stp_00000000000000000000000000006403",
+      "ordinal": 5,
+      "depth": 1,
+      "name": "summarize_batch",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:02.785Z",
+      "ended_at": "2026-11-13T12:00:04.707Z",
+      "duration_ms": 1922,
+      "offset_ms": 2387,
+      "input": {
+        "batch": 2,
+        "tickets": 20
+      },
+      "output": {
+        "text": "Batch 2: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.",
+        "usage": {
+          "input_tokens": 2076,
+          "output_tokens": 31
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "claude-haiku-5-5",
+      "tokens_input": 2076,
+      "tokens_output": 31,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006406",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": "stp_00000000000000000000000000006403",
+      "ordinal": 6,
+      "depth": 1,
+      "name": "summarize_batch",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:04.708Z",
+      "ended_at": "2026-11-13T12:00:06.769Z",
+      "duration_ms": 2061,
+      "offset_ms": 4310,
+      "input": {
+        "batch": 3,
+        "tickets": 1
+      },
+      "output": {
+        "text": "Batch 3: 1 tickets. Most are billing questions about duplicate charges; 1 report login problems after a password change.",
+        "usage": {
+          "input_tokens": 110,
+          "output_tokens": 30
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "claude-haiku-5-5",
+      "tokens_input": 110,
+      "tokens_output": 30,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006407",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": null,
+      "ordinal": 7,
+      "depth": 0,
+      "name": "send_digest",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:06.771Z",
+      "ended_at": "2026-11-13T12:00:06.992Z",
+      "duration_ms": 221,
+      "offset_ms": 6373,
+      "input": {
+        "channel": "#support-leads",
+        "summary_chars": 362
+      },
+      "output": {
+        "message_id": "MSG-71200.39800000191",
+        "status": "sent"
+      },
+      "error": null,
+      "tool_name": "send_digest",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": true
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006408",
+      "execution_id": "exe_00000000000000000000000000000064",
+      "parent_step_id": null,
+      "ordinal": 8,
+      "depth": 0,
+      "name": "report",
+      "type": "output",
+      "status": "completed",
+      "started_at": "2026-11-13T12:00:06.993Z",
+      "ended_at": "2026-11-13T12:00:06.994Z",
+      "duration_ms": 1,
+      "offset_ms": 6595,
+      "input": null,
+      "output": {
+        "tickets": 41,
+        "batches": 3,
+        "delivered": true
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 17
+}

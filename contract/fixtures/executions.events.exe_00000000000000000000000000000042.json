@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000042001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-12T12:10:03.289Z",
+      "received_at": "2026-11-12T12:10:03.797Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004201",
+        "parent_step_id": null,
+        "name": "classify",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "My invoice shows the wrong company address."
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T12:10:03.767Z",
+      "received_at": "2026-11-12T12:10:03.797Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004201",
+        "output": {
+          "text": "billing",
+          "usage": {
+            "input_tokens": 27,
+            "output_tokens": 2
+          }
+        },
+        "tokens_input": 27,
+        "tokens_output": 2,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-12T12:10:03.768Z",
+      "received_at": "2026-11-12T12:10:03.797Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004202",
+        "parent_step_id": null,
+        "name": "retrieve_kb",
+        "step_type": "tool_call",
+        "input": {
+          "category": "billing"
+        },
+        "tool_name": "retrieve_kb",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T12:10:04.029Z",
+      "received_at": "2026-11-12T12:10:04.297Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004202",
+        "output": {
+          "articles": [
+            {
+              "id": "KB-101",
+              "title": "How refunds are processed",
+              "body": "Refunds reach the card in 5-7 days."
+            }
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-12T12:10:04.030Z",
+      "received_at": "2026-11-12T12:10:04.297Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004203",
+        "parent_step_id": null,
+        "name": "draft_reply",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "My invoice shows the wrong company address.",
+          "articles": [
+            {
+              "id": "KB-101",
+              "title": "How refunds are processed",
+              "body": "Refunds reach the card in 5-7 days."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T12:10:04.499Z",
+      "received_at": "2026-11-12T12:10:04.797Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004203",
+        "output": {
+          "text": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+          "usage": {
+            "input_tokens": 54,
+            "output_tokens": 16
+          }
+        },
+        "tokens_input": 54,
+        "tokens_output": 16,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000042007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-12T12:10:04.500Z",
+      "received_at": "2026-11-12T12:10:04.797Z",
+      "payload": {
+        "output": {
+          "category": "billing",
+          "reply": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+          "articles": [
+            "KB-101"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

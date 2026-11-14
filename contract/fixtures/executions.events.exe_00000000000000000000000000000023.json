@@ -1,0 +1,143 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000023001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T09:45:55.231Z",
+      "received_at": "2026-11-13T09:45:55.739Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002301",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2044\nVendor: Adatum Legal\nTotal: 5600.00\nCurrency: GBP"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T09:45:55.232Z",
+      "received_at": "2026-11-13T09:45:55.739Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002301",
+        "output": {
+          "invoice_number": "INV-2044",
+          "vendor": "Adatum Legal",
+          "total": 5600,
+          "currency": "GBP"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T09:45:55.233Z",
+      "received_at": "2026-11-13T09:45:55.739Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002302",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2044",
+          "vendor": "Adatum Legal",
+          "total": 5600,
+          "currency": "GBP"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T09:45:55.440Z",
+      "received_at": "2026-11-13T09:45:55.739Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002302",
+        "output": {
+          "valid": true,
+          "problems": []
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T09:45:55.441Z",
+      "received_at": "2026-11-13T09:45:55.739Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002303",
+        "parent_step_id": null,
+        "name": "submit_invoice",
+        "step_type": "tool_call",
+        "input": {
+          "invoice": {
+            "invoice_number": "INV-2044",
+            "vendor": "Adatum Legal",
+            "total": 5600,
+            "currency": "GBP"
+          }
+        },
+        "tool_name": "submit_invoice",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T09:45:55.742Z",
+      "received_at": "2026-11-13T09:45:56.239Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002303",
+        "output": {
+          "submission_id": "SUB-INV-2044",
+          "status": "accepted"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000023007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T09:45:55.743Z",
+      "received_at": "2026-11-13T09:45:56.239Z",
+      "payload": {
+        "output": {
+          "status": "processed",
+          "invoice_number": "INV-2044"
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

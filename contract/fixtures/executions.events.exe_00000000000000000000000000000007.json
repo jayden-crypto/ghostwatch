@@ -1,0 +1,202 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000007001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T11:07:29.734Z",
+      "received_at": "2026-11-14T11:07:30.242Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000701",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "How does schema drift break API consumers?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T11:07:29.735Z",
+      "received_at": "2026-11-14T11:07:30.242Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000701",
+        "output": {
+          "query": "how does schema drift break api consumers"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T11:07:29.736Z",
+      "received_at": "2026-11-14T11:07:30.242Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000702",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "how does schema drift break api consumers",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T11:07:31.576Z",
+      "received_at": "2026-11-14T11:07:31.742Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000702",
+        "output": {
+          "_truncated": true,
+          "original_bytes": 155915,
+          "preview": "{\"results\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model "
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T11:07:31.577Z",
+      "received_at": "2026-11-14T11:07:31.742Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000703",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T11:07:31.578Z",
+      "received_at": "2026-11-14T11:07:31.742Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000703",
+        "output": {
+          "sources": [
+            "Agent observability: tracing every step (part 1)",
+            "Why silent failures are the hardest agent bugs (part 2)",
+            "Retry strategies for rate-limited tools (part 3)",
+            "Schema drift in upstream APIs (part 4)",
+            "Replaying agent runs against recorded inputs (part 5)",
+            "Baselines for agent latency and token use (part 6)",
+            "Agent observability: tracing every step (part 7)",
+            "Why silent failures are the hardest agent bugs (part 8)",
+            "Retry strategies for rate-limited tools (part 9)",
+            "Schema drift in upstream APIs (part 10)",
+            "Replaying agent runs against recorded inputs (part 11)",
+            "Baselines for agent latency and token use (part 12)",
+            "Agent observability: tracing every step (part 13)",
+            "Why silent failures are the hardest agent bugs (part 14)",
+            "Retry strategies for rate-limited tools (part 15)",
+            "Schema drift in upstream APIs (part 16)",
+            "Replaying agent runs against recorded inputs (part 17)",
+            "Baselines for agent latency and token use (part 18)",
+            "Agent observability: tracing every step (part 19)",
+            "Why silent failures are the hardest agent bugs (part 20)",
+            "Retry strategies for rate-limited tools (part 21)",
+            "Schema drift in upstream APIs (part 22)",
+            "Replaying agent runs against recorded inputs (part 23)",
+            "Baselines for agent latency and token use (part 24)"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-14T11:07:31.579Z",
+      "received_at": "2026-11-14T11:07:31.742Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000704",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "_truncated": true,
+          "original_bytes": 154932,
+          "preview": "{\"question\":\"How does schema drift break API consumers?\",\"sources\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and"
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T11:07:34.529Z",
+      "received_at": "2026-11-14T11:07:34.742Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000704",
+        "output": {
+          "_truncated": true,
+          "original_bytes": 153164,
+          "preview": "{\"text\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent m"
+        },
+        "tokens_input": 38743,
+        "tokens_output": 38275,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000007009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T11:07:34.530Z",
+      "received_at": "2026-11-14T11:07:34.742Z",
+      "payload": {
+        "output": {
+          "_truncated": true,
+          "original_bytes": 154380,
+          "preview": "{\"answer\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent"
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

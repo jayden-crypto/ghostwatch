@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000003001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T08:05:33.128Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000301",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "How does schema drift break API consumers?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T08:05:33.129Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000301",
+        "output": {
+          "query": "how does schema drift break api consumers"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T08:05:33.130Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000302",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "how does schema drift break api consumers",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T08:05:33.464Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000302",
+        "output": {
+          "results": [
+            {
+              "title": "Schema drift in upstream APIs",
+              "url": "https://example.test/schema-drift",
+              "snippet": "A renamed response field breaks every consumer that indexes it directly."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ],
+          "total": 3
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T08:05:33.465Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000303",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T08:05:33.466Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000303",
+        "output": {
+          "sources": [
+            "Schema drift in upstream APIs",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-13T08:05:33.467Z",
+      "received_at": "2026-11-13T08:05:33.636Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000304",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "question": "How does schema drift break API consumers?",
+          "sources": [
+            {
+              "title": "Schema drift in upstream APIs",
+              "snippet": "A renamed response field breaks every consumer that indexes it directly."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T08:05:33.897Z",
+      "received_at": "2026-11-13T08:05:34.136Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000304",
+        "output": {
+          "text": "Based on 3 sources: A renamed response field breaks every consumer that indexes it directly. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "usage": {
+            "input_tokens": 132,
+            "output_tokens": 62
+          }
+        },
+        "tokens_input": 132,
+        "tokens_output": 62,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000003009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T08:05:33.898Z",
+      "received_at": "2026-11-13T08:05:34.136Z",
+      "payload": {
+        "output": {
+          "answer": "Based on 3 sources: A renamed response field breaks every consumer that indexes it directly. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "sources": [
+            "Schema drift in upstream APIs",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

@@ -1,0 +1,181 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000068",
+    "agent_id": "agt_00000000000000000000000000000004",
+    "agent_name": "Ticket Digest",
+    "status": "timed_out",
+    "started_at": "2026-11-14T12:00:00.409Z",
+    "ended_at": "2026-11-14T12:02:22.058Z",
+    "duration_ms": 141649,
+    "step_count": 2,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 2,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": {
+      "type": "TimeoutError",
+      "message": "Execution timed out after 141649 ms.",
+      "stacktrace": null
+    },
+    "input": {
+      "trigger": "cron",
+      "schedule": "0 */6 * * *"
+    },
+    "output": null,
+    "config": {
+      "model": "claude-haiku-5-5",
+      "params": {
+        "batch_size": 20
+      },
+      "expected_steps": [
+        "fetch_tickets",
+        "summarize",
+        "send_digest"
+      ],
+      "timeout_ms": 120000,
+      "schedule": "0 */6 * * *"
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "scheduled"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000006"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000006801",
+      "execution_id": "exe_00000000000000000000000000000068",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "load_schedule",
+      "type": "input",
+      "status": "completed",
+      "started_at": "2026-11-14T12:00:00.410Z",
+      "ended_at": "2026-11-14T12:00:00.412Z",
+      "duration_ms": 2,
+      "offset_ms": 1,
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": {
+        "since": "2026-11-14T06:00:00.409Z",
+        "until": "2026-11-14T12:00:00.409Z"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006802",
+      "execution_id": "exe_00000000000000000000000000000068",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "running",
+      "started_at": "2026-11-14T12:00:00.413Z",
+      "ended_at": null,
+      "duration_ms": null,
+      "offset_ms": 4,
+      "input": {
+        "since": "2026-11-14T06:00:00.409Z",
+        "until": "2026-11-14T12:00:00.409Z"
+      },
+      "output": null,
+      "error": null,
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_00000000000000000000000000000008",
+      "type": "repeated_timeouts",
+      "severity": "high",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "execution_id": "exe_00000000000000000000000000000068",
+      "detected_at": "2026-11-14T12:02:22.058Z",
+      "rule_id": "repeated_timeouts.v1",
+      "title": "3 of the last 8 executions timed out",
+      "explanation": "3 of the last 8 executions of ticket-digest timed out, including this one. Rule fires at 3 or more timeouts in the agent's last 10 executions.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "This execution timed out",
+          "ref_id": "exe_00000000000000000000000000000068",
+          "field": "status",
+          "observed": "timed_out",
+          "expected": null,
+          "excerpt": null
+        },
+        {
+          "kind": "execution",
+          "label": "Earlier timed-out execution",
+          "ref_id": "exe_00000000000000000000000000000066",
+          "field": "status",
+          "observed": "timed_out",
+          "expected": null,
+          "excerpt": null
+        },
+        {
+          "kind": "execution",
+          "label": "Earlier timed-out execution",
+          "ref_id": "exe_00000000000000000000000000000065",
+          "field": "status",
+          "observed": "timed_out",
+          "expected": null,
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "id": "anm_00000000000000000000000000000009",
+      "type": "stale_execution",
+      "severity": "high",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "execution_id": "exe_00000000000000000000000000000068",
+      "detected_at": "2026-11-14T12:02:22.058Z",
+      "rule_id": "stale_execution.v1",
+      "title": "No event for 141,645 ms; marked timed out",
+      "explanation": "The execution was running and sent no event for 141,645 ms (last event received at 2026-11-14T12:00:00.413Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Time since the last event was received",
+          "ref_id": "exe_00000000000000000000000000000068",
+          "field": "last_event_at",
+          "observed": {
+            "last_event_at": "2026-11-14T12:00:00.413Z",
+            "idle_ms": 141645
+          },
+          "expected": {
+            "timeout_ms": 120000
+          },
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 4
+}

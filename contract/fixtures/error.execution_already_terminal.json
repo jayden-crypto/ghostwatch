@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "execution_already_terminal",
+    "message": "Execution exe_0000000000000000000000000000000a is already failed; no further events are accepted.",
+    "details": null
+  }
+}

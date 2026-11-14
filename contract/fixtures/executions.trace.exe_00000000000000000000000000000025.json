@@ -1,0 +1,141 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000025",
+    "agent_id": "agt_00000000000000000000000000000002",
+    "agent_name": "Invoice Processor",
+    "status": "completed",
+    "started_at": "2026-11-13T20:15:39.348Z",
+    "ended_at": "2026-11-13T20:15:39.846Z",
+    "duration_ms": 498,
+    "step_count": 3,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "document": "Invoice: INV-2041\nVendor: Northwind Paper\nTotal: 1280.50\nCurrency: USD"
+    },
+    "output": {
+      "status": "processed",
+      "invoice_number": "INV-2041"
+    },
+    "config": {
+      "model": null,
+      "params": {},
+      "expected_steps": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000002501",
+      "execution_id": "exe_00000000000000000000000000000025",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "extract_fields",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-13T20:15:39.349Z",
+      "ended_at": "2026-11-13T20:15:39.350Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "document": "Invoice: INV-2041\nVendor: Northwind Paper\nTotal: 1280.50\nCurrency: USD"
+      },
+      "output": {
+        "invoice_number": "INV-2041",
+        "vendor": "Northwind Paper",
+        "total": 1280.5,
+        "currency": "USD"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002502",
+      "execution_id": "exe_00000000000000000000000000000025",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "validate",
+      "type": "custom",
+      "status": "completed",
+      "started_at": "2026-11-13T20:15:39.351Z",
+      "ended_at": "2026-11-13T20:15:39.546Z",
+      "duration_ms": 195,
+      "offset_ms": 3,
+      "input": {
+        "invoice_number": "INV-2041",
+        "vendor": "Northwind Paper",
+        "total": 1280.5,
+        "currency": "USD"
+      },
+      "output": {
+        "valid": true,
+        "problems": []
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002503",
+      "execution_id": "exe_00000000000000000000000000000025",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "submit_invoice",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T20:15:39.547Z",
+      "ended_at": "2026-11-13T20:15:39.845Z",
+      "duration_ms": 298,
+      "offset_ms": 199,
+      "input": {
+        "invoice": {
+          "invoice_number": "INV-2041",
+          "vendor": "Northwind Paper",
+          "total": 1280.5,
+          "currency": "USD"
+        }
+      },
+      "output": {
+        "submission_id": "SUB-INV-2041",
+        "status": "accepted"
+      },
+      "error": null,
+      "tool_name": "submit_invoice",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": true
+      }
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}
