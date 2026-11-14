@@ -1,18 +1,23 @@
 """Shared fixtures. The app under test always talks to the test database, never the dev one."""
 
 import os
+from collections.abc import Iterator
+from pathlib import Path
 
 DEFAULT_TEST_DATABASE_URL = "postgresql+psycopg://ghostwatch:ghostwatch@localhost:5432/ghostwatch_test"
 os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", DEFAULT_TEST_DATABASE_URL)
 os.environ.setdefault("GHOSTWATCH_API_KEY", "test-ingest-key")
 
 import pytest  # noqa: E402
+from alembic import command  # noqa: E402
+from alembic.config import Config  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
+from sqlalchemy.orm import Session  # noqa: E402
 
-from app.db import get_engine  # noqa: E402
+from app.db import get_engine, get_session  # noqa: E402
 from app.main import create_app  # noqa: E402
 
 
@@ -29,6 +34,39 @@ def database_available() -> None:
         pytest.skip(f"{message} (run `docker compose up -d`)")
 
 
+def alembic_config() -> Config:
+    return Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+
+
+@pytest.fixture(scope="session")
+def migrated_database(database_available: None) -> None:
+    """Rebuild the test database from the Alembic migration, so tests run on the real schema."""
+    engine = get_engine()
+    if not (engine.url.database or "").endswith("_test"):
+        pytest.exit(f"Refusing to reset {engine.url.database!r}: the test database name must end in '_test'.")
+    with engine.begin() as connection:
+        connection.execute(text("DROP SCHEMA public CASCADE"))
+        connection.execute(text("CREATE SCHEMA public"))
+    command.upgrade(alembic_config(), "head")
+
+
+@pytest.fixture
+def db_session(migrated_database: None) -> Iterator[Session]:
+    """A session inside an outer transaction that is rolled back after the test.
+
+    Commits made by application code only release a savepoint, so nothing outlives the test.
+    """
+    connection = get_engine().connect()
+    transaction = connection.begin()
+    session = Session(bind=connection, join_transaction_mode="create_savepoint", expire_on_commit=False)
+    try:
+        yield session
+    finally:
+        session.close()
+        transaction.rollback()
+        connection.close()
+
+
 @pytest.fixture
 def app() -> FastAPI:
     return create_app()
@@ -37,4 +75,11 @@ def app() -> FastAPI:
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     # Server exceptions are not re-raised: tests assert on the 500 response a real client would get.
+    return TestClient(app, raise_server_exceptions=False)
+
+
+@pytest.fixture
+def db_client(app: FastAPI, db_session: Session) -> TestClient:
+    """A client whose requests use the test's rolled-back session."""
+    app.dependency_overrides[get_session] = lambda: db_session
     return TestClient(app, raise_server_exceptions=False)

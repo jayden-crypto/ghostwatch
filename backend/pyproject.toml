@@ -30,3 +30,7 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.ruff.lint.isort]
+# The local alembic/ migrations directory would otherwise make ruff treat the library as first-party.
+known-third-party = ["alembic"]
