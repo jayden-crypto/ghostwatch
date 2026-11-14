@@ -15,10 +15,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "ghostwatch",
     "httpx2>=2.0",
     "pytest>=8.3",
     "ruff>=0.8",
 ]
+
+[tool.uv.sources]
+# The SDK is tested end to end against the real API in tests/test_sdk_e2e.py.
+ghostwatch = { path = "../sdk/python", editable = true }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

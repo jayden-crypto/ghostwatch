@@ -84,6 +84,19 @@ wheels = [
 ]
 
 [[package]]
+name = "ghostwatch"
+version = "0.1.0"
+source = { editable = "../sdk/python" }
+
+[package.metadata]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.3" },
+    { name = "ruff", specifier = ">=0.8" },
+]
+
+[[package]]
 name = "ghostwatch-backend"
 version = "0.1.0"
 source = { virtual = "." }
@@ -99,6 +112,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "ghostwatch" },
     { name = "httpx2" },
     { name = "pytest" },
     { name = "ruff" },
@@ -117,6 +131,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "ghostwatch", editable = "../sdk/python" },
     { name = "httpx2", specifier = ">=2.0" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "ruff", specifier = ">=0.8" },

@@ -36,6 +36,13 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
+      - name: SDK lint and tests
+        working-directory: sdk/python
+        run: |
+          uv sync --frozen
+          uv run ruff check .
+          uv run ruff format --check .
+          uv run pytest -q
 
   # Owned by Adit: replace this stub with install, typecheck, lint and tests in F1.
   frontend:
