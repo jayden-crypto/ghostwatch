@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app import ids
-from app.models import Agent, Anomaly, Execution, Investigation
+from app.models import Agent, Anomaly, Execution, Investigation, Replay
 
 T0 = datetime(2026, 11, 14, 10, 0, 0, tzinfo=UTC)
 
@@ -77,3 +77,18 @@ def make_investigation(session: Session, execution: Execution, **overrides: Any)
     session.add(investigation)
     session.flush()
     return investigation
+
+
+def make_replay(session: Session, original: Execution, **overrides: Any) -> Replay:
+    values: dict[str, Any] = {
+        "id": ids.new_id(ids.REPLAY),
+        "original_execution_id": original.id,
+        "mode": "sandbox",
+        "status": "pending",
+        "requested_at": T0,
+    }
+    values.update(overrides)
+    replay = Replay(**values)
+    session.add(replay)
+    session.flush()
+    return replay

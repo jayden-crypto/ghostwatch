@@ -23,6 +23,8 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# Deprecations in our own code fail the suite instead of scrolling past.
+filterwarnings = ["error"]
 
 [tool.ruff]
 line-length = 110

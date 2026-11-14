@@ -3,7 +3,7 @@
 from collections.abc import Sequence
 
 from sqlalchemy import func, or_, select
-from sqlalchemy.dialects.postgresql import insert
+from sqlalchemy.dialects.postgresql import distinct_on, insert
 from sqlalchemy.orm import Session
 
 from app import ids
@@ -143,7 +143,7 @@ def build_agents(session: Session, agents: Sequence[Agent]) -> list[schemas.Agen
     latest = session.scalars(
         select(Execution)
         .where(Execution.agent_id.in_(agent_ids))
-        .distinct(Execution.agent_id)
+        .ext(distinct_on(Execution.agent_id))
         .order_by(Execution.agent_id, Execution.started_at.desc(), Execution.id.desc())
     ).all()
     last_executions = {summary.agent_id: summary for summary in build_summaries(session, latest)}
