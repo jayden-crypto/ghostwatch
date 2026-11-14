@@ -1,4 +1,4 @@
-# Ghostwatch API Contract — v1.0
+# Ghostwatch API Contract — v1.1
 
 **Status:** FROZEN for implementation. Changes only via the contract-change process in `CONTRIBUTING.md` (a PR touching only `contract/`, approved by both Jayden and Adit).
 
@@ -299,7 +299,7 @@ interface Anomaly {
   status: AnomalyStatus;
   agent_id: ID;
   agent_name: string;
-  execution_id: ID | null;   // null for agent-level anomalies such as repeated_timeouts
+  execution_id: ID | null;   // for agent-level anomalies such as repeated_timeouts: the most recent related execution; null only if none exists
   detected_at: Timestamp;
   rule_id: string;           // e.g. "duration_spike.v1"
   title: string;             // ≤ 80 chars: "Duration 4.2× above baseline"
@@ -489,3 +489,4 @@ Lifecycle: `pending` → (worker claims) `claimed` → worker creates an executi
 | Version | Date | Change | Approved by |
 |---|---|---|---|
 | 1.0 | 2026-11-14 | Initial contract. Additions over the product spec's suggested endpoints: `/stats/*`, `/executions/{id}/events` (GET), `/investigations` (list), `/replays*`, `/anomalies/{id}`, `/health`. Reason: the dashboard needs aggregates and lists that the suggested endpoints didn't cover, and replay needs a worker handshake. | Jayden, Adit |
+| 1.1 | 2026-11-14 | §8: corrected the comment on `Anomaly.execution_id`. It said the field is null for agent-level anomalies, which contradicted the rule table in the same section (`repeated_timeouts`: `execution_id` = most recent one). It now says the field holds the most recent related execution for agent-level anomalies and is null only if none exists. Clarification only: the type is still `ID \| null`, and no field, endpoint or enum changed. | Jayden (made before Adit's kickoff; Adit to confirm) |
