@@ -1,8 +1,8 @@
-# Backend progress — updated 2026-11-14T17:10Z
+# Backend progress — updated 2026-11-14T20:50Z
 
-## Status: all backend P0 code is written: B1–B11 and B15, plus B9 (investigations). 409 backend tests pass locally on docker compose Postgres; SDK 22; demo lint clean. B16 (docs) and P1 (B12–B14) not started. CI for the B9 commit was not checked before the session ended.
+## Status: every backend P0 issue is done (B1–B11, B15, B16). 417 backend tests and 22 SDK tests pass locally on docker compose Postgres. P1 (B12–B14) not started. Nothing from the frontend side exists in the repo yet.
 
-## Live endpoints (implemented + tested against the contract)
+## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
 - POST /agents 🔑, GET /agents, GET /agents/{agent_id}
 - POST /executions 🔑, GET /executions, GET /executions/{execution_id}
@@ -11,60 +11,63 @@
 - GET /anomalies, GET /anomalies/{anomaly_id}
 - POST /investigations/{execution_id}, GET /investigations/{execution_id}, GET /investigations
 
-Not implemented (404 envelope): PATCH /anomalies/{id}, /replays*, POST /executions/{id}/replay.
+Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim. `cost_usd` is always null until B14.
 
 ## In progress
-- nothing mid-edit. First thing next session: check the CI run of the latest commit on jayden/backend.
+- nothing
 
 ## Next up
-- B16 docs/API.md + OpenAPI descriptions (#15), then SYNC 2 (#33)
-- P1: B12 replay API (#16), B13 SDK sandbox replay + worker (#17), B14 cost (#18), PATCH /anomalies/{id}
-- Not yet done for B9: a live call to the real Fable API (needs ANTHROPIC_API_KEY in .env and LLM_PROVIDER=fable). The provider is tested only with a fake client.
+- P1, in order: B12 replay API (#16) → B13 SDK sandbox replay + worker (#17) → B14 token cost (#18), plus PATCH /anomalies/{anomaly_id}
+- Review Adit's X1 fixtures PR (#2) when it appears. `backend/tests/fixture_map.py` guesses his file names from the brief and will probably need adjusting; the conformance test fails loudly on any unmapped or invalid fixture.
+- Open the `jayden/backend` → `main` PR when Jayden says so (he asked for it not to be opened yet).
+
+## Not verified
+- The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
+- No fixtures exist, so the fixture half of B15 has never run (it skips with a stated reason).
+- Nothing has been exercised from a browser: there is no frontend in the repo.
 
 ## How to run
 - `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app`
-- Seed: `cd demo && uv run python seed.py` (add `--all` for the two failures; `--append` if data exists)
-- Scenarios: `cd demo && uv run python run_scenario.py list`
-- Smoke test against a running server: `cd backend && uv run python -m scripts.smoke`
-- Tests: `cd backend && uv run pytest -q`; `cd sdk/python && uv run pytest -q`
-- `docker` lives at ~/.docker/bin and is not on PATH in non-login shells on Jayden's machine.
+- Live API docs: http://localhost:8000/docs. Reference with real examples: `docs/API.md`
+- Seed: `cd demo && uv run python seed.py` (baselines plus the support-triage incidents; `--all` adds the schema-change and ghost-invoice failures; `--append` if data already exists)
+- One demo step: `cd demo && uv run python run_scenario.py list`
+- Tests: `cd backend && uv run ruff check . && uv run pytest -q`; `cd sdk/python && uv run pytest -q`
+- Smoke test over real HTTP against a running server: `cd backend && uv run python -m scripts.smoke`
+- Regenerate docs/API.md from a seeded server: `cd backend && uv run python -m scripts.api_docs`
+- On Jayden's machine `docker` is at `~/.docker/bin` and is not on PATH in non-login shells.
+- The local dev database holds smoke-test and demo runs left over from verification. Reset it with `docker compose down -v` (Jayden's call) before seeding for the demo.
 
-## Investigations (B9) in brief → Adit
-- Auto-queued in the ingest transaction on failed/timed_out (auto_failure) or an anomaly of high or above (auto_anomaly); runs as a background task. The sweeper also runs any still-queued ones.
-- `confirmed` only from a signature: missing_key_in_upstream_output, retry_exhaustion, tool_http_error, timeout_in_step, ghost_completion. With rule_based and no matching signature the root cause is `insufficient_evidence`; an LLM hypothesis is at most `probable`.
-- `summary` is a deterministic template. `provider` is `fable` only when the model's answer was used; on any LLM failure it is `rule_based` and `evidence_gaps` says why.
-- POST returns 202 with the in-flight investigation if one is queued or running, 200 with the completed one unless `force`, 409 while the execution is running.
-- Fable requests use structured outputs and opt into the server-side refusal fallback; `model` is the model that actually answered.
-- The local dev database holds smoke-test and demo runs from verification; reset with `docker compose down -v` before seeding for the demo.
+## What the frontend should know → Adit
+- **Ids in paths**: an unknown or malformed id is always `404 not_found`, never 422.
+- **Validation errors**: `details` is `[{loc, msg}]`; `loc` is an array such as `["body", "slug"]`.
+- **Agents**: `success_rate` is all-time; `health` uses the last 20 terminal executions and open anomalies, so a high success rate can sit next to `failing`. `avg_duration_ms` is a rounded integer.
+- **Executions list**: `started_after` inclusive, `started_before` exclusive. Unknown duration, tokens and cost sort last in both directions.
+- **Timed-out executions**: `error` is `{type: "TimeoutError", message: "Execution timed out after <n> ms.", stacktrace: null}`.
+- **Truncation**: `input`, `output`, `metadata` over 64 KB become the contract marker. Error messages, stack traces and log messages stay strings, cut to 64 KB with a `[truncated: N bytes in total]` note.
+- **Trace**: `depth` 0 for a step whose parent is unknown; `offset_ms` never negative. A completed run with zero steps returns `steps: []` and a critical `ghost_completion` anomaly.
+- **Stats**: a window is whole UTC buckets ending with the current one (24 hours, 7 days, 30 days). Overview totals equal the sum of the default timeseries. Running executions are in the overview, not in the points. `open_anomalies` and `total_agents` are not windowed.
+- **Anomalies**: agent-level ones carry an `execution_id` (contract v1.1). `PATCH` is not implemented.
+- **Investigations**: start automatically on failed or timed_out executions and on anomalies of high or above. `confirmed` only comes from a signature; with `rule_based` and no matching signature the root cause is `insufficient_evidence`. `provider` is `fable` only when the model's answer was used; otherwise `rule_based`, with the reason in `evidence_gaps`. `summary` is a deterministic template. POST returns the in-flight investigation (202) if one is queued or running.
+- **`/health`**: `llm_configured` is true when the configured provider can run; `llm_model` is null for `rule_based`.
+- **Demo data**: the fake LLM is `demo-llm-1`, which has no price, so `cost_usd` is null on every demo run.
 
-## Decisions (ambiguities resolved; "→ Adit" marks ones the frontend should know about)
-- **Contract v1.1** (on main): agent-level anomalies carry the most recent related execution in `execution_id`; null only if none exists → Adit.
-- **CODEOWNERS** (on main) lists both developers on every path.
-- **Unknown or malformed ids in a path return `404 not_found`**, never 422 → Adit.
-- **Validation `details`**: `loc` is an array of strings/numbers, e.g. `["body", "slug"]` or `["body", "events", 2, "payload", "step_id"]` → Adit.
-- **405** uses the envelope with code `bad_request` (the contract lists no code for 405).
-- **`/health`** → Adit: `llm_configured` is true when the configured provider can run (`rule_based` always; `fable` only with a key); `llm_model` is null for `rule_based`.
-- **Agents** → Adit: `success_rate` is all-time, `health` uses the last 20 terminal executions; `avg_duration_ms` is a rounded integer. `POST /agents` keeps stored values for fields left out; explicit `null` clears. `GET /agents` sorts by `name` (default) or `created_at`; `health` accepts a comma list.
-- **Executions** → Adit: `started_after` is inclusive, `started_before` exclusive. Unknown tokens/cost/duration sort last in both directions. `q` matches an execution id prefix or a case-insensitive part of the agent name. `POST /executions` with an unknown `agent_id` or `replay_of` → 404. Request timestamps must be timezone-aware strings (epoch numbers and naive times → 422).
-- **Ingestion**: duplicates are dropped before every other rule, so retrying the final batch of a finished execution returns 202 with `duplicates`. A step id may be started once, ever; ending an unknown, foreign or already-ended step → 422. A terminal event leaves running steps running (ghost-completion evidence). Event payloads are stored with defaults filled in. Durations come from client timestamps and are clamped at 0.
-- **Truncation**: `input`, `output` and `metadata` over 64 KB become the contract marker (in the event and the step). `error.message`, `error.stacktrace` and log messages keep their string type and are cut to 64 KB with a `[truncated: N bytes in total]` note (stack traces keep the tail) → Adit.
-- **Timed-out executions** → Adit: `error` is `{type: "TimeoutError", message: "Execution timed out after <n> ms.", stacktrace: null}`.
-- **Trace**: a step whose parent is unknown, or whose parent chain loops, is laid out as a root (`depth` 0); `parent_step_id` is returned as sent. `offset_ms` is clamped at 0 → Adit.
-- **Stats** → Adit: a window is whole UTC buckets ending with the current one (24h = 24 hours, 7d = 7 days, 30d = 30 days; `30d&bucket=hour` = 720 points). Overview totals equal the sum of the default timeseries. `bucket` defaults to `hour` for `24h`, `day` otherwise. `open_anomalies` and `total_agents` are current totals, not windowed. Running executions are in the overview but not in timeseries points.
-- **Schemas enforce contract invariants**: report citations resolve; `signature` set exactly when `confirmed`; `report` set exactly when `completed`; a live replay is always authorized; anomalies and facts have ≥ 1 evidence item; anomaly `title` ≤ 80 chars. Fixtures that break these fail B15.
-- **Planned, not built yet**: sweeper appends an `execution.timed_out` event through the ingest path; `PATCH /anomalies/{id}` with the P1 batch; `cost_usd` null until B14; investigating a running execution → 409.
-- **Tooling**: tests use `httpx2` (Starlette 1.10 deprecates `httpx` for its TestClient). Git identity for this clone is the GitHub noreply address.
+## Decisions (backend-internal)
+- 405 responses use the envelope with code `bad_request` (the contract lists no code for 405).
+- `POST /agents` keeps stored values for fields left out of an update; explicit `null` clears.
+- Ingestion: duplicates are dropped before every other rule; a step id can be started once; a terminal event leaves running steps running; payloads are stored with defaults filled in; durations come from client timestamps, clamped at 0. The execution row is locked for the batch.
+- The sweeper times an execution out by appending an `execution.timed_out` event through the ingest path, re-checking staleness under the row lock. It also runs any investigation still queued.
+- Baseline: last 20 completed, non-replay executions that started no later than the one evaluated. p95 is nearest-rank. Agent-level rules fire only on an execution that is itself part of the pattern.
+- `tool_http_error` only considers the last tool call up to the failing step, so a 429 the agent recovered from is not blamed for a later failure.
+- Fable requests use structured outputs (`output_config.format`), effort `medium`, and the server-side refusal fallback; `model` records the model that answered. Forced tool use is not used: the model rejects it.
+- SDK: zero runtime dependencies; the execution is created lazily by the background thread, so the agent never waits on Ghostwatch. `@gw.llm_call` reads token usage from a returned `usage` dict.
+- Demo seed backdates over 6 days so all of it is inside the 7-day window. Scenarios change only a fake service.
+- The schemas enforce contract invariants (citations resolve, `signature` exactly when `confirmed`, `report` exactly when `completed`, a live replay is authorized, ≥ 1 evidence item, title ≤ 80 chars), so fixtures that break them fail B15.
+- OpenAPI: FastAPI's default validation-error schema is removed; every documented error is the envelope.
+- Tooling: tests use `httpx2`; pytest treats warnings as errors; long literal lines are allowed in tests.
 
 ## Contract change requests (open)
 - none
 
 ## Known issues / tech debt
-- No real-HTTP smoke test of B3–B7 yet (needs Docker).
-- `docker-compose.yml` itself is untested for the same reason.
-- F1–F13 (#19–#31) are unassigned until Adit accepts the collaborator invite.
-- Issues #3–#10 are still open; they close when `jayden/backend` merges to `main`.
-
-## How to run
-- `cp .env.example .env` (done on Jayden's machine), `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app --reload`
-- Tests: `cd backend && uv run ruff check . && uv run pytest -q` (database tests skip locally without Postgres; CI runs them)
-- API docs once running: http://localhost:8000/docs
+- Issues #3–#15 stay open until `jayden/backend` merges to `main`.
+- `GHOSTWATCH_API_KEY` in `.env` is still the placeholder from `.env.example`.
