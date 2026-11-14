@@ -4,6 +4,7 @@
 events of a batch inside the same transaction that stores them, so they can never disagree.
 """
 
+from datetime import datetime
 from typing import Any
 
 from sqlalchemy import func, select
@@ -13,6 +14,9 @@ from app import ids
 from app.errors import ApiError, not_found
 from app.models import Event, Execution, Step
 from app.schemas import events as schemas
+from app.services.anomaly import engine as anomaly_engine
+from app.services.anomaly.rules import StaleInfo
+from app.services.anomaly.thresholds import DEFAULT_TIMEOUT_MS
 from app.services.payloads import cap_error, cap_text, truncate_json
 from app.timeutil import milliseconds_between, utcnow
 
@@ -74,7 +78,48 @@ def _new_events_in_seq_order(
     return [first_by_seq[seq] for seq in sorted(first_by_seq)]
 
 
-def _apply(session: Session, execution: Execution, new_events: list[tuple[int, schemas.IngestEvent]]) -> None:
+def stale_timeout_ms(config: dict[str, Any]) -> int:
+    """How long an execution may go without an event before it counts as stale."""
+    return config.get("timeout_ms") or DEFAULT_TIMEOUT_MS
+
+
+def time_out_if_stale(session: Session, execution_id: str, now: datetime) -> bool:
+    """Time out a running execution that has sent no event for its timeout. Used by the sweeper.
+
+    State only ever changes through events, so this appends an `execution.timed_out` event and lets
+    the normal terminal path run. The staleness check is repeated under the row lock, because an
+    event may have arrived since the sweeper looked.
+    """
+    with session.begin_nested():
+        execution = session.scalars(
+            select(Execution)
+            .where(Execution.id == execution_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        ).one_or_none()
+        if execution is None or execution.status != "running":
+            return False
+        timeout_ms = stale_timeout_ms(execution.config)
+        idle_ms = milliseconds_between(execution.last_event_at, now)
+        if idle_ms < timeout_ms:
+            return False
+        last_seq = session.scalar(select(func.max(Event.seq)).where(Event.execution_id == execution_id))
+        event = schemas.ExecutionTimedOut(
+            seq=(last_seq or 0) + 1, type="execution.timed_out", timestamp=now, payload={}
+        )
+        stale = StaleInfo(last_event_at=execution.last_event_at, timeout_ms=timeout_ms, idle_ms=idle_ms)
+        _apply(session, execution, [(0, event)], stale=stale)
+    session.commit()
+    return True
+
+
+def _apply(
+    session: Session,
+    execution: Execution,
+    new_events: list[tuple[int, schemas.IngestEvent]],
+    *,
+    stale: StaleInfo | None = None,
+) -> None:
     received_at = utcnow()
     referenced = {
         event.payload.step_id for _, event in new_events if isinstance(event.payload, _STEP_PAYLOADS)
@@ -106,7 +151,7 @@ def _apply(session: Session, execution: Execution, new_events: list[tuple[int, s
         elif isinstance(event, schemas.StepCompleted | schemas.StepFailed):
             _end_step(execution, known_steps, index, event, payload)
         elif event.type in TERMINAL_EVENT_STATUS:
-            _finalize(session, execution, event, payload)
+            _finalize(session, execution, event, payload, stale)
 
     execution.last_event_at = received_at
 
@@ -198,9 +243,13 @@ def _merged_metadata(started: dict[str, Any], completed: dict[str, Any]) -> dict
 
 
 def _finalize(
-    session: Session, execution: Execution, event: schemas.IngestEvent, payload: dict[str, Any]
+    session: Session,
+    execution: Execution,
+    event: schemas.IngestEvent,
+    payload: dict[str, Any],
+    stale: StaleInfo | None,
 ) -> None:
-    """Apply a terminal event: status, end time, duration and token totals."""
+    """Apply a terminal event: status, end time, duration and token totals, then run the anomaly rules."""
     execution.status = TERMINAL_EVENT_STATUS[event.type]
     execution.ended_at = event.timestamp
     execution.duration_ms = milliseconds_between(execution.started_at, event.timestamp)
@@ -217,6 +266,8 @@ def _finalize(
             Step.execution_id == execution.id
         )
     ).one()
+
+    anomaly_engine.evaluate(session, execution, stale=stale)
 
 
 def _timeout_error(duration_ms: int) -> dict[str, Any]:

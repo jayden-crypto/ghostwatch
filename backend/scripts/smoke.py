@@ -17,6 +17,7 @@ from pydantic import TypeAdapter, ValidationError
 
 from app.config import get_settings
 from app.schemas.agents import Agent
+from app.schemas.anomalies import Anomaly
 from app.schemas.common import ErrorEnvelope, Page
 from app.schemas.events import IngestResponse, StoredEvent
 from app.schemas.executions import ExecutionDetail, ExecutionSummary
@@ -326,6 +327,15 @@ def main() -> int:
         StatsTimeseries,
     )
     assert (week.bucket, len(week.points)) == ("day", 7)
+
+    anomalies = check(
+        "GET /anomalies?execution_id=",
+        client.get("/anomalies", params={"execution_id": execution.id}),
+        200,
+        Page[Anomaly],
+    )
+    assert all(anomaly.execution_id == execution.id and anomaly.evidence for anomaly in anomalies.items)
+    assert len(anomalies.items) == detail.anomaly_count, (len(anomalies.items), detail.anomaly_count)
 
     check(
         "GET unknown execution",

@@ -18,6 +18,11 @@ def get_engine() -> Engine:
     )
 
 
+def new_session() -> Session:
+    """A session for work outside a request (background tasks, the sweeper). The caller closes it."""
+    return Session(get_engine(), expire_on_commit=False)
+
+
 def get_session() -> Iterator[Session]:
-    with Session(get_engine(), expire_on_commit=False) as session:
+    with new_session() as session:
         yield session

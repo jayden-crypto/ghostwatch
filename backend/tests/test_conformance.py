@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 from app.config import REPO_ROOT
 from app.models import Execution
 from app.schemas.agents import Agent
+from app.schemas.anomalies import Anomaly
 from app.schemas.common import ErrorEnvelope, Page
 from app.schemas.events import IngestResponse, StoredEvent
 from app.schemas.executions import ExecutionDetail, ExecutionSummary
@@ -312,6 +313,9 @@ def test_live_responses_validate_against_the_contract(
         "/api/v1/executions?status=running": Page[ExecutionSummary],  # an empty page
         f"/api/v1/executions/{execution.id}/trace": Trace,
         f"/api/v1/executions/{execution.id}/events": Page[StoredEvent],
+        "/api/v1/anomalies": Page[Anomaly],
+        f"/api/v1/anomalies?execution_id={execution.id}&severity=medium,high&status=open": Page[Anomaly],
+        "/api/v1/anomalies?type=ghost_completion": Page[Anomaly],  # an empty page
         "/api/v1/stats/overview": StatsOverview,
         "/api/v1/stats/overview?window=24h": StatsOverview,
         "/api/v1/stats/timeseries": StatsTimeseries,

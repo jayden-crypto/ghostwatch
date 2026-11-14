@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app import ids
-from app.models import Agent, Anomaly, Execution, Investigation, Replay
+from app.models import Agent, Anomaly, Execution, Investigation, Replay, Step
 
 T0 = datetime(2026, 11, 14, 10, 0, 0, tzinfo=UTC)
 
@@ -102,3 +102,20 @@ def make_replay(session: Session, original: Execution, **overrides: Any) -> Repl
     session.add(replay)
     session.flush()
     return replay
+
+
+def make_step(session: Session, execution: Execution, ordinal: int, **overrides: Any) -> Step:
+    values: dict[str, Any] = {
+        "id": ids.new_id(ids.STEP),
+        "execution_id": execution.id,
+        "ordinal": ordinal,
+        "name": "work",
+        "type": "custom",
+        "status": "completed",
+        "started_at": execution.started_at,
+    }
+    values.update(overrides)
+    step = Step(**values)
+    session.add(step)
+    session.flush()
+    return step

@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     llm_model: str = "claude-fable-5-2"
 
+    sweeper_interval_seconds: float = 30
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

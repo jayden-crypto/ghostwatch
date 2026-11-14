@@ -70,7 +70,8 @@ Timestamp = Annotated[
 
 
 def _require_string(value: Any) -> Any:
-    if not isinstance(value, str):
+    """Requests must send ISO 8601 text (never epoch numbers); internal callers may pass a datetime."""
+    if not isinstance(value, str | datetime):
         raise ValueError("timestamp must be an ISO 8601 string, not a number")
     return value
 

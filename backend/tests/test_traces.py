@@ -154,8 +154,13 @@ def test_trace_of_a_completed_run_with_no_steps(
     """A ghost completion has an empty trace; that emptiness is the evidence and must be served."""
     post_events(db_client, auth, execution.id, [ev.execution_completed(1, 40, output={"status": "ok"})])
     trace = db_client.get(f"/api/v1/executions/{execution.id}/trace").json()
-    assert (trace["steps"], trace["anomalies"], trace["event_count"]) == ([], [], 1)
+    assert (trace["steps"], trace["event_count"]) == ([], 1)
     assert (trace["execution"]["status"], trace["execution"]["step_count"]) == ("completed", 0)
+    # ...and the anomaly engine flags it on the spot.
+    assert [(item["type"], item["severity"]) for item in trace["anomalies"]] == [
+        ("ghost_completion", "critical")
+    ]
+    assert trace["execution"]["anomaly_count"] == 1
 
 
 def test_trace_with_no_events_yet(db_client: TestClient, db_session: Session, execution: Execution) -> None:

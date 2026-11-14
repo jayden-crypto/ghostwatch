@@ -2,6 +2,7 @@
 
 import socket
 import threading
+import time
 from collections.abc import Iterator
 
 import ghostwatch as gw
@@ -21,11 +22,13 @@ from tests.test_conformance import validate
 
 
 @pytest.fixture
-def live_api(migrated_database: None) -> Iterator[str]:
+def live_api(migrated_database: None, monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
     """The app served by uvicorn on a free port. It commits for real, so the tables are emptied after."""
     with socket.socket() as probe:
         probe.bind(("127.0.0.1", 0))
         port = probe.getsockname()[1]
+    monkeypatch.setenv("SWEEPER_INTERVAL_SECONDS", "0.1")
+    get_settings.cache_clear()
     server = uvicorn.Server(uvicorn.Config(create_app(), host="127.0.0.1", port=port, log_level="warning"))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()
@@ -40,6 +43,7 @@ def live_api(migrated_database: None) -> Iterator[str]:
         gw._sdk.initialised = False
         server.should_exit = True
         thread.join(10)
+        get_settings.cache_clear()
         with get_engine().begin() as connection:
             connection.execute(
                 text("TRUNCATE replays, investigations, anomalies, steps, events, executions, agents CASCADE")
@@ -195,7 +199,32 @@ def test_two_runs_of_one_agent_are_separate_executions(live_api: str) -> None:
         runs.append(run)
     assert gw.flush() is True
     with httpx2.Client(base_url=live_api) as http:
-        page = http.get("/executions", params={"sort": "started_at"}).json()
-    assert [item["id"] for item in page["items"]] == [run.id for run in runs]
+        page = http.get("/executions").json()
+    # Both runs can start within the same millisecond, so their order is not asserted.
+    assert sorted(item["id"] for item in page["items"]) == sorted(run.id for run in runs)
     assert {item["agent_id"] for item in page["items"]} == {page["items"][0]["agent_id"]}
     assert [item["step_count"] for item in page["items"]] == [1, 1]
+
+
+def test_the_running_app_times_out_an_execution_that_goes_quiet(live_api: str) -> None:
+    """The sweeper is started by the app's lifespan: no events for timeout_ms, and the run is timed out."""
+    headers = {"Authorization": f"Bearer {get_settings().ghostwatch_api_key}"}
+    with httpx2.Client(base_url=live_api, headers=headers) as http:
+        agent = http.post("/agents", json={"slug": "support-triage", "name": "Support Triage"}).json()
+        created = http.post(
+            "/executions", json={"agent_id": agent["id"], "input": {}, "config": {"timeout_ms": 300}}
+        )
+        execution_id = created.json()["id"]
+        assert created.json()["status"] == "running"
+
+        deadline = time.monotonic() + 10
+        status = "running"
+        while status == "running" and time.monotonic() < deadline:
+            time.sleep(0.05)
+            status = http.get(f"/executions/{execution_id}").json()["status"]
+        assert status == "timed_out"
+
+        trace = validate(Trace, http.get(f"/executions/{execution_id}/trace").content)
+    assert [(anomaly.type, anomaly.severity) for anomaly in trace.anomalies] == [("stale_execution", "high")]
+    assert trace.execution.error.type == "TimeoutError"
+    assert trace.event_count == 1
