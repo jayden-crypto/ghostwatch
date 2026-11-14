@@ -94,3 +94,14 @@ def register_error_handlers(app: FastAPI) -> None:
     app.add_exception_handler(ApiError, _handle_api_error)
     app.add_exception_handler(RequestValidationError, _handle_validation_error)
     app.add_exception_handler(HTTPException, _handle_http_exception)
+
+
+def not_found(kind: str, id_: str) -> ApiError:
+    return ApiError(404, "not_found", f"{kind} {id_} does not exist.")
+
+
+def invalid_query(param: str, message: str) -> ApiError:
+    """A query parameter failed validation that FastAPI's own type checks cannot express."""
+    return ApiError(
+        422, "validation_error", "Request validation failed.", [{"loc": ["query", param], "msg": message}]
+    )

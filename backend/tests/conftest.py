@@ -17,6 +17,7 @@ from sqlalchemy import text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
+from app.config import get_settings  # noqa: E402
 from app.db import get_engine, get_session  # noqa: E402
 from app.main import create_app  # noqa: E402
 
@@ -83,3 +84,9 @@ def db_client(app: FastAPI, db_session: Session) -> TestClient:
     """A client whose requests use the test's rolled-back session."""
     app.dependency_overrides[get_session] = lambda: db_session
     return TestClient(app, raise_server_exceptions=False)
+
+
+@pytest.fixture
+def auth() -> dict[str, str]:
+    """Headers for the ingestion endpoints."""
+    return {"Authorization": f"Bearer {get_settings().ghostwatch_api_key}"}

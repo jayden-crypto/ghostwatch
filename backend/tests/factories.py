@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from app import ids
-from app.models import Agent, Execution
+from app.models import Agent, Anomaly, Execution, Investigation
 
 T0 = datetime(2026, 11, 14, 10, 0, 0, tzinfo=UTC)
 
@@ -40,3 +40,40 @@ def make_execution(session: Session, agent: Agent, **overrides: Any) -> Executio
     session.add(execution)
     session.flush()
     return execution
+
+
+def make_anomaly(session: Session, execution: Execution, **overrides: Any) -> Anomaly:
+    values: dict[str, Any] = {
+        "id": ids.new_id(ids.ANOMALY),
+        "agent_id": execution.agent_id,
+        "execution_id": execution.id,
+        "type": "excessive_retries",
+        "severity": "medium",
+        "status": "open",
+        "rule_id": "excessive_retries.v1",
+        "title": "Test anomaly",
+        "explanation": "Created by a test.",
+        "evidence": [],
+        "detected_at": T0,
+    }
+    values.update(overrides)
+    anomaly = Anomaly(**values)
+    session.add(anomaly)
+    session.flush()
+    return anomaly
+
+
+def make_investigation(session: Session, execution: Execution, **overrides: Any) -> Investigation:
+    values: dict[str, Any] = {
+        "id": ids.new_id(ids.INVESTIGATION),
+        "execution_id": execution.id,
+        "status": "queued",
+        "trigger": "manual",
+        "provider": "rule_based",
+        "created_at": T0,
+    }
+    values.update(overrides)
+    investigation = Investigation(**values)
+    session.add(investigation)
+    session.flush()
+    return investigation
