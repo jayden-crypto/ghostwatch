@@ -1,65 +1,75 @@
-# Frontend progress — updated 2026-11-14T18:25Z
+# Frontend progress — updated 2026-11-14T20:30Z
 
-## Status: first session done — repo inspected, source-of-truth files read, execution plan posted to Adit. No app code yet; waiting for Adit's "go".
+## Status: X1 fixtures are written, validated and committed locally but NOT pushed (no GitHub credentials on this machine). F1 scaffold and shell build clean but have not been looked at in a browser yet. F2 not started.
 
 ## Pages (mock ✓ / live ✓)
+All eight top-level routes render the app shell with a labelled "Not implemented" placeholder.
 - Overview `/`: mock ✗ live ✗
 - Agents `/agents`, `/agents/[id]`: mock ✗ live ✗
 - Executions `/executions`: mock ✗ live ✗
-- Trace explorer `/executions/[id]`: mock ✗ live ✗
+- Trace explorer `/executions/[id]`: mock ✗ live ✗ (route not created yet)
 - Traces `/traces`: mock ✗ live ✗
 - Anomalies `/anomalies`: mock ✗ live ✗
 - Investigations `/investigations`, `/investigations/[executionId]`: mock ✗ live ✗
 - Replays `/replays`, `/replays/[id]` (P1): mock ✗ live ✗
 - Settings `/settings` (P1): mock ✗ live ✗
 
+## Done
+- F1a (#19): `create-next-app` scaffold: Next 16.4, React 19, TS strict, Tailwind 4, ESLint.
+- `lib/api/types.ts`: mirror of contract v1.1, enum value lists exported as constants.
+- X1 (#2): 144 fixtures in `contract/fixtures/` + `README.md` index. Commit `b391bae` on local branch `contract/fixtures` (cut from `main`, touches only `contract/fixtures/`), also merged into `adit/frontend`.
+  - `npm run validate-fixtures`: 144 fixtures match types, 571 ids / 1048 references resolve, 19 enums fully covered.
+  - Jayden's `tests/test_conformance.py -k fixture` at e9f4c53 with these fixtures: 145 passed.
+- F1b (#19): design tokens in `app/globals.css`, Geist fonts (local `geist` package), shadcn/ui (radix, nova preset), sidebar, breadcrumbs, MOCK DATA badge, Ctrl/⌘K palette (pages only), `Page`, `EmptyState`, `NotImplemented`. `tsc`, `eslint` and `next build` pass.
+
 ## In progress
-- nothing. Nothing is mid-edit.
+- F1b verification: load every route in the browser at 1440 and 1024 px. `.claude/launch.json` (local, git-excluded) starts the dev server.
 
-## Next up (order after "go")
-1. F1a (#19): `create-next-app` scaffold only (TS strict, Tailwind, App Router) in `frontend/`.
-2. `lib/api/types.ts` (first slice of F2 #20) mirroring contract v1.1 — X1 needs it.
-3. X1 (#2): `contract/fixtures/` + `frontend/scripts/validate-fixtures.ts`; PR from branch `contract/fixtures` to `main`. Jayden is blocked on this for B15.
-4. F1b (#19): tokens, fonts, shell, nav, MOCK DATA badge — while Jayden reviews X1.
-5. F2 (#20) → F3 (#21) → F6 (#22) → F4 (#23) → F5 (#24) → early live pass (F12 #28) → F7 (#25) → F8 (#26) → F9 (#27) → F13 (#29) → F10 (#30) → F11 (#31).
-
-Issue numbers follow the table order in PROJECT_PLAN §7, not F-number order: F6 is #22, F4 #23, F5 #24, F7 #25, F8 #26, F9 #27, F12 #28, F13 #29, F10 #30, F11 #31.
+## Next up
+1. **Push `contract/fixtures` and open the X1 PR** to `main` once `gh auth login` is done. PR body is drafted (not in the repo); title `[X1] Contract fixtures for every endpoint`.
+2. Finish F1b verification; fill the frontend CI job when `ci.yml` reaches `main`.
+3. F2 (#20): `client.ts`, `mock.ts`, `live.ts`, `hooks.ts`, `npm run sync-fixtures`.
+4. F3 (#21) → F6 (#22) → F4 (#23) → F5 (#24) → live pass (#28) → F7 → F8 → F9 → F13 → F10 → F11.
 
 ## Waiting on backend (endpoint → why)
-Per `backend/PROGRESS.md` on `origin/jayden/backend` at e9f4c53 (read 2026-11-14T18:20Z), these are already implemented, so nothing below blocks a live switch once the backend runs on this machine:
-/health, /agents*, /executions*, /executions/{id}/trace, /executions/{id}/events, /stats/*, /anomalies (GET), /investigations*.
-- POST /executions/{id}/replay, /replays* (B12, B13) → replay dialog + comparison stay on mocks (F10)
-- PATCH /anomalies/{id} (P1) → acknowledge/resolve buttons stay "Not implemented"
-- cost_usd (B14) → null until then; UI shows "—"
-- `jayden/backend` → `main` merge → needed before I can fill the frontend job in `.github/workflows/ci.yml` (the file exists only on his branch)
+Per `backend/PROGRESS.md` on `origin/jayden/backend` (e9f4c53) everything except the below is implemented.
+- POST /executions/{id}/replay, /replays* (B12, B13) → replay UI stays on mocks
+- PATCH /anomalies/{id} (P1) → acknowledge/resolve stay "Not implemented"
+- cost_usd (B14) → null until then
+- `jayden/backend` → `main` → needed before the frontend CI job can be filled (`ci.yml` exists only on his branch)
 
 ## Environment (this machine: Windows 11)
-- node v24.19.0 OK · npm 11.17.0 OK · git 2.55.0 OK · uv 0.12.16 OK · python 3.12.14 OK
-- gh: MISSING (needs install + `gh auth login` by Adit) → blocks opening PRs from the CLI (X1)
-- docker: MISSING → blocks running Jayden's backend + Postgres locally for the live switch
-- Playwright browsers: not installed → `npx playwright install chromium` needed before F13 smoke test (download, no admin)
-- git identity was unset; set repo-locally to the GitHub noreply address for `adituppal7`
+- node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12: OK
+- gh 2.104 installed at `C:\Program Files\GitHub CLI` but **not logged in**; git has no GitHub credentials → cannot push
+- docker: MISSING → cannot run the backend + Postgres locally for the live switch
+- Playwright browsers not installed (needed for F13)
+- A read-only checkout of `jayden/backend` with a uv venv was made in a temp folder to run conformance; it may be gone after a reboot (`git worktree prune` cleans the reference).
 
 ## Decisions
-- **Mode is global, never mixed.** `NEXT_PUBLIC_API_MODE` switches every request at once. Mixing fixture replays with live executions would show ids that do not resolve and fixture data without a badge that applies to the whole screen. In live mode an unbuilt endpoint shows its real 404 envelope as "Not available on this backend yet".
-- **Fixture file names use only the (resource, operation) pairs in Jayden's `backend/tests/fixture_map.py`**; anything else fails B15 on purpose. Raw events are `executions.events.<variant>.json`.
-- **Fixtures obey the invariants his schemas enforce beyond the contract text**: `signature` set exactly when `confirmed`; `report` set exactly when `completed`; live replay always authorized; ≥ 1 evidence item on anomalies and facts; anomaly title ≤ 80 chars; fact/hypothesis/recommendation ids `F1`/`H1`/`R1` style.
-- **Fixture step names, types and configs copy the real demo agents** (`demo/agents/*.py`), so mock and live look the same. The demo agents are flat (depth 0); nested-depth and 250-step traces are generated in `frontend/tests/`, not in `contract/fixtures/`.
-- **`validate-fixtures.ts`** generates a TS file with each fixture inlined as a literal `satisfies <Type>` and runs `tsc --noEmit` (JSON imports widen enums to `string`, so a plain import cannot check them), then checks id/timestamp format, cross-file id resolution and enum coverage at runtime. I will also run the fixture layer of Jayden's `test_conformance.py` from a read-only worktree before opening the PR.
-- **GET /investigations/{execution_id} 404** is the "no investigation yet" state, not an error.
-- **The raw-event item type** (unnamed in contract §6) is called `StoredEvent` in `types.ts`, matching the backend.
-- **Settings shows the data mode read-only**; it is a build-time env var.
-- **Running-step bars** end at the browser's "now"; labelled as live, and clamped to the execution start.
-- **`/` trend chart** has no `running` series (the API leaves running executions out of timeseries points); the running count is a stat tile.
-- **Schedule is counted from Adit's "go" (G+0)**, because T+0 is not recorded in the repo.
+- **Fixtures are generated**, not hand-written: `scripts/build-fixtures.ts` builds one world from `scripts/fixtures/story.ts` and derives events → steps → executions → anomalies → investigations → stats, so files cannot disagree. Anomaly and investigation text ports the backend's templates (`rules.py`, `facts.py`, `signatures.py`). After X1 merges, run it only on a `contract/<topic>` branch.
+- **Fixture world**: 5 agents (3 demo agents, `ticket-digest` scheduled job, idle `pr-reviewer`), 41 executions, fixture clock `2026-11-14T18:00:00.000Z`. Every execution has a trace and an events file named by execution id. Scenario index: `contract/fixtures/README.md`.
+- **Not produced by the backend today but present in fixtures** (listed in the fixtures README): evidence kinds `event` and `metric`; `cost_usd` values from a fixture-only price; anomaly statuses `acknowledged`/`resolved`; replay comparisons computed from the contract's outcome rule.
+- **Health fixture says `rule_based`**; the one `fable` report (`probable`) records its own provider and model.
+- **Manual investigation fixtures** (`investigations.create`, `.get.queued`, `.get.running`, `.get.manual_result`) belong to the `rate_limit` run and are not in `investigations.list.json`; the mock adapter will step through them after a POST.
+- **Mode is global, never mixed.** Anything other than `NEXT_PUBLIC_API_MODE=live` is mock, so a missing variable cannot show fixtures unlabelled.
+- **Tertiary text is `#8A8A93`**, not the brief's `#71717A`, which is 4.1:1 on the background.
+- **Dark only**: `class="dark"` on `<html>`; shadcn variables are mapped onto the Ghostwatch tokens.
+- **Next 16 has `cacheComponents` on**: anything reading the URL (`usePathname`, `useSearchParams`, `params`) sits inside `<Suspense>`; no `Date.now()` during prerender.
+- **Queries do not retry silently** (`retry: false`): errors show with a Retry button.
+- GET /investigations/{execution_id} 404 = "no investigation yet". Raw-event item type is `StoredEvent`. Settings shows the mode read-only.
+- Git identity for this clone: `adituppal7` with the GitHub noreply address (repo-local).
 
 ## Contract change requests (open)
 - none
 
 ## Known issues
-- Kickoff said anomalies and investigations are not built; Jayden's branch says they are (B8, B9 committed). To confirm with Jayden at the first live pass.
-- `frontend/` and `contract/fixtures/` did not exist before this file; `.github/workflows/ci.yml` and `docker-compose.yml` exist only on `jayden/backend`.
-- Issues #2 and #19–#31 have no assignee yet.
+- X1 is not on GitHub yet; Jayden is still blocked on it.
+- Kickoff said anomalies and investigations are not built; Jayden's branch says they are. Confirm at the first live pass.
+- The palette searches pages only; execution and agent lookup comes with F2.
+- `token_spike` fixture shows "387× above baseline": correct for a >64 KB payload, but dramatic.
+- Issues #2 and #19–#31 have no assignee.
 
 ## How to run
-- Not runnable yet (no scaffold). Target: `cd frontend && npm i && npm run sync-fixtures && npm run dev`
+- `cd frontend && npm i && npm run dev` (mock mode by default; no env file needed)
+- Live: create `frontend/.env.local` with `NEXT_PUBLIC_API_MODE=live` and `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1`
+- Checks: `npm run typecheck && npm run lint && npm run build && npm run validate-fixtures`
