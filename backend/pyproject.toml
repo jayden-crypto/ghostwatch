@@ -46,3 +46,5 @@ known-third-party = ["alembic"]
 [tool.ruff.lint.per-file-ignores]
 # Tests assert on exact report and explanation sentences; those literals are clearer unbroken.
 "tests/*" = ["E501"]
+# The Markdown template for docs/API.md lives in this script; its prose lines are not wrapped at 110.
+"scripts/api_docs.py" = ["E501"]

@@ -5,7 +5,8 @@ from collections.abc import Callable
 from contextlib import AbstractContextManager
 from typing import Annotated
 
-from fastapi import Depends, Header, Query
+from fastapi import Depends, Query
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
@@ -24,10 +25,19 @@ def get_session_factory() -> Callable[[], AbstractContextManager[Session]]:
 SessionFactoryDep = Annotated[Callable[[], AbstractContextManager[Session]], Depends(get_session_factory)]
 
 
-def require_api_key(settings: SettingsDep, authorization: Annotated[str | None, Header()] = None) -> None:
+_bearer = HTTPBearer(
+    auto_error=False,
+    scheme_name="IngestionKey",
+    description="The ingestion key (`GHOSTWATCH_API_KEY`). Required by the endpoints an SDK writes to.",
+)
+
+
+def require_api_key(
+    settings: SettingsDep, credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)]
+) -> None:
     """Guard for ingestion endpoints: `Authorization: Bearer <GHOSTWATCH_API_KEY>`."""
-    expected = f"Bearer {settings.ghostwatch_api_key}"
-    if authorization is None or not secrets.compare_digest(authorization.encode(), expected.encode()):
+    expected = settings.ghostwatch_api_key.encode()
+    if credentials is None or not secrets.compare_digest(credentials.credentials.encode(), expected):
         raise ApiError(401, "unauthorized", "Missing or invalid API key.")
 
 
