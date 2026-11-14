@@ -1,14 +1,16 @@
+# Both developers are listed on every path so that each pull request needs a review from the other
+# person. Directory ownership (who writes where) is defined in CLAUDE.md, not here.
+
 *                     @jayden-crypto @adituppal7
 
-/backend/             @jayden-crypto
-/sdk/                 @jayden-crypto
-/demo/                @jayden-crypto
-/docker-compose.yml   @jayden-crypto
-/docs/API.md          @jayden-crypto
+/backend/             @jayden-crypto @adituppal7
+/sdk/                 @jayden-crypto @adituppal7
+/demo/                @jayden-crypto @adituppal7
+/docker-compose.yml   @jayden-crypto @adituppal7
+/docs/API.md          @jayden-crypto @adituppal7
 
-/frontend/            @adituppal7
+/frontend/            @jayden-crypto @adituppal7
 
-# Shared: both must approve
 /contract/            @jayden-crypto @adituppal7
 /PROJECT_PLAN.md      @jayden-crypto @adituppal7
 /CLAUDE.md            @jayden-crypto @adituppal7
