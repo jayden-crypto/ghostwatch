@@ -2,7 +2,7 @@
 
 import re
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from pydantic import (
     AfterValidator,
@@ -102,3 +102,28 @@ class Evidence(ContractModel):
     observed: Json
     expected: Json
     excerpt: str | None
+
+
+ErrorCode = Literal[
+    "bad_request",
+    "unauthorized",
+    "not_found",
+    "conflict",
+    "execution_already_terminal",
+    "validation_error",
+    "side_effect_authorization_required",
+    "internal_error",
+    "llm_unavailable",
+]
+
+
+class ErrorBody(ContractModel):
+    code: ErrorCode
+    message: str
+    details: Json
+
+
+class ErrorEnvelope(ContractModel):
+    """Every non-2xx response."""
+
+    error: ErrorBody
