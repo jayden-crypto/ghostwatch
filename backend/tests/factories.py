@@ -53,7 +53,17 @@ def make_anomaly(session: Session, execution: Execution, **overrides: Any) -> An
         "rule_id": "excessive_retries.v1",
         "title": "Test anomaly",
         "explanation": "Created by a test.",
-        "evidence": [],
+        "evidence": [
+            {
+                "kind": "execution",
+                "label": "Execution under test",
+                "ref_id": execution.id,
+                "field": "status",
+                "observed": execution.status,
+                "expected": None,
+                "excerpt": None,
+            }
+        ],
         "detected_at": T0,
     }
     values.update(overrides)
