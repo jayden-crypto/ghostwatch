@@ -13,6 +13,7 @@ from app.models import Agent, Anomaly, Execution, Investigation, Replay
 from app.schemas.common import Page
 from app.schemas.enums import EXECUTION_STATUSES
 from app.schemas.executions import ExecutionConfig, ExecutionCreate, ExecutionDetail, ExecutionSummary
+from app.services.payloads import truncate_json
 from app.services.query import contains, parse_csv, parse_sort
 from app.timeutil import utcnow
 
@@ -57,7 +58,7 @@ def create_execution(session: Session, body: ExecutionCreate) -> Execution:
         status="running",
         started_at=body.started_at or now,
         last_event_at=now,
-        input=body.input,
+        input=truncate_json(body.input),
         config=body.stored_config(),
         tags=body.tags,
         replay_of=body.replay_of,
