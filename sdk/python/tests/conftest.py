@@ -136,6 +136,7 @@ def reset_sdk() -> Iterator[None]:
     gw._sdk.transport = NullTransport()
     gw._sdk.clock = None
     gw._sdk.initialised = False
+    gw._sdk.last_execution = None
     gw._sdk._warned.clear()
 
 

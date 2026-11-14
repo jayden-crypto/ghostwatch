@@ -30,9 +30,20 @@ from typing import Any
 
 from ghostwatch.client import NullTransport, Transport
 from ghostwatch.execution import Execution, Step, current_execution
-from ghostwatch.tools import tool
+from ghostwatch.tools import llm_call, tool
 
-__all__ = ["Agent", "Execution", "Step", "current_execution", "execution", "flush", "init", "tool"]
+__all__ = [
+    "Agent",
+    "Execution",
+    "Step",
+    "current_execution",
+    "execution",
+    "flush",
+    "init",
+    "last_execution",
+    "llm_call",
+    "tool",
+]
 __version__ = "0.1.0"
 
 logger = logging.getLogger("ghostwatch")
@@ -61,6 +72,7 @@ class _Sdk:
         self.transport: Any = NullTransport()
         self.clock: Callable[[], datetime] | None = None
         self.initialised = False
+        self.last_execution: Execution | None = None
         self._warned: set[str] = set()
         self._lock = threading.Lock()
 
@@ -122,6 +134,11 @@ def execution(
     if not _sdk.initialised:
         _sdk.warn_once("execution() used before init(); the agent runs normally but nothing is recorded")
     return Execution(_sdk, input=input, config=config, tags=tags, replay_of=replay_of, replay_id=replay_id)
+
+
+def last_execution() -> Execution | None:
+    """The execution most recently entered in this process (its `id` is set once it has been sent)."""
+    return _sdk.last_execution
 
 
 def flush(timeout: float = 5.0) -> bool:

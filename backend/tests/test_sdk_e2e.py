@@ -1,53 +1,16 @@
 """The SDK against the real API over HTTP: what an instrumented agent does becomes a correct trace."""
 
-import socket
-import threading
 import time
-from collections.abc import Iterator
 
 import ghostwatch as gw
 import httpx2
 import pytest
-import uvicorn
-from ghostwatch.client import NullTransport
-from sqlalchemy import text
 
 from app.config import get_settings
-from app.db import get_engine
-from app.main import create_app
 from app.schemas.agents import Agent
 from app.schemas.common import Page
 from app.schemas.traces import Trace
 from tests.test_conformance import validate
-
-
-@pytest.fixture
-def live_api(migrated_database: None, monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
-    """The app served by uvicorn on a free port. It commits for real, so the tables are emptied after."""
-    with socket.socket() as probe:
-        probe.bind(("127.0.0.1", 0))
-        port = probe.getsockname()[1]
-    monkeypatch.setenv("SWEEPER_INTERVAL_SECONDS", "0.1")
-    get_settings.cache_clear()
-    server = uvicorn.Server(uvicorn.Config(create_app(), host="127.0.0.1", port=port, log_level="warning"))
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-    try:
-        while not server.started:
-            assert thread.is_alive(), "the test server failed to start"
-            thread.join(0.01)
-        yield f"http://127.0.0.1:{port}/api/v1"
-    finally:
-        gw._sdk.transport.close(timeout=1)
-        gw._sdk.transport = NullTransport()
-        gw._sdk.initialised = False
-        server.should_exit = True
-        thread.join(10)
-        get_settings.cache_clear()
-        with get_engine().begin() as connection:
-            connection.execute(
-                text("TRUNCATE replays, investigations, anomalies, steps, events, executions, agents CASCADE")
-            )
 
 
 @gw.tool

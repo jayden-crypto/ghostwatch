@@ -43,6 +43,12 @@ jobs:
           uv run ruff check .
           uv run ruff format --check .
           uv run pytest -q
+      - name: Demo lint
+        working-directory: demo
+        run: |
+          uv sync --frozen
+          uv run ruff check .
+          uv run ruff format --check .
 
   # Owned by Adit: replace this stub with install, typecheck, lint and tests in F1.
   frontend:

@@ -1,6 +1,8 @@
 """Shared fixtures. The app under test always talks to the test database, never the dev one."""
 
 import os
+import socket
+import threading
 from collections.abc import Iterator
 from pathlib import Path
 
@@ -8,11 +10,14 @@ DEFAULT_TEST_DATABASE_URL = "postgresql+psycopg://ghostwatch:ghostwatch@localhos
 os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL", DEFAULT_TEST_DATABASE_URL)
 os.environ.setdefault("GHOSTWATCH_API_KEY", "test-ingest-key")
 
+import ghostwatch as gw  # noqa: E402
 import pytest  # noqa: E402
+import uvicorn  # noqa: E402
 from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
 from fastapi import FastAPI  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from ghostwatch.client import NullTransport  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
@@ -90,3 +95,33 @@ def db_client(app: FastAPI, db_session: Session) -> TestClient:
 def auth() -> dict[str, str]:
     """Headers for the ingestion endpoints."""
     return {"Authorization": f"Bearer {get_settings().ghostwatch_api_key}"}
+
+
+@pytest.fixture
+def live_api(migrated_database: None, monkeypatch: pytest.MonkeyPatch) -> Iterator[str]:
+    """The app served by uvicorn on a free port. It commits for real, so the tables are emptied after."""
+    with socket.socket() as probe:
+        probe.bind(("127.0.0.1", 0))
+        port = probe.getsockname()[1]
+    monkeypatch.setenv("SWEEPER_INTERVAL_SECONDS", "0.1")
+    get_settings.cache_clear()
+    server = uvicorn.Server(uvicorn.Config(create_app(), host="127.0.0.1", port=port, log_level="warning"))
+    thread = threading.Thread(target=server.run, daemon=True)
+    thread.start()
+    try:
+        while not server.started:
+            assert thread.is_alive(), "the test server failed to start"
+            thread.join(0.01)
+        yield f"http://127.0.0.1:{port}/api/v1"
+    finally:
+        gw._sdk.transport.close(timeout=1)
+        gw._sdk.transport = NullTransport()
+        gw._sdk.initialised = False
+        gw._sdk.last_execution = None
+        server.should_exit = True
+        thread.join(10)
+        get_settings.cache_clear()
+        with get_engine().begin() as connection:
+            connection.execute(
+                text("TRUNCATE replays, investigations, anomalies, steps, events, executions, agents CASCADE")
+            )

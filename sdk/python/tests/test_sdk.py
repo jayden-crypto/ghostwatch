@@ -417,3 +417,39 @@ def test_without_init_the_agent_runs_and_nothing_is_recorded(
     assert [record.message for record in caplog.records].count(
         "Ghostwatch: execution() used before init(); the agent runs normally but nothing is recorded"
     ) == 1
+
+
+def test_llm_calls_are_recorded_with_model_and_token_usage(sdk: StubApi) -> None:
+    @gw.llm_call(model="demo-llm")
+    def summarize(prompt: str) -> dict:
+        return {"text": prompt.upper(), "usage": {"input_tokens": 12, "output_tokens": 3}}
+
+    @gw.llm_call
+    def classify(text: str) -> str:
+        return "billing"
+
+    assert summarize("outside a run")["text"] == "OUTSIDE A RUN"
+    with gw.execution() as run:
+        assert summarize("hello")["text"] == "HELLO"
+        assert classify("my invoice is wrong") == "billing"
+    assert gw.last_execution() is run
+    gw.flush()
+
+    started = [event["payload"] for event in sdk.events() if event["type"] == "step.started"]
+    completed = [event["payload"] for event in sdk.events() if event["type"] == "step.completed"]
+    assert [(s["name"], s["step_type"], s["model"], s["tool_name"]) for s in started] == [
+        ("summarize", "llm_call", "demo-llm", None),
+        ("classify", "llm_call", None, None),
+    ]
+    assert (started[0]["input"], started[0]["metadata"]) == ({"prompt": "hello"}, {})
+    assert (completed[0]["tokens_input"], completed[0]["tokens_output"]) == (12, 3)
+    assert completed[0]["output"] == {"text": "HELLO", "usage": {"input_tokens": 12, "output_tokens": 3}}
+    assert (completed[1]["tokens_input"], completed[1]["tokens_output"], completed[1]["output"]) == (
+        None,
+        None,
+        "billing",
+    )
+
+
+def test_last_execution_is_none_before_any_run() -> None:
+    assert gw.last_execution() is None

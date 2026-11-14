@@ -255,7 +255,7 @@ def excessive_retries(rule_input: RuleInput) -> AnomalyDraft | None:
     return AnomalyDraft(
         type="excessive_retries",
         severity="medium",
-        title=f"{_plural(total, 'retry', 'retries')} in one execution, up to attempt {highest}",
+        title=f"{_plural(len(retried), 'retried step')}, highest attempt {highest}",
         explanation=(
             f"The highest attempt number in this execution is {highest} and the sum of (attempt - 1) over "
             f"all steps is {total}. Rule fires when any step has attempt >= {t.RETRY_ATTEMPT_LIMIT} or the "

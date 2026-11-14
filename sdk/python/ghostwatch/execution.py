@@ -193,6 +193,7 @@ class Execution:
     def __enter__(self) -> Execution:
         self._started_at = self._sdk.now()
         self._token = _current_execution.set(self)
+        self._sdk.last_execution = self
         return self
 
     def __exit__(

@@ -232,7 +232,7 @@ def test_excessive_retries_on_a_third_attempt() -> None:
     ]
     draft = rules.excessive_retries(rule_input(execution(), steps))
     assert_well_formed(draft, "excessive_retries", "medium")
-    assert draft.title == "3 retries in one execution, up to attempt 3"
+    assert draft.title == "2 retried steps, highest attempt 3"
     assert draft.explanation == (
         "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. "
         "Rule fires when any step has attempt >= 3 or the sum is >= 5."
@@ -247,7 +247,7 @@ def test_excessive_retries_on_the_total() -> None:
     steps = [step(index, f"tool_{index}", attempt=2) for index in range(1, 6)]  # five second attempts
     draft = rules.excessive_retries(rule_input(execution(), steps))
     assert_well_formed(draft, "excessive_retries", "medium")
-    assert draft.title == "5 retries in one execution, up to attempt 2"
+    assert draft.title == "5 retried steps, highest attempt 2"
 
 
 def test_excessive_retries_non_firing_cases() -> None:
