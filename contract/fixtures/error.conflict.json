@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "conflict",
+    "message": "An investigation cannot be started while the execution is still running.",
+    "details": null
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "id": "exe_00000000000000000000000000000028",
+  "agent_id": "agt_00000000000000000000000000000002",
+  "agent_name": "Invoice Processor",
+  "status": "completed",
+  "started_at": "2026-11-14T17:28:40.153Z",
+  "ended_at": "2026-11-14T17:28:40.366Z",
+  "duration_ms": 213,
+  "step_count": 2,
+  "tokens_total": null,
+  "cost_usd": null,
+  "anomaly_count": 1,
+  "has_investigation": true,
+  "replay_of": null,
+  "error": null,
+  "input": {
+    "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+  },
+  "output": {
+    "status": "processed",
+    "invoice_number": "INV-2042"
+  },
+  "config": {
+    "model": null,
+    "params": {},
+    "expected_steps": [
+      "extract_fields",
+      "validate",
+      "submit_invoice"
+    ],
+    "timeout_ms": null
+  },
+  "tokens_input": null,
+  "tokens_output": null,
+  "tags": [
+    "demo"
+  ],
+  "replay_ids": [
+    "rpl_00000000000000000000000000000004"
+  ]
+}

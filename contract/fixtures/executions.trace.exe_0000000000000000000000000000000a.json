@@ -1,0 +1,160 @@
+{
+  "execution": {
+    "id": "exe_0000000000000000000000000000000a",
+    "agent_id": "agt_00000000000000000000000000000001",
+    "agent_name": "Research Assistant",
+    "status": "failed",
+    "started_at": "2026-11-14T17:20:14.592Z",
+    "ended_at": "2026-11-14T17:20:14.953Z",
+    "duration_ms": 361,
+    "step_count": 3,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": {
+      "type": "KeyError",
+      "message": "'results'",
+      "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+    },
+    "input": {
+      "question": "How do teams trace what an AI agent did?"
+    },
+    "output": null,
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_results": 3
+      },
+      "expected_steps": [
+        "web_search",
+        "parse_results",
+        "summarize"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000002",
+      "rpl_00000000000000000000000000000003"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000000a01",
+      "execution_id": "exe_0000000000000000000000000000000a",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "plan",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T17:20:14.593Z",
+      "ended_at": "2026-11-14T17:20:14.594Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "question": "How do teams trace what an AI agent did?"
+      },
+      "output": {
+        "query": "how do teams trace what an ai agent did"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000a02",
+      "execution_id": "exe_0000000000000000000000000000000a",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "web_search",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T17:20:14.595Z",
+      "ended_at": "2026-11-14T17:20:14.950Z",
+      "duration_ms": 355,
+      "offset_ms": 3,
+      "input": {
+        "query": "how do teams trace what an ai agent did",
+        "max_results": 3
+      },
+      "output": {
+        "data": [
+          {
+            "title": "Agent observability: tracing every step",
+            "url": "https://example.test/agent-observability",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "url": "https://example.test/silent-failures",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          },
+          {
+            "title": "Replaying agent runs against recorded inputs",
+            "url": "https://example.test/replay",
+            "snippet": "Deterministic replay turns a production failure into a local test case."
+          }
+        ],
+        "meta": {
+          "total": 3,
+          "api_version": "2026-11"
+        }
+      },
+      "error": null,
+      "tool_name": "web_search",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000000a03",
+      "execution_id": "exe_0000000000000000000000000000000a",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "parse_results",
+      "type": "reasoning",
+      "status": "failed",
+      "started_at": "2026-11-14T17:20:14.951Z",
+      "ended_at": "2026-11-14T17:20:14.952Z",
+      "duration_ms": 1,
+      "offset_ms": 359,
+      "input": {
+        "response_keys": [
+          "data",
+          "meta"
+        ]
+      },
+      "output": null,
+      "error": {
+        "type": "KeyError",
+        "message": "'results'",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+      },
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}

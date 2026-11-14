@@ -1,0 +1,216 @@
+{
+  "window": "30d",
+  "bucket": "day",
+  "points": [
+    {
+      "bucket_start": "2026-10-16T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-17T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-18T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-19T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-20T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-21T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-22T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-23T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-24T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-25T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-26T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-27T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-28T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-29T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-30T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-10-31T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-01T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-02T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-03T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-04T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-05T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-06T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-07T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-08T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-09T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-10T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-11T00:00:00.000Z",
+      "completed": 0,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": null
+    },
+    {
+      "bucket_start": "2026-11-12T00:00:00.000Z",
+      "completed": 8,
+      "failed": 0,
+      "timed_out": 0,
+      "avg_duration_ms": 1288
+    },
+    {
+      "bucket_start": "2026-11-13T00:00:00.000Z",
+      "completed": 11,
+      "failed": 1,
+      "timed_out": 1,
+      "avg_duration_ms": 13314
+    },
+    {
+      "bucket_start": "2026-11-14T00:00:00.000Z",
+      "completed": 13,
+      "failed": 4,
+      "timed_out": 2,
+      "avg_duration_ms": 15520
+    }
+  ]
+}

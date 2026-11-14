@@ -1,0 +1,12 @@
+{
+  "id": "inv_0000000000000000000000000000000b",
+  "execution_id": "exe_00000000000000000000000000000048",
+  "status": "queued",
+  "trigger": "manual",
+  "provider": "rule_based",
+  "model": null,
+  "created_at": "2026-11-14T17:59:59.690Z",
+  "completed_at": null,
+  "error": null,
+  "report": null
+}

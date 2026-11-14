@@ -1,0 +1,179 @@
+{
+  "items": [
+    {
+      "id": "agt_00000000000000000000000000000002",
+      "name": "Invoice Processor",
+      "slug": "invoice-processor",
+      "description": "Extracts invoice fields, validates them and submits the invoice for payment.",
+      "framework": "custom",
+      "metadata": {},
+      "created_at": "2026-11-12T08:00:01.391Z",
+      "stats": {
+        "total_executions": 9,
+        "completed": 8,
+        "failed": 1,
+        "timed_out": 0,
+        "running": 0,
+        "success_rate": 0.8888888888888888,
+        "avg_duration_ms": 457,
+        "open_anomalies": 1,
+        "last_execution": {
+          "id": "exe_00000000000000000000000000000029",
+          "agent_id": "agt_00000000000000000000000000000002",
+          "agent_name": "Invoice Processor",
+          "status": "failed",
+          "started_at": "2026-11-14T17:52:06.737Z",
+          "ended_at": "2026-11-14T17:52:06.951Z",
+          "duration_ms": 214,
+          "step_count": 2,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": "exe_00000000000000000000000000000028",
+          "error": {
+            "type": "ValidationUnavailable",
+            "message": "validation service returned HTTP 503",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+          }
+        },
+        "health": "failing"
+      }
+    },
+    {
+      "id": "agt_00000000000000000000000000000005",
+      "name": "PR Reviewer",
+      "slug": "pr-reviewer",
+      "description": null,
+      "framework": null,
+      "metadata": {},
+      "created_at": "2026-11-14T16:10:44.530Z",
+      "stats": {
+        "total_executions": 0,
+        "completed": 0,
+        "failed": 0,
+        "timed_out": 0,
+        "running": 0,
+        "success_rate": null,
+        "avg_duration_ms": null,
+        "open_anomalies": 0,
+        "last_execution": null,
+        "health": "idle"
+      }
+    },
+    {
+      "id": "agt_00000000000000000000000000000001",
+      "name": "Research Assistant",
+      "slug": "research-assistant",
+      "description": "Answers a question from web search results.",
+      "framework": "custom",
+      "metadata": {},
+      "created_at": "2026-11-12T08:00:01.204Z",
+      "stats": {
+        "total_executions": 11,
+        "completed": 9,
+        "failed": 2,
+        "timed_out": 0,
+        "running": 0,
+        "success_rate": 0.8181818181818182,
+        "avg_duration_ms": 1012,
+        "open_anomalies": 2,
+        "last_execution": {
+          "id": "exe_0000000000000000000000000000000c",
+          "agent_id": "agt_00000000000000000000000000000001",
+          "agent_name": "Research Assistant",
+          "status": "completed",
+          "started_at": "2026-11-14T17:45:27.806Z",
+          "ended_at": "2026-11-14T17:45:28.288Z",
+          "duration_ms": 482,
+          "step_count": 4,
+          "tokens_total": 197,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": false,
+          "replay_of": "exe_0000000000000000000000000000000a",
+          "error": null
+        },
+        "health": "degraded"
+      }
+    },
+    {
+      "id": "agt_00000000000000000000000000000003",
+      "name": "Support Triage",
+      "slug": "support-triage",
+      "description": "Classifies a support ticket, looks up the knowledge base and drafts a reply.",
+      "framework": "custom",
+      "metadata": {},
+      "created_at": "2026-11-12T08:00:01.577Z",
+      "stats": {
+        "total_executions": 11,
+        "completed": 10,
+        "failed": 0,
+        "timed_out": 0,
+        "running": 1,
+        "success_rate": 1,
+        "avg_duration_ms": 1585,
+        "open_anomalies": 2,
+        "last_execution": {
+          "id": "exe_0000000000000000000000000000004a",
+          "agent_id": "agt_00000000000000000000000000000003",
+          "agent_name": "Support Triage",
+          "status": "running",
+          "started_at": "2026-11-14T17:59:57.660Z",
+          "ended_at": null,
+          "duration_ms": null,
+          "step_count": 2,
+          "tokens_total": 28,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": false,
+          "replay_of": null,
+          "error": null
+        },
+        "health": "healthy"
+      }
+    },
+    {
+      "id": "agt_00000000000000000000000000000004",
+      "name": "Ticket Digest",
+      "slug": "ticket-digest",
+      "description": "Scheduled job that summarises new support tickets every six hours and posts the digest.",
+      "framework": "custom",
+      "metadata": {
+        "schedule": "0 */6 * * *",
+        "owner": "support-ops"
+      },
+      "created_at": "2026-11-12T17:42:10.006Z",
+      "stats": {
+        "total_executions": 10,
+        "completed": 5,
+        "failed": 2,
+        "timed_out": 3,
+        "running": 0,
+        "success_rate": 0.5,
+        "avg_duration_ms": 44715,
+        "open_anomalies": 5,
+        "last_execution": {
+          "id": "exe_0000000000000000000000000000006a",
+          "agent_id": "agt_00000000000000000000000000000004",
+          "agent_name": "Ticket Digest",
+          "status": "completed",
+          "started_at": "2026-11-14T14:41:36.914Z",
+          "ended_at": "2026-11-14T14:41:40.865Z",
+          "duration_ms": 3951,
+          "step_count": 7,
+          "tokens_total": 3020,
+          "cost_usd": 0.003264,
+          "anomaly_count": 0,
+          "has_investigation": false,
+          "replay_of": "exe_00000000000000000000000000000068",
+          "error": null
+        },
+        "health": "degraded"
+      }
+    }
+  ],
+  "total": 5,
+  "limit": 50,
+  "offset": 0
+}

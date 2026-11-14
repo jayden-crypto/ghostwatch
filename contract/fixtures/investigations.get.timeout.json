@@ -1,0 +1,205 @@
+{
+  "id": "inv_00000000000000000000000000000005",
+  "execution_id": "exe_00000000000000000000000000000068",
+  "trigger": "auto_failure",
+  "created_at": "2026-11-14T12:02:22.096Z",
+  "status": "completed",
+  "provider": "rule_based",
+  "model": null,
+  "completed_at": "2026-11-14T12:02:22.260Z",
+  "error": null,
+  "report": {
+    "summary": "The execution timed out while Step 2 fetch_tickets was running. The root cause is confirmed by the deterministic signature timeout_in_step.",
+    "failing_step_id": "stp_00000000000000000000000000006802",
+    "root_cause": {
+      "status": "confirmed",
+      "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+      "hypothesis_id": "H1",
+      "signature": "timeout_in_step"
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of ticket-digest ended with status timed_out after 141649 ms and 2 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_00000000000000000000000000000068",
+            "field": "status",
+            "observed": "timed_out",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "The execution ended with the error TimeoutError: Execution timed out after 141649 ms..",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Terminal error of the execution",
+            "ref_id": "exe_00000000000000000000000000000068",
+            "field": "error.message",
+            "observed": "Execution timed out after 141649 ms.",
+            "expected": null,
+            "excerpt": "Execution timed out after 141649 ms."
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 2 fetch_tickets had started and was still running when the execution timed out.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Status of Step 2 fetch_tickets",
+            "ref_id": "stp_00000000000000000000000000006802",
+            "field": "status",
+            "observed": "running",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "Step 1 load_schedule (input, completed) returned an object with keys: since, until.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 1 load_schedule",
+            "ref_id": "stp_00000000000000000000000000006801",
+            "field": "output",
+            "observed": [
+              "since",
+              "until"
+            ],
+            "expected": null,
+            "excerpt": "{\"since\":\"2026-11-14T06:00:00.409Z\",\"until\":\"2026-11-14T12:00:00.409Z\"}"
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule. Expected steps that did not complete: fetch_tickets, summarize, send_digest.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_00000000000000000000000000000068",
+            "field": "config.expected_steps",
+            "observed": [
+              "load_schedule"
+            ],
+            "expected": [
+              "fetch_tickets",
+              "summarize",
+              "send_digest"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "Anomaly repeated_timeouts (high) was raised on this execution: 3 of the last 8 executions timed out.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule repeated_timeouts.v1 fired",
+            "ref_id": "anm_00000000000000000000000000000008",
+            "field": "explanation",
+            "observed": "3 of the last 8 executions timed out",
+            "expected": null,
+            "excerpt": "3 of the last 8 executions of ticket-digest timed out, including this one. Rule fires at 3 or more timeouts in the agent's last 10 executions."
+          },
+          {
+            "kind": "execution",
+            "label": "This execution timed out",
+            "ref_id": "exe_00000000000000000000000000000068",
+            "field": "status",
+            "observed": "timed_out",
+            "expected": null,
+            "excerpt": null
+          },
+          {
+            "kind": "execution",
+            "label": "Earlier timed-out execution",
+            "ref_id": "exe_00000000000000000000000000000066",
+            "field": "status",
+            "observed": "timed_out",
+            "expected": null,
+            "excerpt": null
+          },
+          {
+            "kind": "execution",
+            "label": "Earlier timed-out execution",
+            "ref_id": "exe_00000000000000000000000000000065",
+            "field": "status",
+            "observed": "timed_out",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F7",
+        "statement": "Anomaly stale_execution (high) was raised on this execution: No event for 141,645 ms; marked timed out.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule stale_execution.v1 fired",
+            "ref_id": "anm_00000000000000000000000000000009",
+            "field": "explanation",
+            "observed": "No event for 141,645 ms; marked timed out",
+            "expected": null,
+            "excerpt": "The execution was running and sent no event for 141,645 ms (last event received at 2026-11-14T12:00:00.413Z). Rule fires after config.timeout_ms = 120,000 ms without an event; Ghostwatch then marked the execution timed_out."
+          },
+          {
+            "kind": "execution",
+            "label": "Time since the last event was received",
+            "ref_id": "exe_00000000000000000000000000000068",
+            "field": "last_event_at",
+            "observed": {
+              "last_event_at": "2026-11-14T12:00:00.413Z",
+              "idle_ms": 141645
+            },
+            "expected": {
+              "timeout_ms": 120000
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "statement": "The execution timed out while Step 2 fetch_tickets was running; that step never finished.",
+        "confidence": "high",
+        "reasoning": "Signature timeout_in_step: the execution's status is timed_out and a step that had started has no completion or failure event.",
+        "supporting_fact_ids": [
+          "F3",
+          "F7"
+        ],
+        "contradicting_fact_ids": []
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "R1",
+        "action": "Put a timeout around fetch_tickets and have it fail with an error instead of hanging.",
+        "rationale": "fetch_tickets is where the run stopped making progress.",
+        "hypothesis_id": "H1"
+      }
+    ],
+    "evidence_gaps": [
+      "Only 4 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+    ],
+    "relevant_step_ids": [
+      "stp_00000000000000000000000000006802"
+    ]
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000041",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-12T08:30:26.540Z",
+    "ended_at": "2026-11-12T08:30:27.685Z",
+    "duration_ms": 1145,
+    "step_count": 3,
+    "tokens_total": 101,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "The export button does nothing when I click it."
+    },
+    "output": {
+      "category": "bug",
+      "reply": "Thanks for getting in touch. Include steps, expected and actual.",
+      "articles": [
+        "KB-330"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 84,
+    "tokens_output": 17,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004101",
+      "execution_id": "exe_00000000000000000000000000000041",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-12T08:30:26.541Z",
+      "ended_at": "2026-11-12T08:30:26.966Z",
+      "duration_ms": 425,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "The export button does nothing when I click it."
+      },
+      "output": {
+        "text": "bug",
+        "usage": {
+          "input_tokens": 28,
+          "output_tokens": 1
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 28,
+      "tokens_output": 1,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004102",
+      "execution_id": "exe_00000000000000000000000000000041",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-12T08:30:26.967Z",
+      "ended_at": "2026-11-12T08:30:27.210Z",
+      "duration_ms": 243,
+      "offset_ms": 427,
+      "input": {
+        "category": "bug"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-330",
+            "title": "Reporting a reproducible bug",
+            "body": "Include steps, expected and actual."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004103",
+      "execution_id": "exe_00000000000000000000000000000041",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-12T08:30:27.211Z",
+      "ended_at": "2026-11-12T08:30:27.684Z",
+      "duration_ms": 473,
+      "offset_ms": 671,
+      "input": {
+        "ticket": "The export button does nothing when I click it.",
+        "articles": [
+          {
+            "id": "KB-330",
+            "title": "Reporting a reproducible bug",
+            "body": "Include steps, expected and actual."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Include steps, expected and actual.",
+        "usage": {
+          "input_tokens": 56,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 56,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}

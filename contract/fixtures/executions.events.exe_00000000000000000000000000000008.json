@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000008001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T16:52:10.265Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000801",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "How do teams trace what an AI agent did?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T16:52:10.266Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000801",
+        "output": {
+          "query": "how do teams trace what an ai agent did"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T16:52:10.267Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000802",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "how do teams trace what an ai agent did",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T16:52:10.590Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000802",
+        "output": {
+          "results": [
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            },
+            {
+              "title": "Replaying agent runs against recorded inputs",
+              "url": "https://example.test/replay",
+              "snippet": "Deterministic replay turns a production failure into a local test case."
+            }
+          ],
+          "total": 3
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T16:52:10.591Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000803",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T16:52:10.592Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000803",
+        "output": {
+          "sources": [
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs",
+            "Replaying agent runs against recorded inputs"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-14T16:52:10.593Z",
+      "received_at": "2026-11-14T16:52:10.773Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000804",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "question": "How do teams trace what an AI agent did?",
+          "sources": [
+            {
+              "title": "Agent observability: tracing every step",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            },
+            {
+              "title": "Replaying agent runs against recorded inputs",
+              "snippet": "Deterministic replay turns a production failure into a local test case."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T16:52:11.040Z",
+      "received_at": "2026-11-14T16:52:11.273Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000804",
+        "output": {
+          "text": "Based on 3 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered. Deterministic replay turns a production failure into a local test case.",
+          "usage": {
+            "input_tokens": 135,
+            "output_tokens": 62
+          }
+        },
+        "tokens_input": 135,
+        "tokens_output": 62,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000008009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T16:52:11.041Z",
+      "received_at": "2026-11-14T16:52:11.273Z",
+      "payload": {
+        "output": {
+          "answer": "Based on 3 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered. Deterministic replay turns a production failure into a local test case.",
+          "sources": [
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs",
+            "Replaying agent runs against recorded inputs"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

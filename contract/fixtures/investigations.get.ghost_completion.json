@@ -1,0 +1,182 @@
+{
+  "id": "inv_00000000000000000000000000000008",
+  "execution_id": "exe_00000000000000000000000000000028",
+  "trigger": "auto_anomaly",
+  "created_at": "2026-11-14T17:28:40.404Z",
+  "status": "completed",
+  "provider": "rule_based",
+  "model": null,
+  "completed_at": "2026-11-14T17:28:40.568Z",
+  "error": null,
+  "report": {
+    "summary": "The execution completed. Anomalies raised on it: ghost_completion. The root cause is confirmed by the deterministic signature ghost_completion.",
+    "failing_step_id": null,
+    "root_cause": {
+      "status": "confirmed",
+      "statement": "The agent reported the run as completed, but the recorded steps contradict it: Reported completed, but submit_invoice never completed.",
+      "hypothesis_id": "H1",
+      "signature": "ghost_completion"
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of invoice-processor ended with status completed after 213 ms and 2 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_00000000000000000000000000000028",
+            "field": "status",
+            "observed": "completed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "Step 1 extract_fields (reasoning, completed) returned an object with keys: currency, invoice_number, total, vendor.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 1 extract_fields",
+            "ref_id": "stp_00000000000000000000000000002801",
+            "field": "output",
+            "observed": [
+              "currency",
+              "invoice_number",
+              "total",
+              "vendor"
+            ],
+            "expected": null,
+            "excerpt": "{\"invoice_number\":\"INV-2042\",\"vendor\":\"Contoso Cloud\",\"total\":9400,\"currency\":\"USD\"}"
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 2 validate (custom, completed) has no output.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 2 validate",
+            "ref_id": "stp_00000000000000000000000000002802",
+            "field": "output",
+            "observed": null,
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "The execution is configured to expect these steps to complete: extract_fields, validate, submit_invoice. Steps that completed: extract_fields, validate. Expected steps that did not complete: submit_invoice.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_00000000000000000000000000000028",
+            "field": "config.expected_steps",
+            "observed": [
+              "extract_fields",
+              "validate"
+            ],
+            "expected": [
+              "extract_fields",
+              "validate",
+              "submit_invoice"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "Anomaly ghost_completion (critical) was raised on this execution: Reported completed, but submit_invoice never completed.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule ghost_completion.v1 fired",
+            "ref_id": "anm_0000000000000000000000000000000e",
+            "field": "explanation",
+            "observed": "Reported completed, but submit_invoice never completed",
+            "expected": null,
+            "excerpt": "The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all."
+          },
+          {
+            "kind": "execution",
+            "label": "Expected step submit_invoice never started",
+            "ref_id": "exe_00000000000000000000000000000028",
+            "field": "config.expected_steps",
+            "observed": [
+              "extract_fields",
+              "validate"
+            ],
+            "expected": [
+              "extract_fields",
+              "validate",
+              "submit_invoice"
+            ],
+            "excerpt": null
+          },
+          {
+            "kind": "event",
+            "label": "Warning logged at event 4",
+            "ref_id": "evt_00000000000000000000000000028004",
+            "field": "payload.message",
+            "observed": "validation skipped: validation service returned HTTP 503",
+            "expected": null,
+            "excerpt": "validation skipped: validation service returned HTTP 503"
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "This execution took 213 ms over 2 steps. Over the last 7 completed runs of invoice-processor, the median duration is 509 ms (p95 679 ms) and the largest step count is 4.",
+        "evidence": [
+          {
+            "kind": "baseline",
+            "label": "This execution compared with 7 completed runs",
+            "ref_id": null,
+            "field": null,
+            "observed": {
+              "duration_ms": 213,
+              "step_count": 2,
+              "tokens_total": null
+            },
+            "expected": {
+              "median_duration_ms": 509,
+              "p95_duration_ms": 679,
+              "max_step_count": 4,
+              "median_tokens_total": null
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "statement": "The agent reported the run as completed, but the recorded steps contradict it: Reported completed, but submit_invoice never completed.",
+        "confidence": "high",
+        "reasoning": "Signature ghost_completion: the execution's status is completed and the deterministic ghost_completion rule fired (a step still running, an expected step with no completed step, or no steps at all).",
+        "supporting_fact_ids": [
+          "F5",
+          "F4"
+        ],
+        "contradicting_fact_ids": []
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "R1",
+        "action": "Make the agent fail the run when a required step does not complete, instead of reporting success; check for errors that are caught and ignored before the missing step.",
+        "rationale": "The run's reported outcome and its recorded steps disagree, so the reported outcome is not trustworthy.",
+        "hypothesis_id": "H1"
+      }
+    ],
+    "evidence_gaps": [],
+    "relevant_step_ids": []
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000063",
+    "agent_id": "agt_00000000000000000000000000000004",
+    "agent_name": "Ticket Digest",
+    "status": "failed",
+    "started_at": "2026-11-13T06:00:00.447Z",
+    "ended_at": "2026-11-13T06:00:12.535Z",
+    "duration_ms": 12088,
+    "step_count": 4,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 2,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": {
+      "type": "HTTPError",
+      "message": "HTTP 503 Service Unavailable",
+      "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+    },
+    "input": {
+      "trigger": "cron",
+      "schedule": "0 */6 * * *"
+    },
+    "output": null,
+    "config": {
+      "model": "claude-haiku-5-5",
+      "params": {
+        "batch_size": 20
+      },
+      "expected_steps": [
+        "fetch_tickets",
+        "summarize",
+        "send_digest"
+      ],
+      "timeout_ms": 120000,
+      "schedule": "0 */6 * * *"
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "scheduled"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000007",
+      "rpl_00000000000000000000000000000005"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000006301",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "load_schedule",
+      "type": "input",
+      "status": "completed",
+      "started_at": "2026-11-13T06:00:00.448Z",
+      "ended_at": "2026-11-13T06:00:00.450Z",
+      "duration_ms": 2,
+      "offset_ms": 1,
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": {
+        "since": "2026-11-13T00:00:00.447Z",
+        "until": "2026-11-13T06:00:00.447Z"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000006302",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "failed",
+      "started_at": "2026-11-13T06:00:00.451Z",
+      "ended_at": "2026-11-13T06:00:03.500Z",
+      "duration_ms": 3049,
+      "offset_ms": 4,
+      "input": {
+        "since": "2026-11-13T00:00:00.447Z",
+        "until": "2026-11-13T06:00:00.447Z"
+      },
+      "output": null,
+      "error": {
+        "type": "HTTPError",
+        "message": "HTTP 503 Service Unavailable",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+      },
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006303",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "failed",
+      "started_at": "2026-11-13T06:00:04.501Z",
+      "ended_at": "2026-11-13T06:00:07.523Z",
+      "duration_ms": 3022,
+      "offset_ms": 4054,
+      "input": {
+        "since": "2026-11-13T00:00:00.447Z",
+        "until": "2026-11-13T06:00:00.447Z"
+      },
+      "output": null,
+      "error": {
+        "type": "HTTPError",
+        "message": "HTTP 503 Service Unavailable",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+      },
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 2,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006304",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "failed",
+      "started_at": "2026-11-13T06:00:09.524Z",
+      "ended_at": "2026-11-13T06:00:12.534Z",
+      "duration_ms": 3010,
+      "offset_ms": 9077,
+      "input": {
+        "since": "2026-11-13T00:00:00.447Z",
+        "until": "2026-11-13T06:00:00.447Z"
+      },
+      "output": null,
+      "error": {
+        "type": "HTTPError",
+        "message": "HTTP 503 Service Unavailable",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+      },
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 3,
+      "metadata": {
+        "side_effects": false
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_00000000000000000000000000000001",
+      "type": "repeated_tool_failure",
+      "severity": "high",
+      "status": "resolved",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "detected_at": "2026-11-13T06:00:12.535Z",
+      "rule_id": "repeated_tool_failure.v1",
+      "title": "Tool fetch_tickets failed 3 times in one execution",
+      "explanation": "Tool fetch_tickets has 3 failed steps in this execution. Rule fires at 3 or more failed steps of the same tool in one execution.",
+      "evidence": [
+        {
+          "kind": "step",
+          "label": "Step 2 fetch_tickets failed",
+          "ref_id": "stp_00000000000000000000000000006302",
+          "field": "error.message",
+          "observed": "HTTP 503 Service Unavailable",
+          "expected": null,
+          "excerpt": "HTTP 503 Service Unavailable"
+        },
+        {
+          "kind": "step",
+          "label": "Step 3 fetch_tickets (attempt 2) failed",
+          "ref_id": "stp_00000000000000000000000000006303",
+          "field": "error.message",
+          "observed": "HTTP 503 Service Unavailable",
+          "expected": null,
+          "excerpt": "HTTP 503 Service Unavailable"
+        },
+        {
+          "kind": "step",
+          "label": "Step 4 fetch_tickets (attempt 3) failed",
+          "ref_id": "stp_00000000000000000000000000006304",
+          "field": "error.message",
+          "observed": "HTTP 503 Service Unavailable",
+          "expected": null,
+          "excerpt": "HTTP 503 Service Unavailable"
+        }
+      ]
+    },
+    {
+      "id": "anm_00000000000000000000000000000002",
+      "type": "excessive_retries",
+      "severity": "medium",
+      "status": "resolved",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "execution_id": "exe_00000000000000000000000000000063",
+      "detected_at": "2026-11-13T06:00:12.535Z",
+      "rule_id": "excessive_retries.v1",
+      "title": "2 retried steps, highest attempt 3",
+      "explanation": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5.",
+      "evidence": [
+        {
+          "kind": "step",
+          "label": "Step 4 fetch_tickets (attempt 3) is a retry",
+          "ref_id": "stp_00000000000000000000000000006304",
+          "field": "attempt",
+          "observed": 3,
+          "expected": "below 3",
+          "excerpt": null
+        },
+        {
+          "kind": "step",
+          "label": "Step 3 fetch_tickets (attempt 2) is a retry",
+          "ref_id": "stp_00000000000000000000000000006303",
+          "field": "attempt",
+          "observed": 2,
+          "expected": "below 3",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 9
+}

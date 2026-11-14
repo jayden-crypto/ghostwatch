@@ -1,0 +1,176 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000063001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T06:00:00.448Z",
+      "received_at": "2026-11-13T06:00:00.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006301",
+        "parent_step_id": null,
+        "name": "load_schedule",
+        "step_type": "input",
+        "input": {
+          "trigger": "cron",
+          "schedule": "0 */6 * * *"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T06:00:00.450Z",
+      "received_at": "2026-11-13T06:00:00.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006301",
+        "output": {
+          "since": "2026-11-13T00:00:00.447Z",
+          "until": "2026-11-13T06:00:00.447Z"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T06:00:00.451Z",
+      "received_at": "2026-11-13T06:00:00.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006302",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-13T00:00:00.447Z",
+          "until": "2026-11-13T06:00:00.447Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063004",
+      "seq": 4,
+      "type": "step.failed",
+      "timestamp": "2026-11-13T06:00:03.500Z",
+      "received_at": "2026-11-13T06:00:03.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006302",
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP 503 Service Unavailable",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T06:00:04.501Z",
+      "received_at": "2026-11-13T06:00:04.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006303",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-13T00:00:00.447Z",
+          "until": "2026-11-13T06:00:00.447Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 2,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063006",
+      "seq": 6,
+      "type": "step.failed",
+      "timestamp": "2026-11-13T06:00:07.523Z",
+      "received_at": "2026-11-13T06:00:07.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006303",
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP 503 Service Unavailable",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-13T06:00:09.524Z",
+      "received_at": "2026-11-13T06:00:09.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006304",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-13T00:00:00.447Z",
+          "until": "2026-11-13T06:00:00.447Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 3,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063008",
+      "seq": 8,
+      "type": "step.failed",
+      "timestamp": "2026-11-13T06:00:12.534Z",
+      "received_at": "2026-11-13T06:00:12.956Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006304",
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP 503 Service Unavailable",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000063009",
+      "seq": 9,
+      "type": "execution.failed",
+      "timestamp": "2026-11-13T06:00:12.535Z",
+      "received_at": "2026-11-13T06:00:12.956Z",
+      "payload": {
+        "error": {
+          "type": "HTTPError",
+          "message": "HTTP 503 Service Unavailable",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}
