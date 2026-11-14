@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main, jayden/backend, adit/frontend]
+  pull_request:
+
+jobs:
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ghostwatch
+          POSTGRES_PASSWORD: ghostwatch
+          POSTGRES_DB: ghostwatch_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ghostwatch -d ghostwatch_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://ghostwatch:ghostwatch@localhost:5432/ghostwatch_test
+      GHOSTWATCH_API_KEY: ci-ingest-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+
+  # Owned by Adit: replace this stub with install, typecheck, lint and tests in F1.
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Frontend CI is not implemented yet (see issue F1)."
