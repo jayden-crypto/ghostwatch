@@ -13,9 +13,10 @@ from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.db import new_session
+from app.db import new_session, session_scope
 from app.models import Execution
 from app.services import ingest
+from app.services.investigation import engine as investigation_engine
 from app.timeutil import milliseconds_between, utcnow
 
 logger = logging.getLogger("ghostwatch")
@@ -45,6 +46,9 @@ def sweep_stale_executions(session: Session, now: datetime | None = None) -> int
 def _sweep_once() -> None:
     with new_session() as session:
         sweep_stale_executions(session)
+    # Timing an execution out queues its investigation. Running queued ones here also picks up any
+    # that were queued just before a restart.
+    investigation_engine.run_queued(session_scope)
 
 
 async def run_sweeper(

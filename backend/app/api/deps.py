@@ -1,17 +1,27 @@
 """Dependencies shared by the API routers."""
 
 import secrets
+from collections.abc import Callable
+from contextlib import AbstractContextManager
 from typing import Annotated
 
 from fastapi import Depends, Header, Query
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
-from app.db import get_session
+from app.db import get_session, session_scope
 from app.errors import ApiError
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 SessionDep = Annotated[Session, Depends(get_session)]
+
+
+def get_session_factory() -> Callable[[], AbstractContextManager[Session]]:
+    """How background tasks get a session of their own, after the request's session is gone."""
+    return session_scope
+
+
+SessionFactoryDep = Annotated[Callable[[], AbstractContextManager[Session]], Depends(get_session_factory)]
 
 
 def require_api_key(settings: SettingsDep, authorization: Annotated[str | None, Header()] = None) -> None:

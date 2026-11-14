@@ -4,6 +4,7 @@
 events of a batch inside the same transaction that stores them, so they can never disagree.
 """
 
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
@@ -16,7 +17,8 @@ from app.models import Event, Execution, Step
 from app.schemas import events as schemas
 from app.services.anomaly import engine as anomaly_engine
 from app.services.anomaly.rules import StaleInfo
-from app.services.anomaly.thresholds import DEFAULT_TIMEOUT_MS
+from app.services.anomaly.thresholds import DEFAULT_TIMEOUT_MS, SEVERITY_RANK
+from app.services.investigation import engine as investigation_engine
 from app.services.payloads import cap_error, cap_text, truncate_json
 from app.timeutil import milliseconds_between, utcnow
 
@@ -28,9 +30,13 @@ TERMINAL_EVENT_STATUS = {
 _STEP_PAYLOADS = (schemas.StepStartedPayload, schemas.StepCompletedPayload, schemas.StepFailedPayload)
 
 
-def ingest_events(
-    session: Session, execution_id: str, events: list[schemas.IngestEvent]
-) -> schemas.IngestResponse:
+@dataclass(frozen=True)
+class IngestResult:
+    response: schemas.IngestResponse
+    investigation_id: str | None  # queued by this batch; the caller runs it after the response
+
+
+def ingest_events(session: Session, execution_id: str, events: list[schemas.IngestEvent]) -> IngestResult:
     # The savepoint makes the batch all-or-nothing: a rejected event leaves nothing behind.
     with session.begin_nested():
         # Locking the execution row serialises concurrent batches for the same execution, which
@@ -45,15 +51,14 @@ def ingest_events(
             raise not_found("Execution", execution_id)
 
         new_events = _new_events_in_seq_order(session, execution_id, events)
-        if new_events:
-            _apply(session, execution, new_events)
+        investigation_id = _apply(session, execution, new_events) if new_events else None
         response = schemas.IngestResponse(
             accepted=len(new_events),
             duplicates=len(events) - len(new_events),
             execution_status=execution.status,
         )
     session.commit()
-    return response
+    return IngestResult(response, investigation_id)
 
 
 def _new_events_in_seq_order(
@@ -119,8 +124,10 @@ def _apply(
     new_events: list[tuple[int, schemas.IngestEvent]],
     *,
     stale: StaleInfo | None = None,
-) -> None:
+) -> str | None:
+    """Store and apply the events. Returns the id of the investigation a terminal event queued, if any."""
     received_at = utcnow()
+    investigation_id = None
     referenced = {
         event.payload.step_id for _, event in new_events if isinstance(event.payload, _STEP_PAYLOADS)
     }
@@ -151,9 +158,10 @@ def _apply(
         elif isinstance(event, schemas.StepCompleted | schemas.StepFailed):
             _end_step(execution, known_steps, index, event, payload)
         elif event.type in TERMINAL_EVENT_STATUS:
-            _finalize(session, execution, event, payload, stale)
+            investigation_id = _finalize(session, execution, event, payload, stale)
 
     execution.last_event_at = received_at
+    return investigation_id
 
 
 def _stored_payload(event: schemas.IngestEvent) -> dict[str, Any]:
@@ -248,7 +256,7 @@ def _finalize(
     event: schemas.IngestEvent,
     payload: dict[str, Any],
     stale: StaleInfo | None,
-) -> None:
+) -> str | None:
     """Apply a terminal event: status, end time, duration and token totals, then run the anomaly rules."""
     execution.status = TERMINAL_EVENT_STATUS[event.type]
     execution.ended_at = event.timestamp
@@ -267,7 +275,16 @@ def _finalize(
         )
     ).one()
 
-    anomaly_engine.evaluate(session, execution, stale=stale)
+    raised = anomaly_engine.evaluate(session, execution, stale=stale)
+
+    # Contract §5 rule 5: investigate every failure, and every run with an anomaly of high severity or above.
+    if execution.status in ("failed", "timed_out"):
+        trigger = "auto_failure"
+    elif any(SEVERITY_RANK[anomaly.severity] >= SEVERITY_RANK["high"] for anomaly in raised):
+        trigger = "auto_anomaly"
+    else:
+        return None
+    return investigation_engine.queue(session, execution, trigger).id
 
 
 def _timeout_error(duration_ms: int) -> dict[str, Any]:

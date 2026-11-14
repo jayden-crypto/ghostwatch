@@ -499,7 +499,7 @@ def test_concurrent_identical_batches_are_stored_once(migrated_database: None) -
             thread.start()
         for thread in threads:
             thread.join(timeout=30)
-        assert sorted((result.accepted, result.duplicates) for result in results) == [
+        assert sorted((result.response.accepted, result.response.duplicates) for result in results) == [
             (0, 40),
             (0, 40),
             (0, 40),

@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     llm_provider: Literal["fable", "rule_based"] = "rule_based"
     anthropic_api_key: str = ""
     llm_model: str = "claude-fable-5-2"
+    llm_timeout_seconds: float = 60
 
     sweeper_interval_seconds: float = 30
 

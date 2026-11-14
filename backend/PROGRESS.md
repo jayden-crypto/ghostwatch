@@ -1,32 +1,41 @@
-# Backend progress — updated 2026-11-14T14:14Z
+# Backend progress — updated 2026-11-14T17:10Z
 
-## Status: B1–B7 and B15 done and green in CI (249 tests). Backend is ready for SYNC 1, about T+2 into the schedule. Not yet run locally against Postgres: Docker is still not installed on Jayden's machine.
+## Status: all backend P0 code is written: B1–B11 and B15, plus B9 (investigations). 409 backend tests pass locally on docker compose Postgres; SDK 22; demo lint clean. B16 (docs) and P1 (B12–B14) not started. CI for the B9 commit was not checked before the session ended.
 
-## Live endpoints (implemented + tested against the contract, in CI against Postgres 16)
+## Live endpoints (implemented + tested against the contract)
 - GET /health
 - POST /agents 🔑, GET /agents, GET /agents/{agent_id}
-- POST /executions 🔑, GET /executions (all filters, sort, pagination), GET /executions/{execution_id}
-- POST /executions/{execution_id}/events 🔑
-- GET /executions/{execution_id}/trace, GET /executions/{execution_id}/events
+- POST /executions 🔑, GET /executions, GET /executions/{execution_id}
+- POST /executions/{execution_id}/events 🔑, GET /executions/{execution_id}/trace, GET /executions/{execution_id}/events
 - GET /stats/overview, GET /stats/timeseries
+- GET /anomalies, GET /anomalies/{anomaly_id}
+- POST /investigations/{execution_id}, GET /investigations/{execution_id}, GET /investigations
 
-Not implemented yet (unrouted, so they return the 404 envelope): /anomalies*, /investigations*, /replays*, POST /executions/{id}/replay.
+Not implemented (404 envelope): PATCH /anomalies/{id}, /replays*, POST /executions/{id}/replay.
 
 ## In progress
-- nothing
+- nothing mid-edit. First thing next session: check the CI run of the latest commit on jayden/backend.
 
-## Next up (dependency order; issue numbers in brackets)
-- B10 SDK core (#11) → B8 anomaly engine (#12) → B11 demo (#13) → B9 investigations (#14) → B16 docs (#15) → SYNC 2 (#33)
-- P1 from T+30: B12 (#16) → B13 (#17) → B14 (#18), plus `PATCH /anomalies/{id}`
-- B5's terminal path still has to call the anomaly engine (B8), queue the auto-investigation (B9) and price the run (B14). Until then: no anomalies are raised, no investigation is queued, `cost_usd` is null.
+## Next up
+- B16 docs/API.md + OpenAPI descriptions (#15), then SYNC 2 (#33)
+- P1: B12 replay API (#16), B13 SDK sandbox replay + worker (#17), B14 cost (#18), PATCH /anomalies/{id}
+- Not yet done for B9: a live call to the real Fable API (needs ANTHROPIC_API_KEY in .env and LLM_PROVIDER=fable). The provider is tested only with a fake client.
 
-## Open before SYNC 1 can actually happen
-- **Docker** on Jayden's machine. Without it nobody can run the backend locally for Adit to point at, and I have not done a real-HTTP smoke test of B3–B7 (only the in-process test client in CI).
-- **X1 fixtures (#2)**: nothing pushed yet; Adit has not accepted the collaborator invite. The fixture conformance test skips until `contract/fixtures/` has files, then fails on any fixture that does not validate or is not mapped in `backend/tests/fixture_map.py`.
+## How to run
+- `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app`
+- Seed: `cd demo && uv run python seed.py` (add `--all` for the two failures; `--append` if data exists)
+- Scenarios: `cd demo && uv run python run_scenario.py list`
+- Smoke test against a running server: `cd backend && uv run python -m scripts.smoke`
+- Tests: `cd backend && uv run pytest -q`; `cd sdk/python && uv run pytest -q`
+- `docker` lives at ~/.docker/bin and is not on PATH in non-login shells on Jayden's machine.
 
-## How verification works right now
-- Database tests are skipped locally (no Postgres) and run in the CI `backend` job. Each commit was pushed and its CI run checked: B1 13 tests, B2 37, B3 73, B4 103, B5 136, B6 153, B7 168, B15 249 passed (2 skipped: fixture tests).
-- `filterwarnings = error`: a deprecation in our code fails the suite.
+## Investigations (B9) in brief → Adit
+- Auto-queued in the ingest transaction on failed/timed_out (auto_failure) or an anomaly of high or above (auto_anomaly); runs as a background task. The sweeper also runs any still-queued ones.
+- `confirmed` only from a signature: missing_key_in_upstream_output, retry_exhaustion, tool_http_error, timeout_in_step, ghost_completion. With rule_based and no matching signature the root cause is `insufficient_evidence`; an LLM hypothesis is at most `probable`.
+- `summary` is a deterministic template. `provider` is `fable` only when the model's answer was used; on any LLM failure it is `rule_based` and `evidence_gaps` says why.
+- POST returns 202 with the in-flight investigation if one is queued or running, 200 with the completed one unless `force`, 409 while the execution is running.
+- Fable requests use structured outputs and opt into the server-side refusal fallback; `model` is the model that actually answered.
+- The local dev database holds smoke-test and demo runs from verification; reset with `docker compose down -v` before seeding for the demo.
 
 ## Decisions (ambiguities resolved; "→ Adit" marks ones the frontend should know about)
 - **Contract v1.1** (on main): agent-level anomalies carry the most recent related execution in `execution_id`; null only if none exists → Adit.

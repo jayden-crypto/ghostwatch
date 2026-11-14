@@ -1,5 +1,6 @@
 """Shared fixtures. The app under test always talks to the test database, never the dev one."""
 
+import contextlib
 import os
 import socket
 import threading
@@ -22,6 +23,7 @@ from sqlalchemy import text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
+from app.api.deps import get_session_factory  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import get_engine, get_session  # noqa: E402
 from app.main import create_app  # noqa: E402
@@ -88,6 +90,8 @@ def client(app: FastAPI) -> TestClient:
 def db_client(app: FastAPI, db_session: Session) -> TestClient:
     """A client whose requests use the test's rolled-back session."""
     app.dependency_overrides[get_session] = lambda: db_session
+    # Background tasks (investigations) see the same uncommitted test data.
+    app.dependency_overrides[get_session_factory] = lambda: lambda: contextlib.nullcontext(db_session)
     return TestClient(app, raise_server_exceptions=False)
 
 

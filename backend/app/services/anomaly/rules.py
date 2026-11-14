@@ -14,6 +14,7 @@ from typing import Any
 from app.models import Execution, Step
 from app.services.anomaly import thresholds as t
 from app.services.anomaly.baseline import Baseline, RecentRun
+from app.services.evidence import evidence_item as _evidence
 from app.services.executions import tokens_total
 from app.timeutil import format_timestamp
 
@@ -48,27 +49,6 @@ class RuleInput:
     recent_runs: Sequence[RecentRun]  # newest first; the first one is this execution
     agent_slug: str
     stale: StaleInfo | None = None
-
-
-def _evidence(
-    kind: str,
-    label: str,
-    *,
-    ref_id: str | None = None,
-    field: str | None = None,
-    observed: Any = None,
-    expected: Any = None,
-    excerpt: str | None = None,
-) -> dict[str, Any]:
-    return {
-        "kind": kind,
-        "label": label,
-        "ref_id": ref_id,
-        "field": field,
-        "observed": observed,
-        "expected": expected,
-        "excerpt": None if excerpt is None else excerpt[:500],
-    }
 
 
 def _number(value: float) -> str:

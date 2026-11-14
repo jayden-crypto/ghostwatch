@@ -5,6 +5,7 @@ SDK. The demo never touches the database.
 """
 
 import importlib
+import json
 import re
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
@@ -17,6 +18,7 @@ from app.schemas.agents import Agent
 from app.schemas.anomalies import Anomaly
 from app.schemas.common import Page
 from app.schemas.executions import ExecutionSummary
+from app.schemas.investigations import Investigation
 from app.schemas.stats import StatsTimeseries
 from app.schemas.traces import Trace
 from tests.test_conformance import validate
@@ -127,6 +129,26 @@ def test_schema_change_scenario_fails_on_the_missing_key(demo: SimpleNamespace) 
     assert sorted(search.output) == ["data", "meta"]
     assert (parse.name, parse.error.type, parse.error.message) == ("parse_results", "KeyError", "'results'")
     assert 'payload["results"]' in parse.error.stacktrace
+
+    # Ghostwatch investigates the failure on its own and confirms the root cause from the evidence.
+    investigation = demo.run_scenario.wait_for_investigation(result.execution.id)
+    validate(Investigation, json.dumps(investigation))
+    assert (investigation["status"], investigation["trigger"], investigation["provider"]) == (
+        "completed",
+        "auto_failure",
+        "rule_based",
+    )
+    report = investigation["report"]
+    assert (report["root_cause"]["status"], report["root_cause"]["signature"]) == (
+        "confirmed",
+        "missing_key_in_upstream_output",
+    )
+    assert report["root_cause"]["statement"] == (
+        "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) "
+        "does not contain. That output's keys are: data, meta."
+    )
+    assert report["failing_step_id"] == parse.id
+    assert report["relevant_step_ids"] == [search.id, parse.id]  # one click from the claim to the proof
     assert plan.output == {"query": "how do teams trace what an ai agent did"}
 
 
@@ -154,8 +176,16 @@ def test_ghost_invoice_scenario_reports_success_without_submitting(
     assert healthy_steps[2].metadata == {"side_effects": True}
     assert trace_of(demo, healthy.execution.id).anomalies == []
 
+    investigation = demo.run_scenario.wait_for_investigation(result.execution.id)
+    assert (investigation["trigger"], investigation["report"]["root_cause"]["signature"]) == (
+        "auto_anomaly",
+        "ghost_completion",
+    )
+    assert investigation["report"]["root_cause"]["status"] == "confirmed"
+
     demo.run_scenario.report(result)
     printed = capsys.readouterr().out
+    assert "investigation: confirmed (signature ghost_completion), provider rule_based" in printed
     assert "Agent result : returned {'status': 'processed'" in printed
     assert "[critical] ghost_completion" in printed
     assert f"/executions/{result.execution.id}" in printed

@@ -8,6 +8,7 @@ strict JSON. Exits non-zero on the first mismatch. It writes real rows to the se
 """
 
 import sys
+import time
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -22,6 +23,7 @@ from app.schemas.common import ErrorEnvelope, Page
 from app.schemas.events import IngestResponse, StoredEvent
 from app.schemas.executions import ExecutionDetail, ExecutionSummary
 from app.schemas.health import Health
+from app.schemas.investigations import Investigation
 from app.schemas.stats import StatsOverview, StatsTimeseries
 from app.schemas.traces import Trace
 from app.timeutil import format_timestamp
@@ -336,6 +338,29 @@ def main() -> int:
     )
     assert all(anomaly.execution_id == execution.id and anomaly.evidence for anomaly in anomalies.items)
     assert len(anomalies.items) == detail.anomaly_count, (len(anomalies.items), detail.anomaly_count)
+
+    # A failed execution is investigated automatically, in the background.
+    investigation_url = f"/investigations/{execution.id}"
+    for _ in range(40):
+        if client.get(investigation_url).json().get("status") not in ("queued", "running"):
+            break
+        time.sleep(0.25)
+    investigation = check(
+        "GET /investigations/{execution_id}", client.get(investigation_url), 200, Investigation
+    )
+    assert (investigation.status, investigation.trigger) == ("completed", "auto_failure"), investigation
+    assert investigation.report.failing_step_id == trace.steps[3].id, investigation.report
+    assert investigation.report.facts and all(fact.evidence for fact in investigation.report.facts)
+    check(
+        "GET /investigations?status=completed",
+        client.get("/investigations", params={"status": "completed"}),
+        200,
+        Page[Investigation],
+    )
+    again = check(
+        "POST /investigations/{execution_id} again", client.post(investigation_url), 200, Investigation
+    )
+    assert again.id == investigation.id
 
     check(
         "GET unknown execution",

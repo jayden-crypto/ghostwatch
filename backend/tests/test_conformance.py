@@ -313,6 +313,10 @@ def test_live_responses_validate_against_the_contract(
         "/api/v1/executions?status=running": Page[ExecutionSummary],  # an empty page
         f"/api/v1/executions/{execution.id}/trace": Trace,
         f"/api/v1/executions/{execution.id}/events": Page[StoredEvent],
+        f"/api/v1/investigations/{execution.id}": Investigation,
+        "/api/v1/investigations": Page[Investigation],
+        f"/api/v1/investigations?status=completed&agent_id={agent.id}": Page[Investigation],
+        "/api/v1/investigations?status=failed": Page[Investigation],  # an empty page
         "/api/v1/anomalies": Page[Anomaly],
         f"/api/v1/anomalies?execution_id={execution.id}&severity=medium,high&status=open": Page[Anomaly],
         "/api/v1/anomalies?type=ghost_completion": Page[Anomaly],  # an empty page
@@ -343,6 +347,8 @@ def test_live_responses_validate_against_the_contract(
         (client.get("/api/v1/executions?status=nope"), 422),
         (post_events(client, auth, execution.id, [ev.step_started(7, new_step_id(), 400)]), 409),
         (post_events(client, auth, execution.id, []), 422),
+        (client.get("/api/v1/investigations/exe_" + "0" * 32), 404),
+        (client.post("/api/v1/investigations/exe_" + "0" * 32), 404),
         (client.delete("/api/v1/health"), 405),
     ]
     for response, status in errors:
