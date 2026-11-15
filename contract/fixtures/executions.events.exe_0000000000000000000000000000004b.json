@@ -17,7 +17,9 @@
         "tool_name": null,
         "model": "demo-llm-1",
         "attempt": 1,
-        "metadata": {}
+        "metadata": {
+          "replay_source": "executed"
+        }
       }
     },
     {
@@ -58,7 +60,8 @@
         "model": null,
         "attempt": 1,
         "metadata": {
-          "side_effects": false
+          "side_effects": false,
+          "replay_source": "executed"
         }
       }
     },
@@ -108,7 +111,9 @@
         "tool_name": null,
         "model": "demo-llm-1",
         "attempt": 1,
-        "metadata": {}
+        "metadata": {
+          "replay_source": "executed"
+        }
       }
     },
     {

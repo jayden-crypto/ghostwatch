@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "id": "inv_0000000000000000000000000000000a",
+      "id": "inv_0000000000000000000000000000000b",
       "execution_id": "exe_00000000000000000000000000000029",
       "trigger": "auto_failure",
       "created_at": "2026-11-14T17:52:06.989Z",
@@ -149,7 +149,7 @@
       }
     },
     {
-      "id": "inv_00000000000000000000000000000009",
+      "id": "inv_0000000000000000000000000000000a",
       "execution_id": "exe_0000000000000000000000000000000b",
       "trigger": "auto_failure",
       "created_at": "2026-11-14T17:34:02.164Z",
@@ -313,7 +313,7 @@
       }
     },
     {
-      "id": "inv_00000000000000000000000000000008",
+      "id": "inv_00000000000000000000000000000009",
       "execution_id": "exe_00000000000000000000000000000028",
       "trigger": "auto_anomaly",
       "created_at": "2026-11-14T17:28:40.404Z",
@@ -495,7 +495,7 @@
       }
     },
     {
-      "id": "inv_00000000000000000000000000000007",
+      "id": "inv_00000000000000000000000000000008",
       "execution_id": "exe_0000000000000000000000000000000a",
       "trigger": "auto_failure",
       "created_at": "2026-11-14T17:20:14.991Z",
@@ -679,14 +679,196 @@
       }
     },
     {
-      "id": "inv_00000000000000000000000000000006",
-      "execution_id": "exe_00000000000000000000000000000069",
+      "id": "inv_00000000000000000000000000000007",
+      "execution_id": "exe_0000000000000000000000000000006a",
       "trigger": "auto_failure",
-      "created_at": "2026-11-14T14:20:11.109Z",
+      "created_at": "2026-11-14T14:41:41.754Z",
       "status": "completed",
       "provider": "rule_based",
       "model": null,
-      "completed_at": "2026-11-14T14:20:11.273Z",
+      "completed_at": "2026-11-14T14:41:41.918Z",
+      "error": null,
+      "report": {
+        "summary": "The execution failed at Step 6 send_digest with SandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay. The recorded evidence is not sufficient to determine a root cause.",
+        "failing_step_id": "stp_00000000000000000000000000006a06",
+        "root_cause": {
+          "status": "insufficient_evidence",
+          "statement": "No deterministic signature matched this execution and no supported hypothesis is available, so the recorded evidence is not sufficient to name a root cause.",
+          "hypothesis_id": null,
+          "signature": null
+        },
+        "facts": [
+          {
+            "id": "F1",
+            "statement": "Execution of ticket-digest ended with status failed after 4802 ms and 6 steps.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Final status of the execution",
+                "ref_id": "exe_0000000000000000000000000000006a",
+                "field": "status",
+                "observed": "failed",
+                "expected": null,
+                "excerpt": null
+              }
+            ]
+          },
+          {
+            "id": "F2",
+            "statement": "The execution ended with the error SandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Terminal error of the execution",
+                "ref_id": "exe_0000000000000000000000000000006a",
+                "field": "error.message",
+                "observed": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+                "expected": null,
+                "excerpt": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay"
+              }
+            ]
+          },
+          {
+            "id": "F3",
+            "statement": "Step 6 send_digest failed with SandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Error raised in Step 6 send_digest",
+                "ref_id": "stp_00000000000000000000000000006a06",
+                "field": "error.message",
+                "observed": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+                "expected": null,
+                "excerpt": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay"
+              },
+              {
+                "kind": "step",
+                "label": "End of the stack trace of Step 6 send_digest",
+                "ref_id": "stp_00000000000000000000000000006a06",
+                "field": "error.stacktrace",
+                "observed": "SandboxRecordingMissing",
+                "expected": null,
+                "excerpt": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+              }
+            ]
+          },
+          {
+            "id": "F4",
+            "statement": "Step 2 fetch_tickets (retrieval, completed) returned an object with keys: count, first_ticket_ids, pages.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 2 fetch_tickets",
+                "ref_id": "stp_00000000000000000000000000006a02",
+                "field": "output",
+                "observed": [
+                  "count",
+                  "first_ticket_ids",
+                  "pages"
+                ],
+                "expected": null,
+                "excerpt": "{\"count\":29,\"pages\":2,\"first_ticket_ids\":[\"TCK-88412\",\"TCK-88413\",\"TCK-88415\"]}"
+              }
+            ]
+          },
+          {
+            "id": "F5",
+            "statement": "Step 3 summarize (reasoning, completed) returned an object with keys: batches, summary_chars.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 3 summarize",
+                "ref_id": "stp_00000000000000000000000000006a03",
+                "field": "output",
+                "observed": [
+                  "batches",
+                  "summary_chars"
+                ],
+                "expected": null,
+                "excerpt": "{\"batches\":2,\"summary_chars\":241}"
+              }
+            ]
+          },
+          {
+            "id": "F6",
+            "statement": "Step 4 summarize_batch (llm_call, completed) returned an object with keys: text, usage.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 4 summarize_batch",
+                "ref_id": "stp_00000000000000000000000000006a04",
+                "field": "output",
+                "observed": [
+                  "text",
+                  "usage"
+                ],
+                "expected": null,
+                "excerpt": "{\"text\":\"Batch 1: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.\",\"usage\":{\"input_tokens\":2070,\"output_tokens\":31}}"
+              }
+            ]
+          },
+          {
+            "id": "F7",
+            "statement": "Step 5 summarize_batch (llm_call, completed) returned an object with keys: text, usage.",
+            "evidence": [
+              {
+                "kind": "step",
+                "label": "Output of Step 5 summarize_batch",
+                "ref_id": "stp_00000000000000000000000000006a05",
+                "field": "output",
+                "observed": [
+                  "text",
+                  "usage"
+                ],
+                "expected": null,
+                "excerpt": "{\"text\":\"Batch 2: 9 tickets. Most are billing questions about duplicate charges; 2 report login problems after a password change.\",\"usage\":{\"input_tokens\":955,\"output_tokens\":30}}"
+              }
+            ]
+          },
+          {
+            "id": "F8",
+            "statement": "The execution is configured to expect these steps to complete: fetch_tickets, summarize, send_digest. Steps that completed: load_schedule, fetch_tickets, summarize, summarize_batch. Expected steps that did not complete: send_digest.",
+            "evidence": [
+              {
+                "kind": "execution",
+                "label": "Expected steps compared with completed steps",
+                "ref_id": "exe_0000000000000000000000000000006a",
+                "field": "config.expected_steps",
+                "observed": [
+                  "load_schedule",
+                  "fetch_tickets",
+                  "summarize",
+                  "summarize_batch"
+                ],
+                "expected": [
+                  "fetch_tickets",
+                  "summarize",
+                  "send_digest"
+                ],
+                "excerpt": null
+              }
+            ]
+          }
+        ],
+        "hypotheses": [],
+        "recommendations": [],
+        "evidence_gaps": [
+          "Only 4 completed baseline run(s) exist for ticket-digest; at least 5 are needed to compare this execution with normal behaviour."
+        ],
+        "relevant_step_ids": [
+          "stp_00000000000000000000000000006a06"
+        ]
+      }
+    },
+    {
+      "id": "inv_00000000000000000000000000000006",
+      "execution_id": "exe_00000000000000000000000000000069",
+      "trigger": "auto_failure",
+      "created_at": "2026-11-14T14:20:23.157Z",
+      "status": "completed",
+      "provider": "rule_based",
+      "model": null,
+      "completed_at": "2026-11-14T14:20:23.321Z",
       "error": null,
       "report": {
         "summary": "The execution failed at Step 4 fetch_tickets (attempt 3) with HTTPError: HTTP 503 Service Unavailable. The root cause is confirmed by the deterministic signature retry_exhaustion.",
@@ -700,7 +882,7 @@
         "facts": [
           {
             "id": "F1",
-            "statement": "Execution of ticket-digest ended with status failed after 13 ms and 4 steps.",
+            "statement": "Execution of ticket-digest ended with status failed after 12061 ms and 4 steps.",
             "evidence": [
               {
                 "kind": "execution",
@@ -1835,7 +2017,7 @@
       "report": null
     }
   ],
-  "total": 10,
+  "total": 11,
   "limit": 50,
   "offset": 0
 }

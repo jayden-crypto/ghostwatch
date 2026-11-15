@@ -146,30 +146,34 @@
       "created_at": "2026-11-12T17:42:10.006Z",
       "stats": {
         "total_executions": 10,
-        "completed": 5,
-        "failed": 2,
+        "completed": 4,
+        "failed": 3,
         "timed_out": 3,
         "running": 0,
-        "success_rate": 0.5,
-        "avg_duration_ms": 44715,
+        "success_rate": 0.4,
+        "avg_duration_ms": 46005,
         "open_anomalies": 5,
         "last_execution": {
           "id": "exe_0000000000000000000000000000006a",
           "agent_id": "agt_00000000000000000000000000000004",
           "agent_name": "Ticket Digest",
-          "status": "completed",
+          "status": "failed",
           "started_at": "2026-11-14T14:41:36.914Z",
-          "ended_at": "2026-11-14T14:41:40.865Z",
-          "duration_ms": 3951,
-          "step_count": 7,
-          "tokens_total": 3020,
-          "cost_usd": 0.003264,
+          "ended_at": "2026-11-14T14:41:41.716Z",
+          "duration_ms": 4802,
+          "step_count": 6,
+          "tokens_total": 3086,
+          "cost_usd": 0.000333,
           "anomaly_count": 0,
-          "has_investigation": false,
+          "has_investigation": true,
           "replay_of": "exe_00000000000000000000000000000068",
-          "error": null
+          "error": {
+            "type": "SandboxRecordingMissing",
+            "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+          }
         },
-        "health": "degraded"
+        "health": "failing"
       }
     }
   ],

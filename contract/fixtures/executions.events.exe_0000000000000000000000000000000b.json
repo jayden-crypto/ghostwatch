@@ -17,7 +17,9 @@
         "tool_name": null,
         "model": null,
         "attempt": 1,
-        "metadata": {}
+        "metadata": {
+          "replay_source": "executed"
+        }
       }
     },
     {
@@ -55,7 +57,8 @@
         "model": null,
         "attempt": 1,
         "metadata": {
-          "side_effects": false
+          "side_effects": false,
+          "replay_source": "recorded"
         }
       }
     },
@@ -115,7 +118,9 @@
         "tool_name": null,
         "model": null,
         "attempt": 1,
-        "metadata": {}
+        "metadata": {
+          "replay_source": "executed"
+        }
       }
     },
     {

@@ -89,7 +89,8 @@
             "replay_step_id": "stp_00000000000000000000000000002901",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -98,7 +99,8 @@
             "replay_step_id": "stp_00000000000000000000000000002902",
             "change": "status_changed",
             "original_status": "completed",
-            "replay_status": "failed"
+            "replay_status": "failed",
+            "replay_source": "executed"
           }
         ]
       }
@@ -164,7 +166,8 @@
             "replay_step_id": "stp_00000000000000000000000000000c01",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -173,7 +176,8 @@
             "replay_step_id": "stp_00000000000000000000000000000c02",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "recorded"
           },
           {
             "ordinal": 3,
@@ -182,7 +186,8 @@
             "replay_step_id": "stp_00000000000000000000000000000c03",
             "change": "status_changed",
             "original_status": "failed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 4,
@@ -191,7 +196,8 @@
             "replay_step_id": "stp_00000000000000000000000000000c04",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           }
         ]
       }
@@ -261,7 +267,8 @@
             "replay_step_id": "stp_00000000000000000000000000000b01",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -270,7 +277,8 @@
             "replay_step_id": "stp_00000000000000000000000000000b02",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "recorded"
           },
           {
             "ordinal": 3,
@@ -279,7 +287,8 @@
             "replay_step_id": "stp_00000000000000000000000000000b03",
             "change": "unchanged",
             "original_status": "failed",
-            "replay_status": "failed"
+            "replay_status": "failed",
+            "replay_source": "executed"
           }
         ]
       }
@@ -294,7 +303,7 @@
       "note": null,
       "requested_at": "2026-11-14T14:41:34.654Z",
       "claimed_at": "2026-11-14T14:41:36.544Z",
-      "completed_at": "2026-11-14T14:41:40.889Z",
+      "completed_at": "2026-11-14T14:41:41.740Z",
       "error": null,
       "comparison": {
         "original": {
@@ -321,22 +330,26 @@
           "id": "exe_0000000000000000000000000000006a",
           "agent_id": "agt_00000000000000000000000000000004",
           "agent_name": "Ticket Digest",
-          "status": "completed",
+          "status": "failed",
           "started_at": "2026-11-14T14:41:36.914Z",
-          "ended_at": "2026-11-14T14:41:40.865Z",
-          "duration_ms": 3951,
-          "step_count": 7,
-          "tokens_total": 3020,
-          "cost_usd": 0.003264,
+          "ended_at": "2026-11-14T14:41:41.716Z",
+          "duration_ms": 4802,
+          "step_count": 6,
+          "tokens_total": 3086,
+          "cost_usd": 0.000333,
           "anomaly_count": 0,
-          "has_investigation": false,
+          "has_investigation": true,
           "replay_of": "exe_00000000000000000000000000000068",
-          "error": null
+          "error": {
+            "type": "SandboxRecordingMissing",
+            "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+          }
         },
         "outcome": "inconclusive",
-        "duration_delta_ms": -137698,
+        "duration_delta_ms": -136847,
         "tokens_delta": null,
-        "step_count_delta": 5,
+        "step_count_delta": 4,
         "step_diffs": [
           {
             "ordinal": 1,
@@ -345,7 +358,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a01",
             "change": "output_changed",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -354,7 +368,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a02",
             "change": "status_changed",
             "original_status": "running",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 3,
@@ -363,7 +378,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a03",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 4,
@@ -372,7 +388,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a04",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 5,
@@ -381,7 +398,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a05",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 6,
@@ -390,16 +408,8 @@
             "replay_step_id": "stp_00000000000000000000000000006a06",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
-          },
-          {
-            "ordinal": 7,
-            "name": "report",
-            "original_step_id": null,
-            "replay_step_id": "stp_00000000000000000000000000006a07",
-            "change": "added",
-            "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "failed",
+            "replay_source": "blocked"
           }
         ]
       }
@@ -414,7 +424,7 @@
       "note": null,
       "requested_at": "2026-11-14T14:20:09.208Z",
       "claimed_at": "2026-11-14T14:20:10.608Z",
-      "completed_at": "2026-11-14T14:20:11.095Z",
+      "completed_at": "2026-11-14T14:20:23.143Z",
       "error": null,
       "comparison": {
         "original": {
@@ -443,8 +453,8 @@
           "agent_name": "Ticket Digest",
           "status": "failed",
           "started_at": "2026-11-14T14:20:11.058Z",
-          "ended_at": "2026-11-14T14:20:11.071Z",
-          "duration_ms": 13,
+          "ended_at": "2026-11-14T14:20:23.119Z",
+          "duration_ms": 12061,
           "step_count": 4,
           "tokens_total": null,
           "cost_usd": null,
@@ -458,7 +468,7 @@
           }
         },
         "outcome": "same_failure",
-        "duration_delta_ms": -12075,
+        "duration_delta_ms": -27,
         "tokens_delta": null,
         "step_count_delta": 0,
         "step_diffs": [
@@ -469,7 +479,8 @@
             "replay_step_id": "stp_00000000000000000000000000006901",
             "change": "output_changed",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -478,7 +489,8 @@
             "replay_step_id": "stp_00000000000000000000000000006902",
             "change": "unchanged",
             "original_status": "failed",
-            "replay_status": "failed"
+            "replay_status": "failed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 3,
@@ -487,7 +499,8 @@
             "replay_step_id": "stp_00000000000000000000000000006903",
             "change": "unchanged",
             "original_status": "failed",
-            "replay_status": "failed"
+            "replay_status": "failed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 4,
@@ -496,7 +509,8 @@
             "replay_step_id": "stp_00000000000000000000000000006904",
             "change": "unchanged",
             "original_status": "failed",
-            "replay_status": "failed"
+            "replay_status": "failed",
+            "replay_source": "executed"
           }
         ]
       }
@@ -576,7 +590,8 @@
             "replay_step_id": "stp_00000000000000000000000000004b01",
             "change": "unchanged",
             "original_status": "completed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 2,
@@ -585,7 +600,8 @@
             "replay_step_id": "stp_00000000000000000000000000004b02",
             "change": "status_changed",
             "original_status": "failed",
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 3,
@@ -594,7 +610,8 @@
             "replay_step_id": null,
             "change": "removed",
             "original_status": "failed",
-            "replay_status": null
+            "replay_status": null,
+            "replay_source": null
           },
           {
             "ordinal": 3,
@@ -603,7 +620,8 @@
             "replay_step_id": "stp_00000000000000000000000000004b03",
             "change": "added",
             "original_status": null,
-            "replay_status": "completed"
+            "replay_status": "completed",
+            "replay_source": "executed"
           },
           {
             "ordinal": 4,
@@ -612,7 +630,8 @@
             "replay_step_id": null,
             "change": "removed",
             "original_status": "completed",
-            "replay_status": null
+            "replay_status": null,
+            "replay_source": null
           },
           {
             "ordinal": 5,
@@ -621,7 +640,8 @@
             "replay_step_id": null,
             "change": "removed",
             "original_status": "completed",
-            "replay_status": null
+            "replay_status": null,
+            "replay_source": null
           }
         ]
       }

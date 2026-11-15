@@ -3,26 +3,26 @@
     "id": "exe_0000000000000000000000000000006a",
     "agent_id": "agt_00000000000000000000000000000004",
     "agent_name": "Ticket Digest",
-    "status": "completed",
+    "status": "failed",
     "started_at": "2026-11-14T14:41:36.914Z",
-    "ended_at": "2026-11-14T14:41:40.865Z",
-    "duration_ms": 3951,
-    "step_count": 7,
-    "tokens_total": 3020,
-    "cost_usd": 0.003264,
+    "ended_at": "2026-11-14T14:41:41.716Z",
+    "duration_ms": 4802,
+    "step_count": 6,
+    "tokens_total": 3086,
+    "cost_usd": 0.000333,
     "anomaly_count": 0,
-    "has_investigation": false,
+    "has_investigation": true,
     "replay_of": "exe_00000000000000000000000000000068",
-    "error": null,
+    "error": {
+      "type": "SandboxRecordingMissing",
+      "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+      "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+    },
     "input": {
       "trigger": "cron",
       "schedule": "0 */6 * * *"
     },
-    "output": {
-      "tickets": 29,
-      "batches": 2,
-      "delivered": true
-    },
+    "output": null,
     "config": {
       "model": "claude-haiku-5-5",
       "params": {
@@ -36,7 +36,7 @@
       "timeout_ms": 120000,
       "schedule": "0 */6 * * *"
     },
-    "tokens_input": 2959,
+    "tokens_input": 3025,
     "tokens_output": 61,
     "tags": [
       "scheduled"
@@ -71,7 +71,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000006a02",
@@ -83,8 +85,8 @@
       "type": "retrieval",
       "status": "completed",
       "started_at": "2026-11-14T14:41:36.918Z",
-      "ended_at": "2026-11-14T14:41:36.920Z",
-      "duration_ms": 2,
+      "ended_at": "2026-11-14T14:41:37.554Z",
+      "duration_ms": 636,
       "offset_ms": 4,
       "input": {
         "since": "2026-11-14T08:41:36.914Z",
@@ -106,7 +108,8 @@
       "tokens_output": null,
       "attempt": 1,
       "metadata": {
-        "side_effects": false
+        "side_effects": false,
+        "replay_source": "executed"
       }
     },
     {
@@ -118,10 +121,10 @@
       "name": "summarize",
       "type": "reasoning",
       "status": "completed",
-      "started_at": "2026-11-14T14:41:36.921Z",
-      "ended_at": "2026-11-14T14:41:40.859Z",
-      "duration_ms": 3938,
-      "offset_ms": 7,
+      "started_at": "2026-11-14T14:41:37.555Z",
+      "ended_at": "2026-11-14T14:41:41.714Z",
+      "duration_ms": 4159,
+      "offset_ms": 641,
       "input": {
         "tickets": 29,
         "batch_size": 20
@@ -136,7 +139,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000006a04",
@@ -147,10 +152,10 @@
       "name": "summarize_batch",
       "type": "llm_call",
       "status": "completed",
-      "started_at": "2026-11-14T14:41:36.922Z",
-      "ended_at": "2026-11-14T14:41:38.897Z",
-      "duration_ms": 1975,
-      "offset_ms": 8,
+      "started_at": "2026-11-14T14:41:37.556Z",
+      "ended_at": "2026-11-14T14:41:39.637Z",
+      "duration_ms": 2081,
+      "offset_ms": 642,
       "input": {
         "batch": 1,
         "tickets": 20
@@ -158,17 +163,19 @@
       "output": {
         "text": "Batch 1: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.",
         "usage": {
-          "input_tokens": 2044,
+          "input_tokens": 2070,
           "output_tokens": 31
         }
       },
       "error": null,
       "tool_name": null,
       "model": "claude-haiku-5-5",
-      "tokens_input": 2044,
+      "tokens_input": 2070,
       "tokens_output": 31,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000006a05",
@@ -179,10 +186,10 @@
       "name": "summarize_batch",
       "type": "llm_call",
       "status": "completed",
-      "started_at": "2026-11-14T14:41:38.898Z",
-      "ended_at": "2026-11-14T14:41:40.858Z",
-      "duration_ms": 1960,
-      "offset_ms": 1984,
+      "started_at": "2026-11-14T14:41:39.638Z",
+      "ended_at": "2026-11-14T14:41:41.713Z",
+      "duration_ms": 2075,
+      "offset_ms": 2724,
       "input": {
         "batch": 2,
         "tickets": 9
@@ -190,17 +197,19 @@
       "output": {
         "text": "Batch 2: 9 tickets. Most are billing questions about duplicate charges; 2 report login problems after a password change.",
         "usage": {
-          "input_tokens": 915,
+          "input_tokens": 955,
           "output_tokens": 30
         }
       },
       "error": null,
       "tool_name": null,
       "model": "claude-haiku-5-5",
-      "tokens_input": 915,
+      "tokens_input": 955,
       "tokens_output": 30,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000006a06",
@@ -210,57 +219,32 @@
       "depth": 0,
       "name": "send_digest",
       "type": "tool_call",
-      "status": "completed",
-      "started_at": "2026-11-14T14:41:40.860Z",
-      "ended_at": "2026-11-14T14:41:40.862Z",
-      "duration_ms": 2,
-      "offset_ms": 3946,
+      "status": "failed",
+      "started_at": "2026-11-14T14:41:41.715Z",
+      "ended_at": "2026-11-14T14:41:41.715Z",
+      "duration_ms": 0,
+      "offset_ms": 4801,
       "input": {
         "channel": "#support-leads",
         "summary_chars": 241
       },
-      "output": {
-        "message_id": "MSG-67296.91400003433",
-        "status": "sent"
+      "output": null,
+      "error": {
+        "type": "SandboxRecordingMissing",
+        "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
       },
-      "error": null,
       "tool_name": "send_digest",
       "model": null,
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
       "metadata": {
-        "side_effects": true
+        "side_effects": true,
+        "replay_source": "blocked"
       }
-    },
-    {
-      "id": "stp_00000000000000000000000000006a07",
-      "execution_id": "exe_0000000000000000000000000000006a",
-      "parent_step_id": null,
-      "ordinal": 7,
-      "depth": 0,
-      "name": "report",
-      "type": "output",
-      "status": "completed",
-      "started_at": "2026-11-14T14:41:40.863Z",
-      "ended_at": "2026-11-14T14:41:40.864Z",
-      "duration_ms": 1,
-      "offset_ms": 3949,
-      "input": null,
-      "output": {
-        "tickets": 29,
-        "batches": 2,
-        "delivered": true
-      },
-      "error": null,
-      "tool_name": null,
-      "model": null,
-      "tokens_input": null,
-      "tokens_output": null,
-      "attempt": 1,
-      "metadata": {}
     }
   ],
   "anomalies": [],
-  "event_count": 15
+  "event_count": 13
 }

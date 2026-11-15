@@ -68,7 +68,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000002902",
@@ -100,7 +102,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     }
   ],
   "anomalies": [],

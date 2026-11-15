@@ -55,7 +55,8 @@
         "replay_step_id": "stp_00000000000000000000000000004b01",
         "change": "unchanged",
         "original_status": "completed",
-        "replay_status": "completed"
+        "replay_status": "completed",
+        "replay_source": "executed"
       },
       {
         "ordinal": 2,
@@ -64,7 +65,8 @@
         "replay_step_id": "stp_00000000000000000000000000004b02",
         "change": "status_changed",
         "original_status": "failed",
-        "replay_status": "completed"
+        "replay_status": "completed",
+        "replay_source": "executed"
       },
       {
         "ordinal": 3,
@@ -73,7 +75,8 @@
         "replay_step_id": null,
         "change": "removed",
         "original_status": "failed",
-        "replay_status": null
+        "replay_status": null,
+        "replay_source": null
       },
       {
         "ordinal": 3,
@@ -82,7 +85,8 @@
         "replay_step_id": "stp_00000000000000000000000000004b03",
         "change": "added",
         "original_status": null,
-        "replay_status": "completed"
+        "replay_status": "completed",
+        "replay_source": "executed"
       },
       {
         "ordinal": 4,
@@ -91,7 +95,8 @@
         "replay_step_id": null,
         "change": "removed",
         "original_status": "completed",
-        "replay_status": null
+        "replay_status": null,
+        "replay_source": null
       },
       {
         "ordinal": 5,
@@ -100,7 +105,8 @@
         "replay_step_id": null,
         "change": "removed",
         "original_status": "completed",
-        "replay_status": null
+        "replay_status": null,
+        "replay_source": null
       }
     ]
   }

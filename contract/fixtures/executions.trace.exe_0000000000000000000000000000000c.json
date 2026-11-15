@@ -70,7 +70,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000000c02",
@@ -119,7 +121,8 @@
       "tokens_output": null,
       "attempt": 1,
       "metadata": {
-        "side_effects": false
+        "side_effects": false,
+        "replay_source": "recorded"
       }
     },
     {
@@ -154,7 +157,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000000c04",
@@ -199,7 +204,9 @@
       "tokens_input": 135,
       "tokens_output": 62,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     }
   ],
   "anomalies": [],

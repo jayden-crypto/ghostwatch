@@ -60,19 +60,6 @@
         "rpl_00000000000000000000000000000008"
       ]
     },
-    "recorded_calls": [
-      {
-        "step_name": "fetch_tickets",
-        "step_type": "retrieval",
-        "tool_name": "fetch_tickets",
-        "occurrence": 1,
-        "input": {
-          "since": "2026-11-13T12:00:00.421Z",
-          "until": "2026-11-13T18:00:00.421Z"
-        },
-        "output": null,
-        "error": null
-      }
-    ]
+    "recorded_calls": []
   }
 }

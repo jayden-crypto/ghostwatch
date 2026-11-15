@@ -59,7 +59,8 @@
         "replay_step_id": "stp_00000000000000000000000000002901",
         "change": "unchanged",
         "original_status": "completed",
-        "replay_status": "completed"
+        "replay_status": "completed",
+        "replay_source": "executed"
       },
       {
         "ordinal": 2,
@@ -68,7 +69,8 @@
         "replay_step_id": "stp_00000000000000000000000000002902",
         "change": "status_changed",
         "original_status": "completed",
-        "replay_status": "failed"
+        "replay_status": "failed",
+        "replay_source": "executed"
       }
     ]
   }

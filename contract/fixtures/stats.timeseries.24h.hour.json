@@ -137,10 +137,10 @@
     },
     {
       "bucket_start": "2026-11-14T14:00:00.000Z",
-      "completed": 1,
-      "failed": 1,
+      "completed": 0,
+      "failed": 2,
       "timed_out": 0,
-      "avg_duration_ms": 1982
+      "avg_duration_ms": 8432
     },
     {
       "bucket_start": "2026-11-14T15:00:00.000Z",
