@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { NotImplemented } from "@/components/data/empty-state";
-import { Page } from "@/components/shell/page";
+import { ExecutionsView } from "@/components/executions/executions-view";
 
 export const metadata: Metadata = { title: "Executions" };
 
 export default function ExecutionsPage() {
+  // The filters live in the query string, which is only known per request.
   return (
-    <Page title="Executions" description="Every run of every agent.">
-      <NotImplemented what="The executions table" issue="F5, #24" />
-    </Page>
+    <Suspense>
+      <ExecutionsView />
+    </Suspense>
   );
 }

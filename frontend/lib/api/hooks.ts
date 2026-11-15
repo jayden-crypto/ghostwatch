@@ -28,6 +28,8 @@ import type {
   TimeseriesParams,
 } from "./types";
 
+/** Lists that show what agents are doing right now refresh at this interval. */
+export const LIST_POLL_MS = 5_000;
 export const TRACE_POLL_MS = 3_000;
 export const INVESTIGATION_POLL_MS = 2_000;
 export const REPLAY_POLL_MS = 2_000;
@@ -61,12 +63,13 @@ export const useAgents = (params: AgentListParams = {}) =>
 export const useAgent = (id: ID) => useQuery({ queryKey: keys.agent(id), queryFn: () => api.getAgent(id) });
 
 /** `placeholderData` keeps the previous page on screen while a filter or page change loads. */
-export const useExecutions = (params: ExecutionListParams = {}, options: { enabled?: boolean } = {}) =>
+export const useExecutions = (params: ExecutionListParams = {}, options: { enabled?: boolean; refetchInterval?: number } = {}) =>
   useQuery({
     queryKey: keys.executions(params),
     queryFn: () => api.listExecutions(params),
     placeholderData: keepPreviousData,
     enabled: options.enabled,
+    refetchInterval: options.refetchInterval,
   });
 
 export const useExecution = (id: ID) => useQuery({ queryKey: keys.execution(id), queryFn: () => api.getExecution(id) });

@@ -24,7 +24,12 @@ export interface Column<T> {
   width?: string;
   /** Width of this column's skeleton bar. */
   skeleton?: string;
+  /** Drop the column on narrower screens: `xl` shows it from 1280 px, `wide` from 1400 px. */
+  showFrom?: "xl" | "wide";
 }
+
+const SHOW_FROM = { xl: "hidden xl:table-cell", wide: "hidden min-[1400px]:table-cell" } as const;
+const visibility = (column: { showFrom?: "xl" | "wide" }) => (column.showFrom ? SHOW_FROM[column.showFrom] : undefined);
 
 interface DataTableProps<T> {
   columns: Column<T>[];
@@ -82,6 +87,7 @@ export function DataTable<T>({
                     "h-8 whitespace-nowrap px-3 text-xs font-medium text-fg-subtle first:pl-4 last:pr-4",
                     column.align === "right" && "text-right",
                     column.width,
+                    visibility(column),
                   )}
                 >
                   {column.sortKey && onSortChange ? (
@@ -111,7 +117,7 @@ export function DataTable<T>({
             ? Array.from({ length: skeletonRows }, (_, index) => (
                 <tr key={index} className="border-b border-line-subtle last:border-0">
                   {columns.map((column) => (
-                    <td key={column.id} className="h-[34px] px-3 first:pl-4 last:pr-4">
+                    <td key={column.id} className={cn("h-[34px] px-3 first:pl-4 last:pr-4", visibility(column))}>
                       <Skeleton className={cn("h-3", column.skeleton ?? "w-20", column.align === "right" && "ml-auto")} />
                     </td>
                   ))}
@@ -135,6 +141,7 @@ export function DataTable<T>({
                         className={cn(
                           "h-[34px] whitespace-nowrap px-3 first:pl-4 last:pr-4",
                           column.align === "right" && "text-right",
+                          visibility(column),
                         )}
                       >
                         {index === 0 && href ? (
