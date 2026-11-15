@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T17:49Z
+# Backend progress — updated 2026-11-15T17:52Z
 
-## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 472 backend tests and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
+## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -19,11 +19,10 @@ Not implemented: nothing.
 
 ## Next up
 - Get PR #36 (`jayden/backend` → `main`) reviewed by Adit and merged
-- Adit's fixtures PR #35 is approved at b0cf178 (145 of 145 fixtures pass B15 against contract v1.2; comparisons, replay sources and costs match the backend's own code). When it merges, merge `main` into `jayden/backend` so the fixture half of B15 runs in CI on #36.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
-- The fixture half of B15 skips on this branch (no fixtures here until Adit's PR #35 merges). One fixture investigation there has provider `fable` to exercise that UI state; it is example data, not a real model run.
+- One fixture investigation (`contract/fixtures/`, from Adit's PR #35, merged to `main` as 36e3390) has provider `fable` to exercise that UI state; it is example data, not a real model run.
 - A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
 - Nothing has been exercised from a browser: there is no frontend in the repo.
 
