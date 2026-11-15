@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T11:17Z
+# Backend progress — updated 2026-11-15T12:12Z
 
-## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 472 backend tests and 39 SDK tests pass locally on docker compose Postgres. The P1 commits are local and not pushed.
+## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 472 backend tests and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -18,13 +18,12 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- Push `jayden/backend` (Jayden's call)
-- Review Adit's fixtures PR (#35) on GitHub. Its 145 fixtures all passed B15 when checked out locally.
-- Open the `jayden/backend` → `main` PR when Jayden says so (he asked for it not to be opened yet).
+- Get PR #36 (`jayden/backend` → `main`) reviewed by Adit and merged
+- Re-review Adit's fixtures PR #35 when he updates it. Reviewed at b391bae against contract v1.2: 138 of 145 pass; changes requested (missing `StepDiff.replay_source` and `metadata.replay_source`, a side-effecting tool completing in a sandbox replay, Ticket Digest costs 10× the backend's). His replay comparisons match the backend exactly.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
-- The fixture half of B15 skips on this branch (no fixtures here until Adit's PR #35 merges).
+- The fixture half of B15 skips on this branch (no fixtures here until Adit's PR #35 merges). One fixture investigation there has provider `fable` to exercise that UI state; it is example data, not a real model run.
 - A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
 - Nothing has been exercised from a browser: there is no frontend in the repo.
 
@@ -59,6 +58,8 @@ Not implemented: nothing.
 - **Demo data**: the fake LLM is `demo-llm-1`, which has no price, so `cost_usd` is null on every demo run. Label it as unknown, not as $0.
 
 ## Decisions (backend-internal)
+- No paid API calls: `LLM_PROVIDER=rule_based` everywhere (config default, `.env.example`, the demo, tests, docs examples). Fable is an optional provider that needs `ANTHROPIC_API_KEY`; nothing may claim the demo used it.
+- `.claude/state/` (the session handoff and snapshot) is git-ignored and local to each machine, so the two sessions never conflict on it. Durable state lives in the PROGRESS files.
 - 405 responses use the envelope with code `bad_request` (the contract lists no code for 405).
 - `POST /agents` keeps stored values for fields left out of an update; explicit `null` clears.
 - Ingestion: duplicates are dropped before every other rule; a step id can be started once; a terminal event leaves running steps running; payloads are stored with defaults filled in; durations come from client timestamps, clamped at 0. The execution row is locked for the batch.

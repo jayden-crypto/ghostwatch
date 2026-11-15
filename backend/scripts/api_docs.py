@@ -510,6 +510,9 @@ Contract §9. A report separates three things:
 produced by `rule_based`, `provider` says so, and `evidence_gaps` gives the reason. `summary` is always a
 deterministic template.
 
+`rule_based` is the default and needs no key. `fable` is optional: it needs `ANTHROPIC_API_KEY`, and each
+investigation is a paid API call. Every example in this document was produced with `rule_based`.
+
 Investigations start automatically when an execution fails or times out (`auto_failure`), or raises an anomaly
 of `high` severity or above (`auto_anomaly`).
 
