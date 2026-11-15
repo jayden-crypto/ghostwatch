@@ -3,13 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "npm run -s sync-fixtures && next dev",
+    "build": "npm run -s sync-fixtures && next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "npm run -s sync-fixtures && tsc --noEmit",
     "build-fixtures": "tsx scripts/build-fixtures.ts",
-    "validate-fixtures": "tsx scripts/validate-fixtures.ts"
+    "validate-fixtures": "tsx scripts/validate-fixtures.ts",
+    "sync-fixtures": "tsx scripts/sync-fixtures.ts",
+    "test": "npm run -s sync-fixtures && vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@tanstack/react-query": "^5.107.1",
@@ -28,13 +31,18 @@
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "4.3.3",
-    "@types/node": "^20",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.10",
+    "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "jsdom": "^31.0.1",
     "tailwindcss": "4.3.3",
     "tsx": "^4.23.15",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.1.0"
   }
 }
