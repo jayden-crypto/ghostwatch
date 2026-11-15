@@ -1,4 +1,4 @@
-# Ghostwatch API Contract — v1.1
+# Ghostwatch API Contract — v1.2
 
 **Status:** FROZEN for implementation. Changes only via the contract-change process in `CONTRIBUTING.md` (a PR touching only `contract/`, approved by both Jayden and Adit).
 
@@ -71,6 +71,7 @@ type ReplayMode        = "sandbox" | "live";
 type ReplayStatus      = "pending" | "claimed" | "completed" | "failed";
 type ReplayOutcome     = "same_failure" | "different_failure" | "fixed" | "regressed" | "both_succeeded" | "inconclusive";
 type StepChange        = "unchanged" | "status_changed" | "output_changed" | "added" | "removed";
+type ReplaySource      = "recorded" | "executed" | "blocked";
 type EventType         = "step.started" | "step.completed" | "step.failed"
                        | "execution.completed" | "execution.failed" | "execution.timed_out" | "log";
 ```
@@ -408,7 +409,16 @@ The frontend polls `GET /investigations/{execution_id}` every 2 s while the stat
 
 ## 10. Replays
 
-Replays re-run an execution with its recorded inputs. **Sandbox is the default. In sandbox mode no tool executes for real. Every tool call and LLM call returns the recorded output from the original execution.** Replays are executed by the SDK worker process (the agent's code lives in the developer's process, not in the backend). The backend only coordinates.
+Replays re-run an execution with its recorded inputs. **Sandbox is the default. In sandbox mode every tool call and LLM call that the original execution recorded returns its recorded output, and no tool with side effects ever executes.** Replays are executed by the SDK worker process (the agent's code lives in the developer's process, not in the backend). The backend only coordinates.
+
+**Calls the original never made.** A replay of a fixed agent gets further than the original did, so it reaches calls that have no recording. In sandbox mode such a call runs for real only if it is an LLM call or a tool declared `side_effects: false`. Any other tool is never executed and its step fails with error type `SandboxRecordingMissing`. A tool that does not declare `side_effects` counts as having them: unknown means unsafe.
+
+**`metadata.replay_source`.** Every step of a replay execution carries `metadata.replay_source: ReplaySource`, so a reader can tell what really ran:
+- `"recorded"`: the step is a tool or LLM call whose output was served from the original execution's recording. Nothing ran.
+- `"executed"`: the step's code or call really ran in the replay (the agent's own steps always do; so do unrecorded calls that are allowed to run, and every call in live mode).
+- `"blocked"`: a tool call that had no recording and was not allowed to run in sandbox. Nothing ran; the step is `failed`.
+
+Steps of ordinary (non-replay) executions do not have this key. The frontend shows `replay_source` wherever it shows a replay's steps, so that an outcome of `fixed` can be checked against what was served from the recording and what ran live.
 
 ```ts
 interface RecordedCall {
@@ -434,6 +444,7 @@ interface StepDiff {
   change: StepChange;
   original_status: StepStatus | null;
   replay_status: StepStatus | null;
+  replay_source: ReplaySource | null;  // metadata.replay_source of the replay step; null when there is no replay step
 }
 
 interface ReplayComparison {
@@ -490,3 +501,4 @@ Lifecycle: `pending` → (worker claims) `claimed` → worker creates an executi
 |---|---|---|---|
 | 1.0 | 2026-11-14 | Initial contract. Additions over the product spec's suggested endpoints: `/stats/*`, `/executions/{id}/events` (GET), `/investigations` (list), `/replays*`, `/anomalies/{id}`, `/health`. Reason: the dashboard needs aggregates and lists that the suggested endpoints didn't cover, and replay needs a worker handshake. | Jayden, Adit |
 | 1.1 | 2026-11-14 | §8: corrected the comment on `Anomaly.execution_id`. It said the field is null for agent-level anomalies, which contradicted the rule table in the same section (`repeated_timeouts`: `execution_id` = most recent one). It now says the field holds the most recent related execution for agent-level anomalies and is null only if none exists. Clarification only: the type is still `ID \| null`, and no field, endpoint or enum changed. | Jayden (made before Adit's kickoff; Adit to confirm) |
+| 1.2 | 2026-11-15 | §10 sandbox rule clarified, because the v1.1 wording ("no tool executes for real") made outcome `fixed` impossible: a fixed agent runs past the point where the original failed and reaches calls that were never recorded. Now: recorded calls return their recording; an unrecorded call runs only if it is an LLM call or a tool declared `side_effects: false`; any other tool (including one that does not declare `side_effects`) is blocked with `SandboxRecordingMissing`. Additive: enum `ReplaySource`; every step of a replay execution carries `metadata.replay_source`; `StepDiff` gains `replay_source`. No field was removed or renamed. | Jayden (Adit to confirm) |
