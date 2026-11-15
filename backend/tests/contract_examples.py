@@ -217,6 +217,7 @@ REPLAY = {
                 "change": "status_changed",
                 "original_status": "failed",
                 "replay_status": "completed",
+                "replay_source": "executed",
             }
         ],
     },

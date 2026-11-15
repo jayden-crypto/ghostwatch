@@ -132,14 +132,16 @@ def test_failing_step_is_the_step_the_execution_error_escaped_from() -> None:
         step(3, "inner", "failed", error=inner_error, parent_step_id="stp_" + f"{2:032x}"),
         step(4, "cleanup", "failed", error={"type": "OSError", "message": "disk", "stacktrace": None}),
     ]
-    assert find_failing_step(context("failed", steps, error=inner_error)).name == "inner"
-    assert (
-        find_failing_step(context("failed", steps, error={"type": "Other", "message": "x"})).name == "cleanup"
-    )
-    assert find_failing_step(context("failed", [step(1, "fine")], error=KEY_ERROR)) is None
-    assert find_failing_step(context("completed", steps)) is None
+
+    def failing(ctx: InvestigationContext) -> Step | None:
+        return find_failing_step(ctx.execution, ctx.steps)
+
+    assert failing(context("failed", steps, error=inner_error)).name == "inner"
+    assert failing(context("failed", steps, error={"type": "Other", "message": "x"})).name == "cleanup"
+    assert failing(context("failed", [step(1, "fine")], error=KEY_ERROR)) is None
+    assert failing(context("completed", steps)) is None
     running = [step(1, "a"), step(2, "b", "running"), step(3, "c", "running")]
-    assert find_failing_step(context("timed_out", running)).name == "c"
+    assert failing(context("timed_out", running)).name == "c"
 
 
 def test_facts_cover_retries_http_statuses_running_and_expected_steps() -> None:

@@ -2,10 +2,18 @@
 
 from typing import Self
 
-from pydantic import model_validator
+from pydantic import StrictBool, model_validator
 
 from app.schemas.common import ContractModel, ErrorInfo, ExecutionId, Json, ReplayId, StepId, Timestamp
-from app.schemas.enums import ReplayMode, ReplayOutcome, ReplayStatus, StepChange, StepStatus, StepType
+from app.schemas.enums import (
+    ReplayMode,
+    ReplayOutcome,
+    ReplaySource,
+    ReplayStatus,
+    StepChange,
+    StepStatus,
+    StepType,
+)
 from app.schemas.executions import ExecutionDetail, ExecutionSummary
 
 
@@ -32,6 +40,7 @@ class StepDiff(ContractModel):
     change: StepChange
     original_status: StepStatus | None
     replay_status: StepStatus | None
+    replay_source: ReplaySource | None
 
 
 class ReplayComparison(ContractModel):
@@ -70,3 +79,12 @@ class ReplayClaim(ContractModel):
 
     replay: Replay
     bundle: ReplayBundle
+
+
+class ReplayCreate(ContractModel):
+    """Body of POST /executions/{execution_id}/replay."""
+
+    mode: ReplayMode
+    # Strict on purpose: consent to real side effects must be the JSON value true, never "yes" or 1.
+    authorize_side_effects: StrictBool = False
+    note: str | None = None

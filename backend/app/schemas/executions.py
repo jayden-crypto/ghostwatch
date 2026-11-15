@@ -1,8 +1,8 @@
 """Contract §4: Executions."""
 
-from typing import Any
+from typing import Any, Self
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from app.schemas.common import (
     AgentId,
@@ -74,6 +74,12 @@ class ExecutionCreate(ContractModel):
     started_at: InputTimestamp | None = None
     replay_of: ExecutionId | None = None
     replay_id: ReplayId | None = None
+
+    @model_validator(mode="after")
+    def _replay_id_needs_replay_of(self) -> Self:
+        if self.replay_id is not None and self.replay_of is None:
+            raise ValueError("replay_id requires replay_of")
+        return self
 
     def stored_config(self) -> dict[str, Any]:
         return self.config.model_dump()

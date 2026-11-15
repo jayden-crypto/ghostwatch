@@ -30,6 +30,7 @@ ReplayOutcome = Literal[
     "same_failure", "different_failure", "fixed", "regressed", "both_succeeded", "inconclusive"
 ]
 StepChange = Literal["unchanged", "status_changed", "output_changed", "added", "removed"]
+ReplaySource = Literal["recorded", "executed", "blocked"]
 EventType = Literal[
     "step.started",
     "step.completed",

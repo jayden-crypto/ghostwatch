@@ -8,7 +8,7 @@ from sqlalchemy import ColumnElement, and_, case, exists, func, or_, select
 from sqlalchemy.orm import Session
 
 from app import ids
-from app.errors import not_found
+from app.errors import ApiError, not_found
 from app.models import Agent, Anomaly, Execution, Investigation, Replay
 from app.schemas.common import Page
 from app.schemas.enums import EXECUTION_STATUSES
@@ -51,6 +51,7 @@ def create_execution(session: Session, body: ExecutionCreate) -> Execution:
         raise not_found("Agent", body.agent_id)
     if body.replay_of is not None and session.get(Execution, body.replay_of) is None:
         raise not_found("Execution", body.replay_of)
+    replay = _claimed_replay(session, body) if body.replay_id is not None else None
     now = utcnow()
     execution = Execution(
         id=ids.new_id(ids.EXECUTION),
@@ -66,8 +67,33 @@ def create_execution(session: Session, body: ExecutionCreate) -> Execution:
         created_at=now,
     )
     session.add(execution)
+    if replay is not None:
+        session.flush()
+        replay.replay_execution_id = execution.id
     session.commit()
     return execution
+
+
+def _claimed_replay(session: Session, body: ExecutionCreate) -> Replay:
+    """The replay this new execution is the run of. It must be claimed, unstarted and for `replay_of`."""
+    replay = session.scalars(
+        select(Replay).where(Replay.id == body.replay_id).with_for_update()
+    ).one_or_none()
+    if replay is None:
+        raise not_found("Replay", body.replay_id)
+    if body.replay_of != replay.original_execution_id:
+        message = f"replay {replay.id} is a replay of {replay.original_execution_id}"
+        raise ApiError(
+            422,
+            "validation_error",
+            "Request validation failed.",
+            [{"loc": ["body", "replay_of"], "msg": message}],
+        )
+    if replay.status != "claimed" or replay.replay_execution_id is not None:
+        raise ApiError(
+            409, "conflict", f"Replay {replay.id} is {replay.status} and cannot start a new execution."
+        )
+    return replay
 
 
 def list_executions(

@@ -15,6 +15,7 @@ from app import ids
 from app.errors import ApiError, not_found
 from app.models import Event, Execution, Step
 from app.schemas import events as schemas
+from app.services import replay as replay_service
 from app.services.anomaly import engine as anomaly_engine
 from app.services.anomaly.rules import StaleInfo
 from app.services.anomaly.thresholds import DEFAULT_TIMEOUT_MS, SEVERITY_RANK
@@ -278,13 +279,16 @@ def _finalize(
     raised = anomaly_engine.evaluate(session, execution, stale=stale)
 
     # Contract §5 rule 5: investigate every failure, and every run with an anomaly of high severity or above.
+    trigger = None
     if execution.status in ("failed", "timed_out"):
         trigger = "auto_failure"
     elif any(SEVERITY_RANK[anomaly.severity] >= SEVERITY_RANK["high"] for anomaly in raised):
         trigger = "auto_anomaly"
-    else:
-        return None
-    return investigation_engine.queue(session, execution, trigger).id
+    investigation_id = investigation_engine.queue(session, execution, trigger).id if trigger else None
+
+    # If this execution is the run of a replay, the replay is now complete and can be compared.
+    replay_service.complete_for_execution(session, execution)
+    return investigation_id
 
 
 def _timeout_error(duration_ms: int) -> dict[str, Any]:

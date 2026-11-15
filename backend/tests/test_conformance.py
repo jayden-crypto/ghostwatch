@@ -30,7 +30,7 @@ from app.schemas.events import IngestResponse, StoredEvent
 from app.schemas.executions import ExecutionDetail, ExecutionSummary
 from app.schemas.health import Health
 from app.schemas.investigations import Investigation
-from app.schemas.replays import Replay
+from app.schemas.replays import Replay, ReplayClaim
 from app.schemas.stats import StatsOverview, StatsTimeseries
 from app.schemas.traces import Trace
 from tests import contract_examples as examples
@@ -303,6 +303,37 @@ def test_live_responses_validate_against_the_contract(
     assert validate(IngestResponse, ingested.content).execution_status == "failed"
     make_anomaly(db_session, db_session.get(Execution, execution.id))
 
+    requested = client.post(
+        f"/api/v1/executions/{execution.id}/replay", json={"mode": "sandbox", "note": "n"}
+    )
+    assert requested.status_code == 201
+    replay = validate(Replay, requested.content)
+    claimed = client.post(f"/api/v1/replays/{replay.id}/claim", headers=auth)
+    assert claimed.status_code == 200
+    assert len(validate(ReplayClaim, claimed.content).bundle.recorded_calls) == 1
+    rerun = client.post(
+        "/api/v1/executions",
+        json={
+            "agent_id": agent.id,
+            "input": {},
+            "config": {},
+            "replay_of": execution.id,
+            "replay_id": replay.id,
+        },
+        headers=auth,
+    )
+    rerun_step = new_step_id()
+    post_events(
+        client,
+        auth,
+        rerun.json()["id"],
+        [
+            ev.step_started(1, rerun_step, 0, name="web_search", metadata={"replay_source": "recorded"}),
+            ev.step_completed(2, rerun_step, 5),
+            ev.execution_completed(3, 10),
+        ],
+    )
+
     responses = {
         f"/api/v1/agents/{agent.id}": Agent,
         "/api/v1/agents": Page[Agent],
@@ -324,6 +355,10 @@ def test_live_responses_validate_against_the_contract(
         "/api/v1/stats/overview?window=24h": StatsOverview,
         "/api/v1/stats/timeseries": StatsTimeseries,
         f"/api/v1/stats/timeseries?window=30d&bucket=hour&agent_id={agent.id}": StatsTimeseries,
+        f"/api/v1/replays/{replay.id}": Replay,  # completed, with its comparison
+        "/api/v1/replays": Page[Replay],
+        f"/api/v1/replays?status=completed&original_execution_id={execution.id}": Page[Replay],
+        "/api/v1/replays?status=pending": Page[Replay],  # an empty page
         "/api/v1/health": Health,
     }
     for path, schema in responses.items():
@@ -349,6 +384,10 @@ def test_live_responses_validate_against_the_contract(
         (post_events(client, auth, execution.id, []), 422),
         (client.get("/api/v1/investigations/exe_" + "0" * 32), 404),
         (client.post("/api/v1/investigations/exe_" + "0" * 32), 404),
+        (client.post(f"/api/v1/executions/{execution.id}/replay", json={"mode": "live"}), 422),
+        (client.post(f"/api/v1/replays/{replay.id}/claim", headers=auth), 409),
+        (client.post(f"/api/v1/replays/{replay.id}/claim"), 401),
+        (client.get("/api/v1/replays/rpl_" + "0" * 32), 404),
         (client.delete("/api/v1/health"), 405),
     ]
     for response, status in errors:

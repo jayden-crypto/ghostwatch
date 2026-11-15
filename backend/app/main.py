@@ -56,6 +56,10 @@ TAGS = [
     {"name": "stats", "description": "Aggregates for the overview."},
     {"name": "anomalies", "description": "What the deterministic rules flagged, with evidence."},
     {"name": "investigations", "description": "Evidence-based reports: facts, hypotheses, recommendations."},
+    {
+        "name": "replays",
+        "description": "Re-run an execution against its recorded calls and compare the result.",
+    },
 ]
 
 

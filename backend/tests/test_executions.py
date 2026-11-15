@@ -107,7 +107,7 @@ def test_create_execution_with_defaults_and_explicit_start(
 def test_create_replay_execution(db_client: TestClient, db_session: Session, auth: dict) -> None:
     agent = make_agent(db_session)
     original = make_execution(db_session, agent, status="failed")
-    replay = make_replay(db_session, original)
+    replay = make_replay(db_session, original, status="claimed")
     response = db_client.post(
         "/api/v1/executions",
         json={
