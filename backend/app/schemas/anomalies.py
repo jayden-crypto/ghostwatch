@@ -19,3 +19,9 @@ class Anomaly(ContractModel):
     title: str = Field(max_length=80)
     explanation: str
     evidence: list[Evidence] = Field(min_length=1)
+
+
+class AnomalyUpdate(ContractModel):
+    """Body of PATCH /anomalies/{anomaly_id}."""
+
+    status: AnomalyStatus

@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T11:13Z
+# Backend progress — updated 2026-11-15T11:17Z
 
-## Status: every backend P0 issue is done (B1–B11, B15, B16), and P1's B12 (replay API), B13 (SDK sandbox replay and worker) and B14 (cost from a pricing table) are done and unpushed. 464 backend tests and 39 SDK tests pass locally on docker compose Postgres; 1 backend test fails on purpose until docs/API.md is regenerated with the replay endpoints. PATCH /anomalies/{anomaly_id} is not started.
+## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 472 backend tests and 39 SDK tests pass locally on docker compose Postgres. The P1 commits are local and not pushed.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -8,18 +8,17 @@
 - POST /executions 🔑, GET /executions, GET /executions/{execution_id}
 - POST /executions/{execution_id}/events 🔑, GET /executions/{execution_id}/trace, GET /executions/{execution_id}/events
 - GET /stats/overview, GET /stats/timeseries
-- GET /anomalies, GET /anomalies/{anomaly_id}
+- GET /anomalies, GET /anomalies/{anomaly_id}, PATCH /anomalies/{anomaly_id}
 - POST /investigations/{execution_id}, GET /investigations/{execution_id}, GET /investigations
-- POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim 🔑 (implemented and tested; not in docs/API.md yet)
+- POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim 🔑
 
-Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}.
+Not implemented: nothing.
 
 ## In progress
 - nothing
 
 ## Next up
-- PATCH /anomalies/{anomaly_id}
-- Regenerate docs/API.md with the replay endpoints (`scripts/api_docs.py` needs replay sections and its "Not implemented" table updated), then push `jayden/backend`
+- Push `jayden/backend` (Jayden's call)
 - Review Adit's fixtures PR (#35) on GitHub. Its 145 fixtures all passed B15 when checked out locally.
 - Open the `jayden/backend` → `main` PR when Jayden says so (he asked for it not to be opened yet).
 
@@ -37,7 +36,7 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}.
 - Replay: `cd demo && uv run python replay.py worker --fixed` in one terminal (without `--fixed` the agents run as shipped), then `uv run python replay.py request <execution_id>` in another, or the dashboard's Replay button
 - Tests: `cd backend && uv run ruff check . && uv run pytest -q`; `cd sdk/python && uv run pytest -q`
 - Smoke test over real HTTP against a running server: `cd backend && uv run python -m scripts.smoke`
-- Regenerate docs/API.md from a seeded server: `cd backend && uv run python -m scripts.api_docs`
+- Regenerate docs/API.md from a seeded server with a replay worker running against it (`cd demo && uv run python replay.py worker --fixed`): `cd backend && uv run python -m scripts.api_docs`
 - On Jayden's machine `docker` is at `~/.docker/bin` and is not on PATH in non-login shells.
 - The local dev database holds smoke-test and demo runs left over from verification. Reset it with `docker compose down -v` (Jayden's call) before seeding for the demo.
 
@@ -50,7 +49,7 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}.
 - **Truncation**: `input`, `output`, `metadata` over 64 KB become the contract marker. Error messages, stack traces and log messages stay strings, cut to 64 KB with a `[truncated: N bytes in total]` note.
 - **Trace**: `depth` 0 for a step whose parent is unknown; `offset_ms` never negative. A completed run with zero steps returns `steps: []` and a critical `ghost_completion` anomaly.
 - **Stats**: a window is whole UTC buckets ending with the current one (24 hours, 7 days, 30 days). Overview totals equal the sum of the default timeseries. Running executions are in the overview, not in the points. `open_anomalies` and `total_agents` are not windowed.
-- **Anomalies**: agent-level ones carry an `execution_id` (contract v1.1). `PATCH` is not implemented.
+- **Anomalies**: agent-level ones carry an `execution_id` (contract v1.1). `PATCH /anomalies/{id}` takes `{status}` only; any status may follow any other (a resolved anomaly can be reopened), and only `open` ones count towards `open_anomalies` and agent `health`.
 - **Replay** (contract v1.2): `POST /executions/{id}/replay` returns `pending`; nothing runs until a replay worker is up, so a replay can stay `pending` indefinitely. Poll `GET /replays/{id}` until `completed`; `comparison` is null before that. A replay whose agent fails is still `completed` (the outcome says how it went). `live` without `authorize_side_effects: true` is `422 side_effect_authorization_required`, and the flag must be the JSON value `true`. Replaying a running execution is `409`.
 - **Replay sources**: every step of a replay execution has `metadata.replay_source` (`recorded`, `executed` or `blocked`), mirrored in `StepDiff.replay_source` (null for a `removed` step). A blocked step fails with error type `SandboxRecordingMissing`. The Replay dialog's old line ("nothing external runs") is wrong; the corrected copy is in the message of commit 4b7568d.
 - **Replay demo result**: replaying the schema-change failure gives `same_failure` with the agent as shipped and `fixed` with the parser fix (web_search `recorded`, summarize `added` and `executed`).

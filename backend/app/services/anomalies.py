@@ -23,6 +23,14 @@ def get_anomaly(session: Session, anomaly_id: str) -> models.Anomaly:
     return anomaly
 
 
+def set_status(session: Session, anomaly_id: str, status: AnomalyStatus) -> models.Anomaly:
+    """Triage an anomaly. Any status may follow any other, so a resolved anomaly can be reopened."""
+    anomaly = get_anomaly(session, anomaly_id)
+    anomaly.status = status
+    session.commit()
+    return anomaly
+
+
 def list_anomalies(
     session: Session,
     *,

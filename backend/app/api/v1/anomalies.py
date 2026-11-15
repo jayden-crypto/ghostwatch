@@ -4,7 +4,7 @@ from fastapi import APIRouter, Query
 
 from app.api.deps import PageDep, SessionDep
 from app.api.responses import errors
-from app.schemas.anomalies import Anomaly
+from app.schemas.anomalies import Anomaly, AnomalyUpdate
 from app.schemas.common import Page
 from app.services import anomalies as service
 
@@ -50,3 +50,18 @@ def list_anomalies(
 def get_anomaly(anomaly_id: str, session: SessionDep) -> Anomaly:
     """One anomaly with its explanation and evidence."""
     return service.build_anomalies(session, [service.get_anomaly(session, anomaly_id)])[0]
+
+
+@router.patch(
+    "/{anomaly_id}",
+    response_model=Anomaly,
+    responses=errors(404, 422),
+    summary="Acknowledge, resolve or reopen an anomaly",
+)
+def update_anomaly(anomaly_id: str, body: AnomalyUpdate, session: SessionDep) -> Anomaly:
+    """Sets the anomaly's `status` and returns it. Nothing else about an anomaly can be changed.
+
+    Any status may follow any other, so a resolved anomaly can be reopened. Only `open` anomalies
+    count towards `open_anomalies` in the stats and towards an agent's `health`.
+    """
+    return service.build_anomalies(session, [service.set_status(session, anomaly_id, body.status)])[0]

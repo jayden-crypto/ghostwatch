@@ -458,3 +458,60 @@ def test_anomalies_api_rejects_bad_requests(
     response = db_client.get(f"/api/v1{path}")
     assert response.status_code == status, response.text
     assert response.json()["error"]["code"] == code
+
+
+def test_an_anomaly_can_be_acknowledged_resolved_and_reopened(
+    db_client: TestClient, db_session: Session, agent: Agent
+) -> None:
+    execution = make_execution(db_session, agent, status="completed")
+    anomaly = make_anomaly(db_session, execution, type="ghost_completion", severity="critical")
+    other = make_anomaly(db_session, execution, severity="medium")
+    url = f"/api/v1/anomalies/{anomaly.id}"
+    before = db_client.get(url).json()
+
+    def open_count() -> tuple[int, int, str]:
+        stats = db_client.get("/api/v1/stats/overview").json()
+        listed = db_client.get(f"/api/v1/agents/{agent.id}").json()["stats"]
+        return stats["open_anomalies"], listed["open_anomalies"], listed["health"]
+
+    assert open_count() == (2, 2, "failing")  # an open critical anomaly
+    for status, still_open in (("acknowledged", 1), ("resolved", 1), ("open", 2), ("open", 2)):
+        response = db_client.patch(url, json={"status": status})
+        assert response.status_code == 200, response.text
+        assert response.json() == {**before, "status": status}  # nothing but the status changes
+        assert db_client.get(url).json()["status"] == status
+        assert open_count()[:2] == (still_open, still_open)
+    db_client.patch(url, json={"status": "resolved"})
+    assert open_count() == (1, 1, "healthy")  # only the medium one is still open
+
+    listed = db_client.get("/api/v1/anomalies?status=resolved").json()["items"]
+    assert [item["id"] for item in listed] == [anomaly.id]
+    assert db_client.get(f"/api/v1/anomalies/{other.id}").json()["status"] == "open"
+
+
+@pytest.mark.parametrize(
+    ("body", "loc"),
+    [
+        ({"status": "closed"}, ["body", "status"]),
+        ({"status": None}, ["body", "status"]),
+        ({}, ["body", "status"]),
+        ({"status": "resolved", "severity": "low"}, ["body", "severity"]),  # only status can be changed
+        ({"status": "resolved", "note": "x"}, ["body", "note"]),
+    ],
+)
+def test_patching_an_anomaly_rejects_anything_but_a_valid_status(
+    db_client: TestClient, db_session: Session, agent: Agent, body: dict, loc: list
+) -> None:
+    anomaly = make_anomaly(db_session, make_execution(db_session, agent))
+    response = db_client.patch(f"/api/v1/anomalies/{anomaly.id}", json=body)
+    assert response.status_code == 422, response.text
+    error = response.json()["error"]
+    assert error["code"] == "validation_error" and error["details"][0]["loc"] == loc
+    assert db_client.get(f"/api/v1/anomalies/{anomaly.id}").json()["status"] == "open"
+
+
+def test_patching_an_unknown_anomaly_is_not_found(db_client: TestClient) -> None:
+    for anomaly_id in ("anm_" + "0" * 32, "nope"):
+        response = db_client.patch(f"/api/v1/anomalies/{anomaly_id}", json={"status": "resolved"})
+        assert response.status_code == 404, response.text
+        assert response.json()["error"]["code"] == "not_found"

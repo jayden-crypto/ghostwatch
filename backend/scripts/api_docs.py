@@ -4,8 +4,13 @@ Usage (from backend/):
     uv run python -m scripts.api_docs [base_url]
 
 The server should hold demo data (`cd demo && uv run python seed.py --all`), because the examples
-show the schema-change failure and the ghost-completion run. The script makes a few real writes:
-it re-registers the research-assistant agent and records one short execution.
+show the schema-change failure and the ghost-completion run. A demo replay worker with the parser
+fix must be running against the same server (`cd demo && uv run python replay.py worker --fixed`):
+the replay example is a real replay of that failure, run by the demo agent's own code.
+
+The script makes a few real writes: it re-registers the research-assistant agent, records one
+short execution, requests one sandbox replay, and acknowledges one anomaly and then puts its
+status back.
 
 Nothing in the generated examples is written by hand. Responses are shortened mechanically (see
 `shorten`), and the document says so.
@@ -13,6 +18,7 @@ Nothing in the generated examples is written by hand. Responses are shortened me
 
 import json
 import sys
+import time
 import uuid
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -69,8 +75,20 @@ def first(path: str) -> dict[str, Any]:
     return items[0]
 
 
+def replay_run_by_a_worker(replay_id: str, timeout: float = 30.0) -> None:
+    """Wait until a replay worker has run the replay; stop with instructions if none does."""
+    deadline = time.monotonic() + timeout
+    while client.get(f"/replays/{replay_id}").json()["status"] in ("pending", "claimed"):
+        if time.monotonic() > deadline:
+            raise SystemExit(
+                f"Replay {replay_id} was not run within {timeout:.0f} s. Start a worker against this server "
+                "first: cd demo && uv run python replay.py worker --fixed"
+            )
+        time.sleep(0.25)
+
+
 def build() -> str:
-    failed = first("/executions?status=failed&q=Research&limit=1")
+    failed = first("/executions?status=failed&is_replay=false&q=Research&limit=1")
     ghost = first("/anomalies?type=ghost_completion&limit=1")
     research = first("/agents?q=research-assistant")
 
@@ -141,6 +159,15 @@ def build() -> str:
             }
         ]
     }
+    replay_body = {"mode": "sandbox", "note": "After the parse_results fix"}
+    replay_request = example("POST", f"/executions/{failed['id']}/replay", body=replay_body)
+    replay_id = first(f"/replays?original_execution_id={failed['id']}&limit=1")["id"]
+    replay_run_by_a_worker(replay_id)
+
+    triaged = first("/anomalies?status=open&severity=medium&limit=1")
+    acknowledge = example("PATCH", f"/anomalies/{triaged['id']}", body={"status": "acknowledged"})
+    client.patch(f"/anomalies/{triaged['id']}", json={"status": triaged["status"]})  # leave it as it was
+
     examples = {
         "health": example("GET", "/health"),
         "register": register,
@@ -155,6 +182,10 @@ def build() -> str:
         "overview": example("GET", "/stats/overview?window=7d"),
         "timeseries": example("GET", "/stats/timeseries?window=7d", keep=2),
         "anomalies": example("GET", "/anomalies?severity=critical&limit=1"),
+        "acknowledge": acknowledge,
+        "replay_request": replay_request,
+        "replay_live": example("POST", f"/executions/{failed['id']}/replay", body={"mode": "live"}),
+        "replay": example("GET", f"/replays/{replay_id}", keep=4),
         "investigation": example("GET", f"/investigations/{failed['id']}", keep=2),
         "investigate": example("POST", f"/investigations/{ghost['execution_id']}", keep=1),
         "not_found": example("GET", "/executions/exe_00000000000000000000000000000000"),
@@ -231,8 +262,9 @@ Every non-2xx response has the same shape.
 | 401 | `unauthorized` | 🔑 endpoint called without the key, or with the wrong one |
 | 404 | `not_found` | Unknown id, or unknown route |
 | 409 | `execution_already_terminal` | A new non-log event for an execution that has ended |
-| 409 | `conflict` | Investigating an execution that is still running |
+| 409 | `conflict` | Investigating or replaying an execution that is still running; claiming a replay that is no longer pending |
 | 422 | `validation_error` | `details` is a list of `{loc, msg}`; `loc` is a path such as `["body", "slug"]` |
+| 422 | `side_effect_authorization_required` | A `live` replay requested without `authorize_side_effects: true` |
 | 500 | `internal_error` | Unexpected failure; the body never contains a stack trace |
 
 {{unauthorized}}
@@ -302,7 +334,7 @@ Starts a run in status `running`. Everything after this arrives as events.
 | `config` | object | `model`, `params`, `expected_steps`, `timeout_ms`, plus any extra keys. All four known keys are always present in responses |
 | `tags` | string[] | Optional |
 | `started_at` | timestamp | Optional; defaults to the server's clock |
-| `replay_of`, `replay_id` | id | Set by the replay worker |
+| `replay_of`, `replay_id` | id | Set by the replay worker. `replay_id` needs `replay_of`, and must be a replay of that execution that this worker has claimed (`409` otherwise) |
 
 `config.expected_steps` lists step names that must complete for the run to count as done (the ghost-completion
 rule). `config.timeout_ms` is how long the run may send nothing before it is timed out (default 300000).
@@ -333,6 +365,23 @@ All filters combine with AND.
 
 The summary plus `input`, `output`, `config`, `tokens_input`, `tokens_output`, `tags` and `replay_ids`.
 
+### Tokens and cost
+
+`tokens_input` and `tokens_output` are the sums over the steps that reported them, and `tokens_total` is their
+sum. All three are `null` when no step reported tokens.
+
+`cost_usd` is computed when the execution ends, from each step's own `model` and tokens, using the published
+Anthropic list prices in `backend/app/services/pricing.py` (the source and the date they were read are noted
+there). It is `null`, never `0` and never a partial sum, when:
+
+- no step reported tokens, or
+- any step that reported tokens has a model that is not in the price table, has no model, or reported only
+  input or only output.
+
+The figure covers reported input and output tokens at standard prices. Prompt-cache, batch and fast-mode
+pricing are not in it, because events do not carry that information. The demo's fake model, `demo-llm-1`, has
+no price, so every demo run shows `null`.
+
 ## Event ingestion
 
 Contract §5. Events are the only way an execution's state changes. The `events` table is append-only and is
@@ -350,8 +399,8 @@ Body: `{"events": [...]}` with 1 to 500 events. Each event has `seq` (starts at 
 - `step.completed` or `step.failed` for a step that was never started in this execution, or has already
   ended, is a `422`. A step id can be started once.
 - After a terminal event, a new non-`log` event is a `409 execution_already_terminal`.
-- A terminal event sets `ended_at`, `duration_ms` (from the client's timestamps, never negative) and token
-  totals, runs the anomaly rules, and queues an investigation if the run failed, timed out, or raised an
+- A terminal event sets `ended_at`, `duration_ms` (from the client's timestamps, never negative), token
+  totals and cost, runs the anomaly rules, and queues an investigation if the run failed, timed out, or raised an
   anomaly of `high` severity or above. Steps still running at that point are left running: that is evidence.
 
 {{ingest}}
@@ -372,7 +421,8 @@ Contract §6.
 
 The execution, its steps as a flat list sorted by `ordinal`, the anomalies raised on it, and `event_count`.
 Build the tree from `parent_step_id`. `depth` and `offset_ms` (start relative to the execution's start) are
-computed by the backend. A step whose parent is not in the execution is laid out as a root.
+computed by the backend. A step whose parent is not in the execution is laid out as a root. Every step of a
+replay's execution has `metadata.replay_source` (see Replays).
 
 This is the schema-change failure from the demo: `web_search` returned `data` and `meta`, and
 `parse_results` asked for `results`.
@@ -434,6 +484,14 @@ Contract §8. Eight deterministic rules run when an execution ends: `duration_sp
 
 One anomaly. `404` if unknown.
 
+### `PATCH /anomalies/{anomaly_id}`
+
+Body: `{"status": "open" | "acknowledged" | "resolved"}`. Returns the anomaly. Only the status can be changed,
+and any status may follow any other, so a resolved anomaly can be reopened. Only `open` anomalies count
+towards `open_anomalies` and towards an agent's `health`.
+
+{{acknowledge}}
+
 ## Investigations
 
 Contract §9. A report separates three things:
@@ -475,18 +533,91 @@ If one is already queued or running, that one is returned. If a completed one ex
 `Page<Investigation>` with reports, newest first. Query: `status` (comma-separated), `agent_id`, `sort`
 (`created_at`), `limit`, `offset`.
 
+## Replays
+
+Contract §10. The backend never runs agent code. A replay is a request that a **replay worker** picks up: a
+process that has the agent's code and the SDK (`ghostwatch.ReplayWorker`; for the demo,
+`cd demo && uv run python replay.py worker`). The worker runs the agent again with the original input, as a
+new execution linked to the original. Until a worker is running, a replay stays `pending`.
+
+What runs during a replay depends on `mode`:
+
+- **`sandbox`** (the default choice): no tool with side effects ever runs.
+  - A tool or model call the original execution made returns its recorded output, or raises its recorded
+    error. The function is not called.
+  - A call the original never made runs for real only if it is a model call or a tool declared
+    `side_effects=False`. Any other tool is blocked: its step fails with error type
+    `SandboxRecordingMissing`. A tool that does not declare `side_effects` counts as having them.
+- **`live`**: every tool runs for real. It is refused unless the request says `authorize_side_effects: true`.
+
+Every step of a replay's execution carries `metadata.replay_source`:
+
+| `replay_source` | Meaning |
+|---|---|
+| `recorded` | Served from the original run's recording; nothing was called |
+| `executed` | Ran for real in this replay |
+| `blocked` | Not recorded and not safe to run in a sandbox; the step failed without calling the tool |
+
+### `POST /executions/{execution_id}/replay`
+
+| Body field | Type | Notes |
+|---|---|---|
+| `mode` | `sandbox` or `live` | Required |
+| `authorize_side_effects` | boolean | Required to be the JSON value `true` for `live`; ignored for `sandbox` |
+| `note` | string or null | Optional, shown with the replay |
+
+Returns `201` with the replay in status `pending`. `409 conflict` while the execution is still running.
+
+{{replay_request}}
+
+A `live` replay without authorization:
+
+{{replay_live}}
+
+### `GET /replays/{replay_id}`
+
+Poll every 2 s while `status` is `pending` or `claimed`. `comparison` is `null` until the replay's execution
+has ended. A replay whose agent fails again is still `completed`: `outcome` says how the two runs compare.
+
+| `outcome` | Original | Replay |
+|---|---|---|
+| `fixed` | failed | completed |
+| `same_failure` | failed | failed at a step with the same name, with the same error type |
+| `different_failure` | failed | failed at another step, or with another error type |
+| `regressed` | completed | failed |
+| `both_succeeded` | completed | completed |
+| `inconclusive` | either run timed out or has not finished | |
+
+`step_diffs` aligns the two runs by step `ordinal` and name. `change` is `unchanged`, `status_changed`,
+`output_changed`, `added` (only in the replay) or `removed` (only in the original). `replay_source` repeats the
+replay step's `metadata.replay_source`, and is `null` for a `removed` step.
+
+This is the schema-change failure replayed in the sandbox after the parser was fixed: `web_search` was served
+from the recording, and `summarize`, which the original run never reached, ran for real.
+
+{{replay}}
+
+### `GET /replays`
+
+| Query | Notes |
+|---|---|
+| `original_execution_id` | Replays of this execution |
+| `status` | Comma-separated: `pending`, `claimed`, `completed`, `failed` |
+| `sort` | `requested_at` (default `-requested_at`) |
+| `limit`, `offset` | Pagination |
+
+### `POST /replays/{replay_id}/claim` 🔑
+
+For replay workers. Gives a `pending` replay to exactly one worker: the first claim wins and any later one is
+a `409 conflict`. The response is `{replay, bundle}`. `bundle.original_execution` is the execution being
+replayed, and `bundle.recorded_calls` lists its tool and model calls in order, each with `step_name`,
+`step_type`, `tool_name`, `occurrence` (1 for the first call of that tool or step name, 2 for the second, and
+so on), `input`, `output` and `error`. The worker then starts an execution with `replay_of` and `replay_id` set
+and sends its events as usual; when that execution ends, the replay becomes `completed`.
+
 ## Not implemented
 
-These are in the contract and are not built yet. They return the `404` envelope.
-
-| Endpoint | Status |
-|---|---|
-| `PATCH /anomalies/{anomaly_id}` | Not implemented (P1) |
-| `POST /executions/{execution_id}/replay` | Not implemented (P1) |
-| `GET /replays`, `GET /replays/{replay_id}` | Not implemented (P1) |
-| `POST /replays/{replay_id}/claim` | Not implemented (P1) |
-
-`cost_usd` is always `null` for now: the pricing table (P1) is not built, and a price is never guessed.
+Nothing: every endpoint in the contract is implemented.
 """
 
 if __name__ == "__main__":

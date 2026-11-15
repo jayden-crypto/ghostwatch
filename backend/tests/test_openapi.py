@@ -12,7 +12,7 @@ from app.main import create_app
 
 CONTRACT = (REPO_ROOT / "contract" / "API_CONTRACT.md").read_text()
 # Contract endpoints that are P1 and not built yet. This set may only shrink.
-NOT_IMPLEMENTED = {("PATCH", "/anomalies/{anomaly_id}")}
+NOT_IMPLEMENTED: set[tuple[str, str]] = set()
 ROW = re.compile(r"^\| (GET|POST|PATCH|PUT|DELETE)( 🔑)? \| `(/[^`?]*)", re.MULTILINE)
 
 

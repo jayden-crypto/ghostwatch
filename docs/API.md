@@ -69,8 +69,9 @@ curl -s "http://localhost:8000/api/v1/executions/exe_000000000000000000000000000
 | 401 | `unauthorized` | 🔑 endpoint called without the key, or with the wrong one |
 | 404 | `not_found` | Unknown id, or unknown route |
 | 409 | `execution_already_terminal` | A new non-log event for an execution that has ended |
-| 409 | `conflict` | Investigating an execution that is still running |
+| 409 | `conflict` | Investigating or replaying an execution that is still running; claiming a replay that is no longer pending |
 | 422 | `validation_error` | `details` is a list of `{loc, msg}`; `loc` is a path such as `["body", "slug"]` |
+| 422 | `side_effect_authorization_required` | A `live` replay requested without `authorize_side_effects: true` |
 | 500 | `internal_error` | Unexpected failure; the body never contains a stack trace |
 
 ```bash
@@ -189,37 +190,41 @@ curl -s -X POST "http://localhost:8000/api/v1/agents" \
 
 ```json
 {
- "id": "agt_1e4e2964568d4f6b932088e917020439",
+ "id": "agt_f6d299400ab940a6bf42d431d9728b6c",
  "name": "Research Assistant",
  "slug": "research-assistant",
  "description": "Answers a question from web search results.",
  "framework": "custom",
  "metadata": {},
- "created_at": "2026-11-14T20:38:34.836Z",
+ "created_at": "2026-11-15T11:15:55.670Z",
  "stats": {
-  "total_executions": 28,
-  "completed": 27,
+  "total_executions": 26,
+  "completed": 25,
   "failed": 1,
   "timed_out": 0,
   "running": 0,
-  "success_rate": 0.9642857142857143,
-  "avg_duration_ms": 781,
+  "success_rate": 0.9615384615384616,
+  "avg_duration_ms": 810,
   "open_anomalies": 0,
   "last_execution": {
-   "id": "exe_0e6892c38dcb45c0a7c73d5e69cb2a5a",
-   "agent_id": "agt_1e4e2964568d4f6b932088e917020439",
+   "id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+   "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
    "agent_name": "Research Assistant",
-   "status": "completed",
-   "started_at": "2026-11-14T20:39:08.214Z",
-   "ended_at": "2026-11-14T20:39:08.614Z",
-   "duration_ms": 400,
-   "step_count": 1,
+   "status": "failed",
+   "started_at": "2026-11-15T10:45:55.662Z",
+   "ended_at": "2026-11-15T10:45:56.048Z",
+   "duration_ms": 386,
+   "step_count": 3,
    "tokens_total": null,
    "cost_usd": null,
    "anomaly_count": 0,
-   "has_investigation": false,
+   "has_investigation": true,
    "replay_of": null,
-   "error": null
+   "error": {
+    "type": "KeyError",
+    "message": "'results'",
+    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 63, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 49, in parse_…"
+   }
   },
   "health": "healthy"
  }
@@ -245,13 +250,13 @@ curl -s "http://localhost:8000/api/v1/agents?health=failing,degraded&sort=name"
 {
  "items": [
   {
-   "id": "agt_ce1157da711e4712be2c6edfe8272a22",
+   "id": "agt_f53e145acaad4954891dcfa0896aafdc",
    "name": "Invoice Processor",
    "slug": "invoice-processor",
    "description": "Extracts invoice fields, validates them and submits the invoice for payment.",
    "framework": "custom",
    "metadata": {},
-   "created_at": "2026-11-14T20:38:35.625Z",
+   "created_at": "2026-11-15T11:15:56.579Z",
    "stats": {
     "total_executions": 26,
     "completed": 26,
@@ -262,12 +267,12 @@ curl -s "http://localhost:8000/api/v1/agents?health=failing,degraded&sort=name"
     "avg_duration_ms": 507,
     "open_anomalies": 1,
     "last_execution": {
-     "id": "exe_e5688ee8a1c54100b1e88ffb804a8498",
-     "agent_id": "agt_ce1157da711e4712be2c6edfe8272a22",
+     "id": "exe_9a46248f7b724e7bb3cfad6d4b33fbae",
+     "agent_id": "agt_f53e145acaad4954891dcfa0896aafdc",
      "agent_name": "Invoice Processor",
      "status": "completed",
-     "started_at": "2026-11-14T20:18:34.829Z",
-     "ended_at": "2026-11-14T20:18:35.052Z",
+     "started_at": "2026-11-15T10:55:55.662Z",
+     "ended_at": "2026-11-15T10:55:55.885Z",
      "duration_ms": 223,
      "step_count": 2,
      "tokens_total": null,
@@ -307,7 +312,7 @@ Starts a run in status `running`. Everything after this arrives as events.
 | `config` | object | `model`, `params`, `expected_steps`, `timeout_ms`, plus any extra keys. All four known keys are always present in responses |
 | `tags` | string[] | Optional |
 | `started_at` | timestamp | Optional; defaults to the server's clock |
-| `replay_of`, `replay_id` | id | Set by the replay worker |
+| `replay_of`, `replay_id` | id | Set by the replay worker. `replay_id` needs `replay_of`, and must be a replay of that execution that this worker has claimed (`409` otherwise) |
 
 `config.expected_steps` lists step names that must complete for the run to count as done (the ghost-completion
 rule). `config.timeout_ms` is how long the run may send nothing before it is timed out (default 300000).
@@ -316,18 +321,18 @@ rule). `config.timeout_ms` is how long the run may send nothing before it is tim
 curl -s -X POST "http://localhost:8000/api/v1/executions" \
   -H "Authorization: Bearer $GHOSTWATCH_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"agent_id": "agt_1e4e2964568d4f6b932088e917020439", "input": {"question": "How do teams trace what an AI agent did?"}, "config": {"model": "demo-llm-1", "expected_steps": ["web_search"]}, "tags": ["docs"], "started_at": "2026-11-14T20:39:29.748Z"}'
+  -d '{"agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c", "input": {"question": "How do teams trace what an AI agent did?"}, "config": {"model": "demo-llm-1", "expected_steps": ["web_search"]}, "tags": ["docs"], "started_at": "2026-11-15T11:16:03.297Z"}'
 ```
 
 `201`
 
 ```json
 {
- "id": "exe_cb3ebc646e3145b89f76795a4955d3d5",
- "agent_id": "agt_1e4e2964568d4f6b932088e917020439",
+ "id": "exe_d751b452d0b54ac5ac76bc669e417178",
+ "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
  "agent_name": "Research Assistant",
  "status": "running",
- "started_at": "2026-11-14T20:39:29.748Z",
+ "started_at": "2026-11-15T11:16:03.297Z",
  "ended_at": null,
  "duration_ms": null,
  "step_count": 0,
@@ -386,12 +391,12 @@ curl -s "http://localhost:8000/api/v1/executions?status=failed&sort=-started_at&
 {
  "items": [
   {
-   "id": "exe_40d8319b2ac749a7aae6c45d29129ead",
-   "agent_id": "agt_1e4e2964568d4f6b932088e917020439",
+   "id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+   "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
    "agent_name": "Research Assistant",
    "status": "failed",
-   "started_at": "2026-11-14T20:08:34.829Z",
-   "ended_at": "2026-11-14T20:08:35.215Z",
+   "started_at": "2026-11-15T10:45:55.662Z",
+   "ended_at": "2026-11-15T10:45:56.048Z",
    "duration_ms": 386,
    "step_count": 3,
    "tokens_total": null,
@@ -402,7 +407,7 @@ curl -s "http://localhost:8000/api/v1/executions?status=failed&sort=-started_at&
    "error": {
     "type": "KeyError",
     "message": "'results'",
-    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 42, in parse_…"
+    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 63, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 49, in parse_…"
    }
   }
  ],
@@ -415,6 +420,23 @@ curl -s "http://localhost:8000/api/v1/executions?status=failed&sort=-started_at&
 ### `GET /executions/{execution_id}`
 
 The summary plus `input`, `output`, `config`, `tokens_input`, `tokens_output`, `tags` and `replay_ids`.
+
+### Tokens and cost
+
+`tokens_input` and `tokens_output` are the sums over the steps that reported them, and `tokens_total` is their
+sum. All three are `null` when no step reported tokens.
+
+`cost_usd` is computed when the execution ends, from each step's own `model` and tokens, using the published
+Anthropic list prices in `backend/app/services/pricing.py` (the source and the date they were read are noted
+there). It is `null`, never `0` and never a partial sum, when:
+
+- no step reported tokens, or
+- any step that reported tokens has a model that is not in the price table, has no model, or reported only
+  input or only output.
+
+The figure covers reported input and output tokens at standard prices. Prompt-cache, batch and fast-mode
+pricing are not in it, because events do not carry that information. The demo's fake model, `demo-llm-1`, has
+no price, so every demo run shows `null`.
 
 ## Event ingestion
 
@@ -433,15 +455,15 @@ Body: `{"events": [...]}` with 1 to 500 events. Each event has `seq` (starts at 
 - `step.completed` or `step.failed` for a step that was never started in this execution, or has already
   ended, is a `422`. A step id can be started once.
 - After a terminal event, a new non-`log` event is a `409 execution_already_terminal`.
-- A terminal event sets `ended_at`, `duration_ms` (from the client's timestamps, never negative) and token
-  totals, runs the anomaly rules, and queues an investigation if the run failed, timed out, or raised an
+- A terminal event sets `ended_at`, `duration_ms` (from the client's timestamps, never negative), token
+  totals and cost, runs the anomaly rules, and queues an investigation if the run failed, timed out, or raised an
   anomaly of `high` severity or above. Steps still running at that point are left running: that is evidence.
 
 ```bash
-curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f76795a4955d3d5/events" \
+curl -s -X POST "http://localhost:8000/api/v1/executions/exe_d751b452d0b54ac5ac76bc669e417178/events" \
   -H "Authorization: Bearer $GHOSTWATCH_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"events": [{"seq": 1, "type": "step.started", "timestamp": "2026-11-14T20:39:29.758Z", "payload": {"step_id": "stp_b72aef838d024908ad7a0ca685a4de2c", "name": "web_search", "step_type": "tool_call", "tool_name": "web_search", "input": {"query": "agent tracing"}}}, {"seq": 2, "type": "step.completed", "timestamp": "2026-11-14T20:39:30.128Z", "payload": {"step_id": "stp_b72aef838d024908ad7a0ca685a4de2c", "output": {"results": [], "total": 0}}}, {"seq": 3, "type": "execution.completed", "timestamp": "2026-11-14T20:39:30.148Z", "payload": {"output": {"answer": "…"}}}]}'
+  -d '{"events": [{"seq": 1, "type": "step.started", "timestamp": "2026-11-15T11:16:03.307Z", "payload": {"step_id": "stp_e8ba6d742b8340fc8faae6aeabc8d96d", "name": "web_search", "step_type": "tool_call", "tool_name": "web_search", "input": {"query": "agent tracing"}}}, {"seq": 2, "type": "step.completed", "timestamp": "2026-11-15T11:16:03.677Z", "payload": {"step_id": "stp_e8ba6d742b8340fc8faae6aeabc8d96d", "output": {"results": [], "total": 0}}}, {"seq": 3, "type": "execution.completed", "timestamp": "2026-11-15T11:16:03.697Z", "payload": {"output": {"answer": "…"}}}]}'
 ```
 
 `202`
@@ -457,10 +479,10 @@ curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f7
 Sending the same batch again:
 
 ```bash
-curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f76795a4955d3d5/events" \
+curl -s -X POST "http://localhost:8000/api/v1/executions/exe_d751b452d0b54ac5ac76bc669e417178/events" \
   -H "Authorization: Bearer $GHOSTWATCH_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"events": [{"seq": 1, "type": "step.started", "timestamp": "2026-11-14T20:39:29.758Z", "payload": {"step_id": "stp_b72aef838d024908ad7a0ca685a4de2c", "name": "web_search", "step_type": "tool_call", "tool_name": "web_search", "input": {"query": "agent tracing"}}}, {"seq": 2, "type": "step.completed", "timestamp": "2026-11-14T20:39:30.128Z", "payload": {"step_id": "stp_b72aef838d024908ad7a0ca685a4de2c", "output": {"results": [], "total": 0}}}, {"seq": 3, "type": "execution.completed", "timestamp": "2026-11-14T20:39:30.148Z", "payload": {"output": {"answer": "…"}}}]}'
+  -d '{"events": [{"seq": 1, "type": "step.started", "timestamp": "2026-11-15T11:16:03.307Z", "payload": {"step_id": "stp_e8ba6d742b8340fc8faae6aeabc8d96d", "name": "web_search", "step_type": "tool_call", "tool_name": "web_search", "input": {"query": "agent tracing"}}}, {"seq": 2, "type": "step.completed", "timestamp": "2026-11-15T11:16:03.677Z", "payload": {"step_id": "stp_e8ba6d742b8340fc8faae6aeabc8d96d", "output": {"results": [], "total": 0}}}, {"seq": 3, "type": "execution.completed", "timestamp": "2026-11-15T11:16:03.697Z", "payload": {"output": {"answer": "…"}}}]}'
 ```
 
 `202`
@@ -476,10 +498,10 @@ curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f7
 A new step event after the execution has ended:
 
 ```bash
-curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f76795a4955d3d5/events" \
+curl -s -X POST "http://localhost:8000/api/v1/executions/exe_d751b452d0b54ac5ac76bc669e417178/events" \
   -H "Authorization: Bearer $GHOSTWATCH_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"events": [{"seq": 4, "type": "step.started", "timestamp": "2026-11-14T20:39:30.648Z", "payload": {"step_id": "stp_d601cb4d30a04166b94669c8768573a0", "name": "late", "step_type": "custom"}}]}'
+  -d '{"events": [{"seq": 4, "type": "step.started", "timestamp": "2026-11-15T11:16:04.197Z", "payload": {"step_id": "stp_3dc5c11c428c49f5b188bb32499fb1b0", "name": "late", "step_type": "custom"}}]}'
 ```
 
 `409`
@@ -488,7 +510,7 @@ curl -s -X POST "http://localhost:8000/api/v1/executions/exe_cb3ebc646e3145b89f7
 {
  "error": {
   "code": "execution_already_terminal",
-  "message": "Execution exe_cb3ebc646e3145b89f76795a4955d3d5 is already completed; only log events are accepted.",
+  "message": "Execution exe_d751b452d0b54ac5ac76bc669e417178 is already completed; only log events are accepted.",
   "details": {
    "execution_status": "completed",
    "rejected_seq": 4
@@ -505,13 +527,14 @@ Contract §6.
 
 The execution, its steps as a flat list sorted by `ordinal`, the anomalies raised on it, and `event_count`.
 Build the tree from `parent_step_id`. `depth` and `offset_ms` (start relative to the execution's start) are
-computed by the backend. A step whose parent is not in the execution is laid out as a root.
+computed by the backend. A step whose parent is not in the execution is laid out as a root. Every step of a
+replay's execution has `metadata.replay_source` (see Replays).
 
 This is the schema-change failure from the demo: `web_search` returned `data` and `meta`, and
 `parse_results` asked for `results`.
 
 ```bash
-curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d29129ead/trace"
+curl -s "http://localhost:8000/api/v1/executions/exe_a1e6a27c39894b4a91f897b6c131e741/trace"
 ```
 
 `200`
@@ -519,12 +542,12 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
 ```json
 {
  "execution": {
-  "id": "exe_40d8319b2ac749a7aae6c45d29129ead",
-  "agent_id": "agt_1e4e2964568d4f6b932088e917020439",
+  "id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+  "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
   "agent_name": "Research Assistant",
   "status": "failed",
-  "started_at": "2026-11-14T20:08:34.829Z",
-  "ended_at": "2026-11-14T20:08:35.215Z",
+  "started_at": "2026-11-15T10:45:55.662Z",
+  "ended_at": "2026-11-15T10:45:56.048Z",
   "duration_ms": 386,
   "step_count": 3,
   "tokens_total": null,
@@ -535,7 +558,7 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
   "error": {
    "type": "KeyError",
    "message": "'results'",
-   "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 42, in parse_…"
+   "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 63, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 49, in parse_…"
   },
   "input": {
    "question": "How do teams trace what an AI agent did?"
@@ -558,20 +581,22 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
   "tags": [
    "demo"
   ],
-  "replay_ids": []
+  "replay_ids": [
+   "rpl_954ff24367b540b1b34b61dd688a0123"
+  ]
  },
  "steps": [
   {
-   "id": "stp_d9d5f7795a20471bab61ebaf56f73017",
-   "execution_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+   "id": "stp_e2021e113daf4b5cbf7ba05c7e460f4c",
+   "execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
    "parent_step_id": null,
    "ordinal": 1,
    "depth": 0,
    "name": "plan",
    "type": "reasoning",
    "status": "completed",
-   "started_at": "2026-11-14T20:08:34.830Z",
-   "ended_at": "2026-11-14T20:08:34.831Z",
+   "started_at": "2026-11-15T10:45:55.663Z",
+   "ended_at": "2026-11-15T10:45:55.664Z",
    "duration_ms": 1,
    "offset_ms": 1,
    "input": {
@@ -589,16 +614,16 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
    "metadata": {}
   },
   {
-   "id": "stp_2c45922b0984485ea95593c00a2b91e3",
-   "execution_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+   "id": "stp_c733bd2a2b344f7bb61084f31a88de5f",
+   "execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
    "parent_step_id": null,
    "ordinal": 2,
    "depth": 0,
    "name": "web_search",
    "type": "tool_call",
    "status": "completed",
-   "started_at": "2026-11-14T20:08:34.832Z",
-   "ended_at": "2026-11-14T20:08:35.212Z",
+   "started_at": "2026-11-15T10:45:55.665Z",
+   "ended_at": "2026-11-15T10:45:56.045Z",
    "duration_ms": 380,
    "offset_ms": 3,
    "input": {
@@ -638,16 +663,16 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
    }
   },
   {
-   "id": "stp_52c2ec9b42604237b472bd57e6ecc406",
-   "execution_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+   "id": "stp_91f5f3f5e84d446bbbe1b2f06cffa577",
+   "execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
    "parent_step_id": null,
    "ordinal": 3,
    "depth": 0,
    "name": "parse_results",
    "type": "reasoning",
    "status": "failed",
-   "started_at": "2026-11-14T20:08:35.213Z",
-   "ended_at": "2026-11-14T20:08:35.214Z",
+   "started_at": "2026-11-15T10:45:56.046Z",
+   "ended_at": "2026-11-15T10:45:56.047Z",
    "duration_ms": 1,
    "offset_ms": 384,
    "input": {
@@ -660,7 +685,7 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
    "error": {
     "type": "KeyError",
     "message": "'results'",
-    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 42, in parse_…"
+    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 63, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 49, in parse_…"
    },
    "tool_name": null,
    "model": null,
@@ -680,7 +705,7 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
 The raw event log in `seq` order, exactly as stored. Paginated.
 
 ```bash
-curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d29129ead/events?limit=2"
+curl -s "http://localhost:8000/api/v1/executions/exe_a1e6a27c39894b4a91f897b6c131e741/events?limit=2"
 ```
 
 `200`
@@ -689,11 +714,11 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
 {
  "items": [
   {
-   "id": "evt_7d11feb5a67d419babff8c572cc48937",
+   "id": "evt_feebf5eb720545cf90385e08faec5967",
    "seq": 1,
    "type": "step.started",
-   "timestamp": "2026-11-14T20:08:34.830Z",
-   "received_at": "2026-11-14T20:38:35.593Z",
+   "timestamp": "2026-11-15T10:45:55.663Z",
+   "received_at": "2026-11-15T11:15:56.547Z",
    "payload": {
     "name": "plan",
     "input": {
@@ -701,7 +726,7 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
     },
     "model": null,
     "attempt": 1,
-    "step_id": "stp_d9d5f7795a20471bab61ebaf56f73017",
+    "step_id": "stp_e2021e113daf4b5cbf7ba05c7e460f4c",
     "metadata": {},
     "step_type": "reasoning",
     "tool_name": null,
@@ -709,16 +734,16 @@ curl -s "http://localhost:8000/api/v1/executions/exe_40d8319b2ac749a7aae6c45d291
    }
   },
   {
-   "id": "evt_e8499d5586704b53a7cbd90abeab8d51",
+   "id": "evt_608373f2220a49a4bef27129043d17be",
    "seq": 2,
    "type": "step.completed",
-   "timestamp": "2026-11-14T20:08:34.831Z",
-   "received_at": "2026-11-14T20:38:35.593Z",
+   "timestamp": "2026-11-15T10:45:55.664Z",
+   "received_at": "2026-11-15T11:15:56.547Z",
    "payload": {
     "output": {
      "query": "how do teams trace what an ai agent did"
     },
-    "step_id": "stp_d9d5f7795a20471bab61ebaf56f73017",
+    "step_id": "stp_e2021e113daf4b5cbf7ba05c7e460f4c",
     "metadata": {},
     "tokens_input": null,
     "tokens_output": null
@@ -751,13 +776,13 @@ curl -s "http://localhost:8000/api/v1/stats/overview?window=7d"
 {
  "window": "7d",
  "total_agents": 3,
- "total_executions": 82,
- "completed": 81,
+ "total_executions": 81,
+ "completed": 80,
  "failed": 1,
  "timed_out": 0,
  "running": 0,
- "success_rate": 0.9878048780487805,
- "avg_duration_ms": 906,
+ "success_rate": 0.9876543209876543,
+ "avg_duration_ms": 914,
  "open_anomalies": 3
 }
 ```
@@ -780,18 +805,18 @@ curl -s "http://localhost:8000/api/v1/stats/timeseries?window=7d"
  "bucket": "day",
  "points": [
   {
-   "bucket_start": "2026-11-08T00:00:00.000Z",
-   "completed": 3,
+   "bucket_start": "2026-11-09T00:00:00.000Z",
+   "completed": 9,
    "failed": 0,
    "timed_out": 0,
-   "avg_duration_ms": 881
+   "avg_duration_ms": 870
   },
   {
-   "bucket_start": "2026-11-09T00:00:00.000Z",
+   "bucket_start": "2026-11-10T00:00:00.000Z",
    "completed": 12,
    "failed": 0,
    "timed_out": 0,
-   "avg_duration_ms": 820
+   "avg_duration_ms": 828
   },
   "… 5 more"
  ]
@@ -831,14 +856,14 @@ curl -s "http://localhost:8000/api/v1/anomalies?severity=critical&limit=1"
 {
  "items": [
   {
-   "id": "anm_84a81f36057e47b696b8a5d3b7db9170",
+   "id": "anm_fab9f1bfc8bf4601bfe9fac08276cfbc",
    "type": "ghost_completion",
    "severity": "critical",
    "status": "open",
-   "agent_id": "agt_ce1157da711e4712be2c6edfe8272a22",
+   "agent_id": "agt_f53e145acaad4954891dcfa0896aafdc",
    "agent_name": "Invoice Processor",
-   "execution_id": "exe_e5688ee8a1c54100b1e88ffb804a8498",
-   "detected_at": "2026-11-14T20:38:36.265Z",
+   "execution_id": "exe_9a46248f7b724e7bb3cfad6d4b33fbae",
+   "detected_at": "2026-11-15T11:15:57.448Z",
    "rule_id": "ghost_completion.v1",
    "title": "Reported completed, but submit_invoice never completed",
    "explanation": "The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all.",
@@ -846,7 +871,7 @@ curl -s "http://localhost:8000/api/v1/anomalies?severity=critical&limit=1"
     {
      "kind": "execution",
      "label": "Expected step submit_invoice never started",
-     "ref_id": "exe_e5688ee8a1c54100b1e88ffb804a8498",
+     "ref_id": "exe_9a46248f7b724e7bb3cfad6d4b33fbae",
      "field": "config.expected_steps",
      "observed": [
       "extract_fields",
@@ -871,6 +896,48 @@ curl -s "http://localhost:8000/api/v1/anomalies?severity=critical&limit=1"
 ### `GET /anomalies/{anomaly_id}`
 
 One anomaly. `404` if unknown.
+
+### `PATCH /anomalies/{anomaly_id}`
+
+Body: `{"status": "open" | "acknowledged" | "resolved"}`. Returns the anomaly. Only the status can be changed,
+and any status may follow any other, so a resolved anomaly can be reopened. Only `open` anomalies count
+towards `open_anomalies` and towards an agent's `health`.
+
+```bash
+curl -s -X PATCH "http://localhost:8000/api/v1/anomalies/anm_9b7a2ee16f194c3d9817ddbfb6bd6e14" \
+  -H 'Content-Type: application/json' \
+  -d '{"status": "acknowledged"}'
+```
+
+`200`
+
+```json
+{
+ "id": "anm_9b7a2ee16f194c3d9817ddbfb6bd6e14",
+ "type": "excessive_retries",
+ "severity": "medium",
+ "status": "acknowledged",
+ "agent_id": "agt_03c1773cfa0c45eb97a6c3bf4debfa87",
+ "agent_name": "Support Triage",
+ "execution_id": "exe_316d93f94cad476b9e1ba097fa97fbd7",
+ "detected_at": "2026-11-15T11:15:58.238Z",
+ "rule_id": "excessive_retries.v1",
+ "title": "2 retried steps, highest attempt 3",
+ "explanation": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5.",
+ "evidence": [
+  {
+   "kind": "step",
+   "label": "Step 4 retrieve_kb (attempt 3) is a retry",
+   "ref_id": "stp_8530996309044783856d79485841d8ff",
+   "field": "attempt",
+   "observed": 3,
+   "expected": "below 3",
+   "excerpt": null
+  },
+  "… 1 more"
+ ]
+}
+```
 
 ## Investigations
 
@@ -899,25 +966,25 @@ The latest investigation of the execution, or `404`. `report` is `null` until `s
 Poll every 2 s while `status` is `queued` or `running`.
 
 ```bash
-curl -s "http://localhost:8000/api/v1/investigations/exe_40d8319b2ac749a7aae6c45d29129ead"
+curl -s "http://localhost:8000/api/v1/investigations/exe_a1e6a27c39894b4a91f897b6c131e741"
 ```
 
 `200`
 
 ```json
 {
- "id": "inv_c4bce4bfbbcd4f9f9c1c524f75ce21e0",
- "execution_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+ "id": "inv_4252727d000b4ba59212db04ffb747b0",
+ "execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
  "status": "completed",
  "trigger": "auto_failure",
  "provider": "rule_based",
  "model": null,
- "created_at": "2026-11-14T20:38:35.609Z",
- "completed_at": "2026-11-14T20:38:35.630Z",
+ "created_at": "2026-11-15T11:15:56.564Z",
+ "completed_at": "2026-11-15T11:15:56.591Z",
  "error": null,
  "report": {
   "summary": "The execution failed at Step 3 parse_results with KeyError: 'results'. The root cause is confirmed by the deterministic signature missing_key_in_upstream_output.",
-  "failing_step_id": "stp_52c2ec9b42604237b472bd57e6ecc406",
+  "failing_step_id": "stp_91f5f3f5e84d446bbbe1b2f06cffa577",
   "root_cause": {
    "status": "confirmed",
    "statement": "Step 3 parse_results read the key 'results', which the output of Step 2 web_search (tool web_search) does not contain. That output's keys are: data, meta.",
@@ -932,7 +999,7 @@ curl -s "http://localhost:8000/api/v1/investigations/exe_40d8319b2ac749a7aae6c45
      {
       "kind": "execution",
       "label": "Final status of the execution",
-      "ref_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+      "ref_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
       "field": "status",
       "observed": "failed",
       "expected": null,
@@ -947,7 +1014,7 @@ curl -s "http://localhost:8000/api/v1/investigations/exe_40d8319b2ac749a7aae6c45
      {
       "kind": "execution",
       "label": "Terminal error of the execution",
-      "ref_id": "exe_40d8319b2ac749a7aae6c45d29129ead",
+      "ref_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
       "field": "error.message",
       "observed": "'results'",
       "expected": null,
@@ -980,8 +1047,8 @@ curl -s "http://localhost:8000/api/v1/investigations/exe_40d8319b2ac749a7aae6c45
   ],
   "evidence_gaps": [],
   "relevant_step_ids": [
-   "stp_2c45922b0984485ea95593c00a2b91e3",
-   "stp_52c2ec9b42604237b472bd57e6ecc406"
+   "stp_c733bd2a2b344f7bb61084f31a88de5f",
+   "stp_91f5f3f5e84d446bbbe1b2f06cffa577"
   ]
  }
 }
@@ -994,21 +1061,21 @@ If one is already queued or running, that one is returned. If a completed one ex
 `200` unless `force` is set. `409 conflict` while the execution is still running.
 
 ```bash
-curl -s -X POST "http://localhost:8000/api/v1/investigations/exe_e5688ee8a1c54100b1e88ffb804a8498"
+curl -s -X POST "http://localhost:8000/api/v1/investigations/exe_9a46248f7b724e7bb3cfad6d4b33fbae"
 ```
 
 `200`
 
 ```json
 {
- "id": "inv_e8eac6f5f70d431bbbb4063877e09088",
- "execution_id": "exe_e5688ee8a1c54100b1e88ffb804a8498",
+ "id": "inv_2d8ee14e1ea44b9fa5131a02953bd844",
+ "execution_id": "exe_9a46248f7b724e7bb3cfad6d4b33fbae",
  "status": "completed",
  "trigger": "auto_anomaly",
  "provider": "rule_based",
  "model": null,
- "created_at": "2026-11-14T20:38:36.268Z",
- "completed_at": "2026-11-14T20:38:36.281Z",
+ "created_at": "2026-11-15T11:15:57.451Z",
+ "completed_at": "2026-11-15T11:15:57.465Z",
  "error": null,
  "report": {
   "summary": "The execution completed. Anomalies raised on it: ghost_completion. The root cause is confirmed by the deterministic signature ghost_completion.",
@@ -1027,7 +1094,7 @@ curl -s -X POST "http://localhost:8000/api/v1/investigations/exe_e5688ee8a1c5410
      {
       "kind": "execution",
       "label": "Final status of the execution",
-      "ref_id": "exe_e5688ee8a1c54100b1e88ffb804a8498",
+      "ref_id": "exe_9a46248f7b724e7bb3cfad6d4b33fbae",
       "field": "status",
       "observed": "completed",
       "expected": null,
@@ -1069,15 +1136,231 @@ curl -s -X POST "http://localhost:8000/api/v1/investigations/exe_e5688ee8a1c5410
 `Page<Investigation>` with reports, newest first. Query: `status` (comma-separated), `agent_id`, `sort`
 (`created_at`), `limit`, `offset`.
 
+## Replays
+
+Contract §10. The backend never runs agent code. A replay is a request that a **replay worker** picks up: a
+process that has the agent's code and the SDK (`ghostwatch.ReplayWorker`; for the demo,
+`cd demo && uv run python replay.py worker`). The worker runs the agent again with the original input, as a
+new execution linked to the original. Until a worker is running, a replay stays `pending`.
+
+What runs during a replay depends on `mode`:
+
+- **`sandbox`** (the default choice): no tool with side effects ever runs.
+  - A tool or model call the original execution made returns its recorded output, or raises its recorded
+    error. The function is not called.
+  - A call the original never made runs for real only if it is a model call or a tool declared
+    `side_effects=False`. Any other tool is blocked: its step fails with error type
+    `SandboxRecordingMissing`. A tool that does not declare `side_effects` counts as having them.
+- **`live`**: every tool runs for real. It is refused unless the request says `authorize_side_effects: true`.
+
+Every step of a replay's execution carries `metadata.replay_source`:
+
+| `replay_source` | Meaning |
+|---|---|
+| `recorded` | Served from the original run's recording; nothing was called |
+| `executed` | Ran for real in this replay |
+| `blocked` | Not recorded and not safe to run in a sandbox; the step failed without calling the tool |
+
+### `POST /executions/{execution_id}/replay`
+
+| Body field | Type | Notes |
+|---|---|---|
+| `mode` | `sandbox` or `live` | Required |
+| `authorize_side_effects` | boolean | Required to be the JSON value `true` for `live`; ignored for `sandbox` |
+| `note` | string or null | Optional, shown with the replay |
+
+Returns `201` with the replay in status `pending`. `409 conflict` while the execution is still running.
+
+```bash
+curl -s -X POST "http://localhost:8000/api/v1/executions/exe_a1e6a27c39894b4a91f897b6c131e741/replay" \
+  -H 'Content-Type: application/json' \
+  -d '{"mode": "sandbox", "note": "After the parse_results fix"}'
+```
+
+`201`
+
+```json
+{
+ "id": "rpl_954ff24367b540b1b34b61dd688a0123",
+ "original_execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+ "replay_execution_id": null,
+ "mode": "sandbox",
+ "status": "pending",
+ "side_effects_authorized": false,
+ "note": "After the parse_results fix",
+ "requested_at": "2026-11-15T11:16:05.320Z",
+ "claimed_at": null,
+ "completed_at": null,
+ "error": null,
+ "comparison": null
+}
+```
+
+A `live` replay without authorization:
+
+```bash
+curl -s -X POST "http://localhost:8000/api/v1/executions/exe_a1e6a27c39894b4a91f897b6c131e741/replay" \
+  -H 'Content-Type: application/json' \
+  -d '{"mode": "live"}'
+```
+
+`422`
+
+```json
+{
+ "error": {
+  "code": "side_effect_authorization_required",
+  "message": "A live replay runs the agent's tools for real. Set authorize_side_effects to true to confirm, or use mode sandbox.",
+  "details": null
+ }
+}
+```
+
+### `GET /replays/{replay_id}`
+
+Poll every 2 s while `status` is `pending` or `claimed`. `comparison` is `null` until the replay's execution
+has ended. A replay whose agent fails again is still `completed`: `outcome` says how the two runs compare.
+
+| `outcome` | Original | Replay |
+|---|---|---|
+| `fixed` | failed | completed |
+| `same_failure` | failed | failed at a step with the same name, with the same error type |
+| `different_failure` | failed | failed at another step, or with another error type |
+| `regressed` | completed | failed |
+| `both_succeeded` | completed | completed |
+| `inconclusive` | either run timed out or has not finished | |
+
+`step_diffs` aligns the two runs by step `ordinal` and name. `change` is `unchanged`, `status_changed`,
+`output_changed`, `added` (only in the replay) or `removed` (only in the original). `replay_source` repeats the
+replay step's `metadata.replay_source`, and is `null` for a `removed` step.
+
+This is the schema-change failure replayed in the sandbox after the parser was fixed: `web_search` was served
+from the recording, and `summarize`, which the original run never reached, ran for real.
+
+```bash
+curl -s "http://localhost:8000/api/v1/replays/rpl_954ff24367b540b1b34b61dd688a0123"
+```
+
+`200`
+
+```json
+{
+ "id": "rpl_954ff24367b540b1b34b61dd688a0123",
+ "original_execution_id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+ "replay_execution_id": "exe_a7c1e40d45724dd79ec22b3d9b77db00",
+ "mode": "sandbox",
+ "status": "completed",
+ "side_effects_authorized": false,
+ "note": "After the parse_results fix",
+ "requested_at": "2026-11-15T11:16:05.320Z",
+ "claimed_at": "2026-11-15T11:16:05.903Z",
+ "completed_at": "2026-11-15T11:16:06.554Z",
+ "error": null,
+ "comparison": {
+  "original": {
+   "id": "exe_a1e6a27c39894b4a91f897b6c131e741",
+   "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
+   "agent_name": "Research Assistant",
+   "status": "failed",
+   "started_at": "2026-11-15T10:45:55.662Z",
+   "ended_at": "2026-11-15T10:45:56.048Z",
+   "duration_ms": 386,
+   "step_count": 3,
+   "tokens_total": null,
+   "cost_usd": null,
+   "anomaly_count": 0,
+   "has_investigation": true,
+   "replay_of": null,
+   "error": {
+    "type": "KeyError",
+    "message": "'results'",
+    "stacktrace": "Traceback (most recent call last):\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 63, in run\n    sources = parse_results(payload)\n  File \"/Users/jayden/Desktop/ghostwatch/demo/agents/research_assistant.py\", line 49, in parse_…"
+   }
+  },
+  "replay": {
+   "id": "exe_a7c1e40d45724dd79ec22b3d9b77db00",
+   "agent_id": "agt_f6d299400ab940a6bf42d431d9728b6c",
+   "agent_name": "Research Assistant",
+   "status": "completed",
+   "started_at": "2026-11-15T11:16:05.923Z",
+   "ended_at": "2026-11-15T11:16:06.425Z",
+   "duration_ms": 502,
+   "step_count": 4,
+   "tokens_total": 199,
+   "cost_usd": null,
+   "anomaly_count": 0,
+   "has_investigation": false,
+   "replay_of": "exe_a1e6a27c39894b4a91f897b6c131e741",
+   "error": null
+  },
+  "outcome": "fixed",
+  "duration_delta_ms": 116,
+  "tokens_delta": null,
+  "step_count_delta": 1,
+  "step_diffs": [
+   {
+    "ordinal": 1,
+    "name": "plan",
+    "original_step_id": "stp_e2021e113daf4b5cbf7ba05c7e460f4c",
+    "replay_step_id": "stp_5bc0369815a14412a8fb369a6749b0af",
+    "change": "unchanged",
+    "original_status": "completed",
+    "replay_status": "completed",
+    "replay_source": "executed"
+   },
+   {
+    "ordinal": 2,
+    "name": "web_search",
+    "original_step_id": "stp_c733bd2a2b344f7bb61084f31a88de5f",
+    "replay_step_id": "stp_88ff38ae1ef1451896870dff19fb21d5",
+    "change": "unchanged",
+    "original_status": "completed",
+    "replay_status": "completed",
+    "replay_source": "recorded"
+   },
+   {
+    "ordinal": 3,
+    "name": "parse_results",
+    "original_step_id": "stp_91f5f3f5e84d446bbbe1b2f06cffa577",
+    "replay_step_id": "stp_b88535a7fa8e46c58ca93b6e8183301c",
+    "change": "status_changed",
+    "original_status": "failed",
+    "replay_status": "completed",
+    "replay_source": "executed"
+   },
+   {
+    "ordinal": 4,
+    "name": "summarize",
+    "original_step_id": null,
+    "replay_step_id": "stp_2b1bb5ede205436c8396d906c012c4a2",
+    "change": "added",
+    "original_status": null,
+    "replay_status": "completed",
+    "replay_source": "executed"
+   }
+  ]
+ }
+}
+```
+
+### `GET /replays`
+
+| Query | Notes |
+|---|---|
+| `original_execution_id` | Replays of this execution |
+| `status` | Comma-separated: `pending`, `claimed`, `completed`, `failed` |
+| `sort` | `requested_at` (default `-requested_at`) |
+| `limit`, `offset` | Pagination |
+
+### `POST /replays/{replay_id}/claim` 🔑
+
+For replay workers. Gives a `pending` replay to exactly one worker: the first claim wins and any later one is
+a `409 conflict`. The response is `{replay, bundle}`. `bundle.original_execution` is the execution being
+replayed, and `bundle.recorded_calls` lists its tool and model calls in order, each with `step_name`,
+`step_type`, `tool_name`, `occurrence` (1 for the first call of that tool or step name, 2 for the second, and
+so on), `input`, `output` and `error`. The worker then starts an execution with `replay_of` and `replay_id` set
+and sends its events as usual; when that execution ends, the replay becomes `completed`.
+
 ## Not implemented
 
-These are in the contract and are not built yet. They return the `404` envelope.
-
-| Endpoint | Status |
-|---|---|
-| `PATCH /anomalies/{anomaly_id}` | Not implemented (P1) |
-| `POST /executions/{execution_id}/replay` | Not implemented (P1) |
-| `GET /replays`, `GET /replays/{replay_id}` | Not implemented (P1) |
-| `POST /replays/{replay_id}/claim` | Not implemented (P1) |
-
-`cost_usd` is always `null` for now: the pricing table (P1) is not built, and a price is never guessed.
+Nothing: every endpoint in the contract is implemented.
