@@ -244,6 +244,24 @@ describe("replays", () => {
   });
 });
 
+describe("running executions", () => {
+  it("places a running execution at the present, with its events two seconds old", async () => {
+    const now = Date.parse("2027-01-01T00:00:00.000Z");
+    const api = createMockApi({ latency: () => 0, state: () => null, now: () => now });
+    const trace = await api.getTrace(byKey("running"));
+    const events = await api.listEvents(byKey("running"));
+    expect(Date.parse(events.items.at(-1)!.timestamp)).toBe(now - 2_000);
+    expect(Date.parse(trace.execution.started_at)).toBeLessThan(now - 2_000);
+    expect(trace.steps.at(-1)).toMatchObject({ status: "running", ended_at: null });
+    // Offsets come from the API and must still agree with the moved timestamps.
+    for (const step of trace.steps) {
+      expect(Date.parse(step.started_at) - Date.parse(trace.execution.started_at)).toBe(step.offset_ms);
+    }
+    const [first] = (await api.listExecutions({ limit: 1 })).items;
+    expect(first.id).toBe(byKey("running"));
+  });
+});
+
 describe("debug states", () => {
   it("__state=empty empties every list and zeroes the stats", async () => {
     const { api } = setup("empty");
@@ -252,6 +270,12 @@ describe("debug states", () => {
     }
     expect(await api.statsOverview("7d")).toMatchObject({ total_executions: 0, success_rate: null, avg_duration_ms: null });
     expect((await api.statsTimeseries({ window: "7d" })).points.every((p) => p.completed === 0 && p.avg_duration_ms === null)).toBe(true);
+  });
+
+  it("__state=large gives a trace 250 generated steps", async () => {
+    const trace = await setup("large").api.getTrace(byKey("healthy"));
+    expect(trace.steps).toHaveLength(250);
+    expect(trace.execution.step_count).toBe(250);
   });
 
   it("__state=error fails every request with internal_error", async () => {

@@ -160,6 +160,33 @@
   }
 }
 
+/* A step that has not ended: its bar is striped and the stripes drift, so "still running" reads at a glance. */
+.bar-live {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 4px,
+    color-mix(in oklab, var(--background) 45%, transparent) 4px 8px
+  );
+  background-size: 22.63px 22.63px;
+  animation: bar-live 1.2s linear infinite;
+}
+@keyframes bar-live {
+  to {
+    background-position: 22.63px 0;
+  }
+}
+
+/* A row a deep link landed on: a tint that fades, so the eye finds the step. */
+.row-flash {
+  background: color-mix(in oklab, var(--running) 28%, transparent);
+  animation: row-flash 1.6s ease-out forwards;
+}
+@keyframes row-flash {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

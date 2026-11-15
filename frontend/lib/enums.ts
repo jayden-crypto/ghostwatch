@@ -127,6 +127,21 @@ export const TONE_BORDER: Record<Tone, string> = {
   subtle: "border-fg-subtle",
 };
 
+/** Left-edge accents (anomaly rows, banners). Written out so Tailwind sees each class. */
+export const TONE_BORDER_LEFT: Record<Tone, string> = {
+  completed: "border-l-completed",
+  failed: "border-l-failed",
+  "timed-out": "border-l-timed-out",
+  running: "border-l-running",
+  "sev-low": "border-l-sev-low",
+  "sev-medium": "border-l-sev-medium",
+  "sev-high": "border-l-sev-high",
+  "sev-critical": "border-l-sev-critical",
+  fg: "border-l-fg",
+  muted: "border-l-fg-muted",
+  subtle: "border-l-fg-subtle",
+};
+
 export interface EnumMeta {
   label: string;
   icon: LucideIcon;

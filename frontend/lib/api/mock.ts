@@ -6,9 +6,11 @@
  * computed from the same executions the lists return. Every call waits 150–400 ms so loading
  * states are visible.
  *
- * Debug override, handled here and nowhere else: `?__state=empty` makes the world empty and
- * `?__state=error` makes every request fail, so each view's empty and error states can be seen.
+ * Debug override, handled here and nowhere else: `?__state=empty` makes the world empty,
+ * `?__state=error` makes every request fail, and `?__state=large` gives every trace 250 generated
+ * steps, so each view's empty, error and heavy states can be seen.
  */
+import { withSyntheticSteps } from "@/lib/trace/synthetic";
 import { fixtures } from "@/mocks/fixtures";
 
 import type { GhostwatchApi } from "./client";
@@ -31,7 +33,7 @@ import {
   type Trace,
 } from "./types";
 
-export type MockState = "empty" | "error" | null;
+export type MockState = "empty" | "error" | "large" | null;
 
 export interface MockOptions {
   /** Milliseconds each call waits. */
@@ -39,6 +41,8 @@ export interface MockOptions {
   state?: () => MockState;
   /** Monotonic milliseconds; drives how an investigation started here moves from queued to completed. */
   clock?: () => number;
+  /** Wall-clock milliseconds, used to place executions that are still running. */
+  now?: () => number;
 }
 
 const HOUR = 3_600_000;
@@ -53,7 +57,7 @@ const COMPLETED_MS = 4_000;
 function stateFromUrl(): MockState {
   if (typeof window === "undefined") return null;
   const value = new URLSearchParams(window.location.search).get("__state");
-  return value === "empty" || value === "error" ? value : null;
+  return value === "empty" || value === "error" || value === "large" ? value : null;
 }
 
 const fail = (code: ErrorCode, message: string, details: Json = null): never => {
@@ -82,6 +86,7 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
   const latency = options.latency ?? (() => 150 + Math.random() * 250);
   const state = options.state ?? stateFromUrl;
   const clock = options.clock ?? (() => performance.now());
+  const now = options.now ?? (() => Date.now());
 
   // The fixtures are the database. Rows that requests can change are copied first.
   const named = <T>(prefix: string): Map<ID, T> =>
@@ -99,6 +104,31 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
     investigations: structuredClone(fixtures["investigations.list"].items),
     replays: structuredClone(fixtures["replays.list"].items),
   };
+  // The fixtures are a snapshot, but an execution that is still running is "now" by definition.
+  // Its timestamps are moved so its latest event happened two seconds ago; nothing else changes.
+  for (const execution of db.executions.filter((e) => e.status === "running")) {
+    const trace = db.traces.get(execution.id);
+    const events = db.events.get(execution.id)?.items ?? [];
+    const latest = Math.max(Date.parse(execution.started_at), ...events.map((event) => Date.parse(event.timestamp)));
+    const shift = now() - 2_000 - latest;
+    const move = (timestamp: string) => new Date(Date.parse(timestamp) + shift).toISOString();
+    execution.started_at = move(execution.started_at);
+    if (trace) {
+      trace.execution.started_at = execution.started_at;
+      for (const step of trace.steps) {
+        step.started_at = move(step.started_at);
+        if (step.ended_at) step.ended_at = move(step.ended_at);
+      }
+    }
+    for (const event of events) {
+      event.timestamp = move(event.timestamp);
+      event.received_at = move(event.received_at);
+    }
+    for (const agent of db.agents) {
+      if (agent.stats.last_execution?.id === execution.id) agent.stats.last_execution.started_at = execution.started_at;
+    }
+  }
+
   /** Investigations started here that have not completed yet, by execution id. */
   const inFlight = new Map<ID, { startedAt: number; result: Investigation }>();
 
@@ -198,7 +228,8 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
 
     getExecution: (executionId) => respond(() => traceOrFail(executionId).execution),
 
-    getTrace: (executionId) => respond(() => traceOrFail(executionId)),
+    getTrace: (executionId) =>
+      respond(() => (state() === "large" ? withSyntheticSteps(traceOrFail(executionId), 250) : traceOrFail(executionId))),
 
     listEvents: (executionId, params) =>
       respond(() => {

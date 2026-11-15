@@ -7,7 +7,7 @@
     "build": "npm run -s sync-fixtures && next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "npm run -s sync-fixtures && tsc --noEmit",
+    "typecheck": "npm run -s sync-fixtures && next typegen && tsc --noEmit",
     "build-fixtures": "tsx scripts/build-fixtures.ts",
     "validate-fixtures": "tsx scripts/validate-fixtures.ts",
     "sync-fixtures": "tsx scripts/sync-fixtures.ts",
