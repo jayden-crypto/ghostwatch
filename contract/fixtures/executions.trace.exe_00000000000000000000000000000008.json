@@ -1,0 +1,204 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000008",
+    "agent_id": "agt_00000000000000000000000000000001",
+    "agent_name": "Research Assistant",
+    "status": "completed",
+    "started_at": "2026-11-14T16:52:10.264Z",
+    "ended_at": "2026-11-14T16:52:11.041Z",
+    "duration_ms": 777,
+    "step_count": 4,
+    "tokens_total": 197,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "question": "How do teams trace what an AI agent did?"
+    },
+    "output": {
+      "answer": "Based on 3 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered. Deterministic replay turns a production failure into a local test case.",
+      "sources": [
+        "Agent observability: tracing every step",
+        "Why silent failures are the hardest agent bugs",
+        "Replaying agent runs against recorded inputs"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_results": 3
+      },
+      "expected_steps": [
+        "web_search",
+        "parse_results",
+        "summarize"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 135,
+    "tokens_output": 62,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000000801",
+      "execution_id": "exe_00000000000000000000000000000008",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "plan",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T16:52:10.265Z",
+      "ended_at": "2026-11-14T16:52:10.266Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "question": "How do teams trace what an AI agent did?"
+      },
+      "output": {
+        "query": "how do teams trace what an ai agent did"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000802",
+      "execution_id": "exe_00000000000000000000000000000008",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "web_search",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T16:52:10.267Z",
+      "ended_at": "2026-11-14T16:52:10.590Z",
+      "duration_ms": 323,
+      "offset_ms": 3,
+      "input": {
+        "query": "how do teams trace what an ai agent did",
+        "max_results": 3
+      },
+      "output": {
+        "results": [
+          {
+            "title": "Agent observability: tracing every step",
+            "url": "https://example.test/agent-observability",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "url": "https://example.test/silent-failures",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          },
+          {
+            "title": "Replaying agent runs against recorded inputs",
+            "url": "https://example.test/replay",
+            "snippet": "Deterministic replay turns a production failure into a local test case."
+          }
+        ],
+        "total": 3
+      },
+      "error": null,
+      "tool_name": "web_search",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000000803",
+      "execution_id": "exe_00000000000000000000000000000008",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "parse_results",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T16:52:10.591Z",
+      "ended_at": "2026-11-14T16:52:10.592Z",
+      "duration_ms": 1,
+      "offset_ms": 327,
+      "input": {
+        "response_keys": [
+          "results",
+          "total"
+        ]
+      },
+      "output": {
+        "sources": [
+          "Agent observability: tracing every step",
+          "Why silent failures are the hardest agent bugs",
+          "Replaying agent runs against recorded inputs"
+        ]
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000804",
+      "execution_id": "exe_00000000000000000000000000000008",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "summarize",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T16:52:10.593Z",
+      "ended_at": "2026-11-14T16:52:11.040Z",
+      "duration_ms": 447,
+      "offset_ms": 329,
+      "input": {
+        "question": "How do teams trace what an AI agent did?",
+        "sources": [
+          {
+            "title": "Agent observability: tracing every step",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          },
+          {
+            "title": "Replaying agent runs against recorded inputs",
+            "snippet": "Deterministic replay turns a production failure into a local test case."
+          }
+        ]
+      },
+      "output": {
+        "text": "Based on 3 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered. Deterministic replay turns a production failure into a local test case.",
+        "usage": {
+          "input_tokens": 135,
+          "output_tokens": 62
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 135,
+      "tokens_output": 62,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 9
+}

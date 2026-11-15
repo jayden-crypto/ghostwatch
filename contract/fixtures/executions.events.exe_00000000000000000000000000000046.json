@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000046001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T17:30:58.398Z",
+      "received_at": "2026-11-13T17:30:58.906Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004601",
+        "parent_step_id": null,
+        "name": "classify",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "The export button does nothing when I click it."
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T17:30:58.872Z",
+      "received_at": "2026-11-13T17:30:58.906Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004601",
+        "output": {
+          "text": "bug",
+          "usage": {
+            "input_tokens": 28,
+            "output_tokens": 1
+          }
+        },
+        "tokens_input": 28,
+        "tokens_output": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T17:30:58.873Z",
+      "received_at": "2026-11-13T17:30:58.906Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004602",
+        "parent_step_id": null,
+        "name": "retrieve_kb",
+        "step_type": "tool_call",
+        "input": {
+          "category": "bug"
+        },
+        "tool_name": "retrieve_kb",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T17:30:59.126Z",
+      "received_at": "2026-11-13T17:30:59.406Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004602",
+        "output": {
+          "articles": [
+            {
+              "id": "KB-330",
+              "title": "Reporting a reproducible bug",
+              "body": "Include steps, expected and actual."
+            }
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T17:30:59.127Z",
+      "received_at": "2026-11-13T17:30:59.406Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004603",
+        "parent_step_id": null,
+        "name": "draft_reply",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "The export button does nothing when I click it.",
+          "articles": [
+            {
+              "id": "KB-330",
+              "title": "Reporting a reproducible bug",
+              "body": "Include steps, expected and actual."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T17:30:59.570Z",
+      "received_at": "2026-11-13T17:30:59.906Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004603",
+        "output": {
+          "text": "Thanks for getting in touch. Include steps, expected and actual.",
+          "usage": {
+            "input_tokens": 56,
+            "output_tokens": 16
+          }
+        },
+        "tokens_input": 56,
+        "tokens_output": 16,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000046007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T17:30:59.571Z",
+      "received_at": "2026-11-13T17:30:59.906Z",
+      "payload": {
+        "output": {
+          "category": "bug",
+          "reply": "Thanks for getting in touch. Include steps, expected and actual.",
+          "articles": [
+            "KB-330"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

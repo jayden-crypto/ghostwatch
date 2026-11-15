@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000044001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T07:55:19.074Z",
+      "received_at": "2026-11-13T07:55:19.582Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004401",
+        "parent_step_id": null,
+        "name": "classify",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "The dashboard crashes when I filter by date."
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T07:55:19.500Z",
+      "received_at": "2026-11-13T07:55:19.582Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004401",
+        "output": {
+          "text": "bug",
+          "usage": {
+            "input_tokens": 27,
+            "output_tokens": 1
+          }
+        },
+        "tokens_input": 27,
+        "tokens_output": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T07:55:19.501Z",
+      "received_at": "2026-11-13T07:55:19.582Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004402",
+        "parent_step_id": null,
+        "name": "retrieve_kb",
+        "step_type": "tool_call",
+        "input": {
+          "category": "bug"
+        },
+        "tool_name": "retrieve_kb",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T07:55:19.757Z",
+      "received_at": "2026-11-13T07:55:20.082Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004402",
+        "output": {
+          "articles": [
+            {
+              "id": "KB-330",
+              "title": "Reporting a reproducible bug",
+              "body": "Include steps, expected and actual."
+            }
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T07:55:19.758Z",
+      "received_at": "2026-11-13T07:55:20.082Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004403",
+        "parent_step_id": null,
+        "name": "draft_reply",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "The dashboard crashes when I filter by date.",
+          "articles": [
+            {
+              "id": "KB-330",
+              "title": "Reporting a reproducible bug",
+              "body": "Include steps, expected and actual."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T07:55:20.209Z",
+      "received_at": "2026-11-13T07:55:20.582Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004403",
+        "output": {
+          "text": "Thanks for getting in touch. Include steps, expected and actual.",
+          "usage": {
+            "input_tokens": 55,
+            "output_tokens": 16
+          }
+        },
+        "tokens_input": 55,
+        "tokens_output": 16,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000044007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T07:55:20.210Z",
+      "received_at": "2026-11-13T07:55:20.582Z",
+      "payload": {
+        "output": {
+          "category": "bug",
+          "reply": "Thanks for getting in touch. Include steps, expected and actual.",
+          "articles": [
+            "KB-330"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

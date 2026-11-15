@@ -1,0 +1,40 @@
+{
+  "id": "anm_0000000000000000000000000000000e",
+  "type": "ghost_completion",
+  "severity": "critical",
+  "status": "open",
+  "agent_id": "agt_00000000000000000000000000000002",
+  "agent_name": "Invoice Processor",
+  "execution_id": "exe_00000000000000000000000000000028",
+  "detected_at": "2026-11-14T17:28:40.366Z",
+  "rule_id": "ghost_completion.v1",
+  "title": "Reported completed, but submit_invoice never completed",
+  "explanation": "The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all.",
+  "evidence": [
+    {
+      "kind": "execution",
+      "label": "Expected step submit_invoice never started",
+      "ref_id": "exe_00000000000000000000000000000028",
+      "field": "config.expected_steps",
+      "observed": [
+        "extract_fields",
+        "validate"
+      ],
+      "expected": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "excerpt": null
+    },
+    {
+      "kind": "event",
+      "label": "Warning logged at event 4",
+      "ref_id": "evt_00000000000000000000000000028004",
+      "field": "payload.message",
+      "observed": "validation skipped: validation service returned HTTP 503",
+      "expected": null,
+      "excerpt": "validation skipped: validation service returned HTTP 503"
+    }
+  ]
+}

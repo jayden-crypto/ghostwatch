@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "llm_unavailable",
+    "message": "The LLM provider is not available and the rule-based fallback is disabled.",
+    "details": null
+  }
+}

@@ -1,0 +1,154 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000047001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T07:15:09.822Z",
+      "received_at": "2026-11-14T07:15:10.330Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004701",
+        "parent_step_id": null,
+        "name": "classify",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "Two-factor login keeps rejecting my code."
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T07:15:10.299Z",
+      "received_at": "2026-11-14T07:15:10.330Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004701",
+        "output": {
+          "text": "access",
+          "usage": {
+            "input_tokens": 27,
+            "output_tokens": 2
+          }
+        },
+        "tokens_input": 27,
+        "tokens_output": 2,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T07:15:10.300Z",
+      "received_at": "2026-11-14T07:15:10.330Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004702",
+        "parent_step_id": null,
+        "name": "retrieve_kb",
+        "step_type": "tool_call",
+        "input": {
+          "category": "access"
+        },
+        "tool_name": "retrieve_kb",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T07:15:10.543Z",
+      "received_at": "2026-11-14T07:15:10.830Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004702",
+        "output": {
+          "articles": [
+            {
+              "id": "KB-204",
+              "title": "Resetting two-factor login",
+              "body": "Use a recovery code, then re-enrol."
+            }
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T07:15:10.544Z",
+      "received_at": "2026-11-14T07:15:10.830Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004703",
+        "parent_step_id": null,
+        "name": "draft_reply",
+        "step_type": "llm_call",
+        "input": {
+          "ticket": "Two-factor login keeps rejecting my code.",
+          "articles": [
+            {
+              "id": "KB-204",
+              "title": "Resetting two-factor login",
+              "body": "Use a recovery code, then re-enrol."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T07:15:11.007Z",
+      "received_at": "2026-11-14T07:15:11.330Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000004703",
+        "output": {
+          "text": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+          "usage": {
+            "input_tokens": 54,
+            "output_tokens": 16
+          }
+        },
+        "tokens_input": 54,
+        "tokens_output": 16,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000047007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T07:15:11.008Z",
+      "received_at": "2026-11-14T07:15:11.330Z",
+      "payload": {
+        "output": {
+          "category": "access",
+          "reply": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+          "articles": [
+            "KB-204"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

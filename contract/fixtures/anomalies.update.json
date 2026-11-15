@@ -1,0 +1,26 @@
+{
+  "id": "anm_00000000000000000000000000000005",
+  "type": "unexpected_pattern",
+  "severity": "low",
+  "status": "acknowledged",
+  "agent_id": "agt_00000000000000000000000000000002",
+  "agent_name": "Invoice Processor",
+  "execution_id": "exe_00000000000000000000000000000027",
+  "detected_at": "2026-11-14T10:40:18.161Z",
+  "rule_id": "unexpected_pattern.v1",
+  "title": "New tool in this run: convert_currency",
+  "explanation": "Compared with the last 6 completed runs of invoice-processor, it called 1 tool never seen in the baseline: convert_currency (baseline tools: submit_invoice). Rule fires on a tool never seen in the baseline or on step_count above 2× the baseline maximum.",
+  "evidence": [
+    {
+      "kind": "step",
+      "label": "Step 3 convert_currency calls a tool not seen in the baseline",
+      "ref_id": "stp_00000000000000000000000000002703",
+      "field": "tool_name",
+      "observed": "convert_currency",
+      "expected": [
+        "submit_invoice"
+      ],
+      "excerpt": null
+    }
+  ]
+}

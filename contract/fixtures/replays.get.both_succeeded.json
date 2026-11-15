@@ -1,0 +1,113 @@
+{
+  "id": "rpl_00000000000000000000000000000001",
+  "original_execution_id": "exe_00000000000000000000000000000048",
+  "replay_execution_id": "exe_0000000000000000000000000000004b",
+  "mode": "live",
+  "status": "completed",
+  "side_effects_authorized": true,
+  "note": "Knowledge base rate limit raised; checking the run goes through.",
+  "requested_at": "2026-11-14T13:31:03.522Z",
+  "claimed_at": "2026-11-14T13:31:05.242Z",
+  "completed_at": "2026-11-14T13:31:06.837Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_00000000000000000000000000000048",
+      "agent_id": "agt_00000000000000000000000000000003",
+      "agent_name": "Support Triage",
+      "status": "completed",
+      "started_at": "2026-11-14T13:05:22.445Z",
+      "ended_at": "2026-11-14T13:05:24.664Z",
+      "duration_ms": 2219,
+      "step_count": 5,
+      "tokens_total": 107,
+      "cost_usd": null,
+      "anomaly_count": 1,
+      "has_investigation": false,
+      "replay_of": null,
+      "error": null
+    },
+    "replay": {
+      "id": "exe_0000000000000000000000000000004b",
+      "agent_id": "agt_00000000000000000000000000000003",
+      "agent_name": "Support Triage",
+      "status": "completed",
+      "started_at": "2026-11-14T13:31:05.672Z",
+      "ended_at": "2026-11-14T13:31:06.813Z",
+      "duration_ms": 1141,
+      "step_count": 3,
+      "tokens_total": 107,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": false,
+      "replay_of": "exe_00000000000000000000000000000048",
+      "error": null
+    },
+    "outcome": "both_succeeded",
+    "duration_delta_ms": -1078,
+    "tokens_delta": 0,
+    "step_count_delta": -2,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "classify",
+        "original_step_id": "stp_00000000000000000000000000004801",
+        "replay_step_id": "stp_00000000000000000000000000004b01",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 2,
+        "name": "retrieve_kb",
+        "original_step_id": "stp_00000000000000000000000000004802",
+        "replay_step_id": "stp_00000000000000000000000000004b02",
+        "change": "status_changed",
+        "original_status": "failed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 3,
+        "name": "retrieve_kb",
+        "original_step_id": "stp_00000000000000000000000000004803",
+        "replay_step_id": null,
+        "change": "removed",
+        "original_status": "failed",
+        "replay_status": null,
+        "replay_source": null
+      },
+      {
+        "ordinal": 3,
+        "name": "draft_reply",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000004b03",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 4,
+        "name": "retrieve_kb",
+        "original_step_id": "stp_00000000000000000000000000004804",
+        "replay_step_id": null,
+        "change": "removed",
+        "original_status": "completed",
+        "replay_status": null,
+        "replay_source": null
+      },
+      {
+        "ordinal": 5,
+        "name": "draft_reply",
+        "original_step_id": "stp_00000000000000000000000000004805",
+        "replay_step_id": null,
+        "change": "removed",
+        "original_status": "completed",
+        "replay_status": null,
+        "replay_source": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,200 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000027",
+    "agent_id": "agt_00000000000000000000000000000002",
+    "agent_name": "Invoice Processor",
+    "status": "completed",
+    "started_at": "2026-11-14T10:40:17.482Z",
+    "ended_at": "2026-11-14T10:40:18.161Z",
+    "duration_ms": 679,
+    "step_count": 4,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 1,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "document": "Invoice: INV-2043\nVendor: Fabrikam Freight\nTotal: 312.75\nCurrency: EUR"
+    },
+    "output": {
+      "status": "processed",
+      "invoice_number": "INV-2043"
+    },
+    "config": {
+      "model": null,
+      "params": {},
+      "expected_steps": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000002701",
+      "execution_id": "exe_00000000000000000000000000000027",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "extract_fields",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T10:40:17.483Z",
+      "ended_at": "2026-11-14T10:40:17.484Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "document": "Invoice: INV-2043\nVendor: Fabrikam Freight\nTotal: 312.75\nCurrency: EUR"
+      },
+      "output": {
+        "invoice_number": "INV-2043",
+        "vendor": "Fabrikam Freight",
+        "total": 312.75,
+        "currency": "EUR"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002702",
+      "execution_id": "exe_00000000000000000000000000000027",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "validate",
+      "type": "custom",
+      "status": "completed",
+      "started_at": "2026-11-14T10:40:17.485Z",
+      "ended_at": "2026-11-14T10:40:17.695Z",
+      "duration_ms": 210,
+      "offset_ms": 3,
+      "input": {
+        "invoice_number": "INV-2043",
+        "vendor": "Fabrikam Freight",
+        "total": 312.75,
+        "currency": "EUR"
+      },
+      "output": {
+        "valid": true,
+        "problems": []
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002703",
+      "execution_id": "exe_00000000000000000000000000000027",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "convert_currency",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T10:40:17.696Z",
+      "ended_at": "2026-11-14T10:40:17.871Z",
+      "duration_ms": 175,
+      "offset_ms": 214,
+      "input": {
+        "amount": 312.75,
+        "from": "EUR",
+        "to": "USD"
+      },
+      "output": {
+        "amount": 337.77,
+        "rate": 1.08
+      },
+      "error": null,
+      "tool_name": "convert_currency",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000002704",
+      "execution_id": "exe_00000000000000000000000000000027",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "submit_invoice",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T10:40:17.872Z",
+      "ended_at": "2026-11-14T10:40:18.160Z",
+      "duration_ms": 288,
+      "offset_ms": 390,
+      "input": {
+        "invoice": {
+          "invoice_number": "INV-2043",
+          "vendor": "Fabrikam Freight",
+          "total": 312.75,
+          "currency": "EUR"
+        }
+      },
+      "output": {
+        "submission_id": "SUB-INV-2043",
+        "status": "accepted"
+      },
+      "error": null,
+      "tool_name": "submit_invoice",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": true
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_00000000000000000000000000000005",
+      "type": "unexpected_pattern",
+      "severity": "low",
+      "status": "acknowledged",
+      "agent_id": "agt_00000000000000000000000000000002",
+      "agent_name": "Invoice Processor",
+      "execution_id": "exe_00000000000000000000000000000027",
+      "detected_at": "2026-11-14T10:40:18.161Z",
+      "rule_id": "unexpected_pattern.v1",
+      "title": "New tool in this run: convert_currency",
+      "explanation": "Compared with the last 6 completed runs of invoice-processor, it called 1 tool never seen in the baseline: convert_currency (baseline tools: submit_invoice). Rule fires on a tool never seen in the baseline or on step_count above 2× the baseline maximum.",
+      "evidence": [
+        {
+          "kind": "step",
+          "label": "Step 3 convert_currency calls a tool not seen in the baseline",
+          "ref_id": "stp_00000000000000000000000000002703",
+          "field": "tool_name",
+          "observed": "convert_currency",
+          "expected": [
+            "submit_invoice"
+          ],
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 9
+}

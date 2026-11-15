@@ -1,0 +1,40 @@
+{
+  "id": "agt_00000000000000000000000000000002",
+  "name": "Invoice Processor",
+  "slug": "invoice-processor",
+  "description": "Extracts invoice fields, validates them and submits the invoice for payment.",
+  "framework": "custom",
+  "metadata": {},
+  "created_at": "2026-11-12T08:00:01.391Z",
+  "stats": {
+    "total_executions": 9,
+    "completed": 8,
+    "failed": 1,
+    "timed_out": 0,
+    "running": 0,
+    "success_rate": 0.8888888888888888,
+    "avg_duration_ms": 457,
+    "open_anomalies": 1,
+    "last_execution": {
+      "id": "exe_00000000000000000000000000000029",
+      "agent_id": "agt_00000000000000000000000000000002",
+      "agent_name": "Invoice Processor",
+      "status": "failed",
+      "started_at": "2026-11-14T17:52:06.737Z",
+      "ended_at": "2026-11-14T17:52:06.951Z",
+      "duration_ms": 214,
+      "step_count": 2,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": "exe_00000000000000000000000000000028",
+      "error": {
+        "type": "ValidationUnavailable",
+        "message": "validation service returned HTTP 503",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+      }
+    },
+    "health": "failing"
+  }
+}

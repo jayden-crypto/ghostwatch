@@ -1,0 +1,154 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000044",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-13T07:55:19.073Z",
+    "ended_at": "2026-11-13T07:55:20.210Z",
+    "duration_ms": 1137,
+    "step_count": 3,
+    "tokens_total": 99,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "The dashboard crashes when I filter by date."
+    },
+    "output": {
+      "category": "bug",
+      "reply": "Thanks for getting in touch. Include steps, expected and actual.",
+      "articles": [
+        "KB-330"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 82,
+    "tokens_output": 17,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004401",
+      "execution_id": "exe_00000000000000000000000000000044",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T07:55:19.074Z",
+      "ended_at": "2026-11-13T07:55:19.500Z",
+      "duration_ms": 426,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "The dashboard crashes when I filter by date."
+      },
+      "output": {
+        "text": "bug",
+        "usage": {
+          "input_tokens": 27,
+          "output_tokens": 1
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 27,
+      "tokens_output": 1,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004402",
+      "execution_id": "exe_00000000000000000000000000000044",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T07:55:19.501Z",
+      "ended_at": "2026-11-13T07:55:19.757Z",
+      "duration_ms": 256,
+      "offset_ms": 428,
+      "input": {
+        "category": "bug"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-330",
+            "title": "Reporting a reproducible bug",
+            "body": "Include steps, expected and actual."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004403",
+      "execution_id": "exe_00000000000000000000000000000044",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T07:55:19.758Z",
+      "ended_at": "2026-11-13T07:55:20.209Z",
+      "duration_ms": 451,
+      "offset_ms": 685,
+      "input": {
+        "ticket": "The dashboard crashes when I filter by date.",
+        "articles": [
+          {
+            "id": "KB-330",
+            "title": "Reporting a reproducible bug",
+            "body": "Include steps, expected and actual."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Include steps, expected and actual.",
+        "usage": {
+          "input_tokens": 55,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 55,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}

@@ -1,0 +1,65 @@
+{
+  "replay": {
+    "id": "rpl_00000000000000000000000000000008",
+    "original_execution_id": "exe_00000000000000000000000000000065",
+    "replay_execution_id": null,
+    "mode": "sandbox",
+    "status": "claimed",
+    "side_effects_authorized": false,
+    "note": null,
+    "requested_at": "2026-11-14T17:59:53.200Z",
+    "claimed_at": "2026-11-14T17:59:54.500Z",
+    "completed_at": null,
+    "error": null,
+    "comparison": null
+  },
+  "bundle": {
+    "original_execution": {
+      "id": "exe_00000000000000000000000000000065",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "status": "timed_out",
+      "started_at": "2026-11-13T18:00:00.421Z",
+      "ended_at": "2026-11-13T18:02:24.464Z",
+      "duration_ms": 144043,
+      "step_count": 2,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 1,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": {
+        "type": "TimeoutError",
+        "message": "Execution timed out after 144043 ms.",
+        "stacktrace": null
+      },
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": null,
+      "config": {
+        "model": "claude-haiku-5-5",
+        "params": {
+          "batch_size": 20
+        },
+        "expected_steps": [
+          "fetch_tickets",
+          "summarize",
+          "send_digest"
+        ],
+        "timeout_ms": 120000,
+        "schedule": "0 */6 * * *"
+      },
+      "tokens_input": null,
+      "tokens_output": null,
+      "tags": [
+        "scheduled"
+      ],
+      "replay_ids": [
+        "rpl_00000000000000000000000000000008"
+      ]
+    },
+    "recorded_calls": []
+  }
+}

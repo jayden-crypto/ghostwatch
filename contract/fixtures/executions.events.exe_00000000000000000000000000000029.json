@@ -1,0 +1,103 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000029001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:52:06.738Z",
+      "received_at": "2026-11-14T17:52:07.246Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002901",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000029002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T17:52:06.739Z",
+      "received_at": "2026-11-14T17:52:07.246Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002901",
+        "output": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000029003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:52:06.740Z",
+      "received_at": "2026-11-14T17:52:07.246Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002902",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000029004",
+      "seq": 4,
+      "type": "step.failed",
+      "timestamp": "2026-11-14T17:52:06.950Z",
+      "received_at": "2026-11-14T17:52:07.246Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002902",
+        "error": {
+          "type": "ValidationUnavailable",
+          "message": "validation service returned HTTP 503",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000029005",
+      "seq": 5,
+      "type": "execution.failed",
+      "timestamp": "2026-11-14T17:52:06.951Z",
+      "received_at": "2026-11-14T17:52:07.246Z",
+      "payload": {
+        "error": {
+          "type": "ValidationUnavailable",
+          "message": "validation service returned HTTP 503",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+        }
+      }
+    }
+  ],
+  "total": 5,
+  "limit": 200,
+  "offset": 0
+}

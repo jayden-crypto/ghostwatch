@@ -1,0 +1,268 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000007",
+    "agent_id": "agt_00000000000000000000000000000001",
+    "agent_name": "Research Assistant",
+    "status": "completed",
+    "started_at": "2026-11-14T11:07:29.733Z",
+    "ended_at": "2026-11-14T11:07:34.530Z",
+    "duration_ms": 4797,
+    "step_count": 4,
+    "tokens_total": 77018,
+    "cost_usd": null,
+    "anomaly_count": 2,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "question": "How does schema drift break API consumers?"
+    },
+    "output": {
+      "_truncated": true,
+      "original_bytes": 154380,
+      "preview": "{\"answer\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent"
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_results": 3
+      },
+      "expected_steps": [
+        "web_search",
+        "parse_results",
+        "summarize"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 38743,
+    "tokens_output": 38275,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000000701",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "plan",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T11:07:29.734Z",
+      "ended_at": "2026-11-14T11:07:29.735Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "question": "How does schema drift break API consumers?"
+      },
+      "output": {
+        "query": "how does schema drift break api consumers"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000702",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "web_search",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T11:07:29.736Z",
+      "ended_at": "2026-11-14T11:07:31.576Z",
+      "duration_ms": 1840,
+      "offset_ms": 3,
+      "input": {
+        "query": "how does schema drift break api consumers",
+        "max_results": 3
+      },
+      "output": {
+        "_truncated": true,
+        "original_bytes": 155915,
+        "preview": "{\"results\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model "
+      },
+      "error": null,
+      "tool_name": "web_search",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000000703",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "parse_results",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T11:07:31.577Z",
+      "ended_at": "2026-11-14T11:07:31.578Z",
+      "duration_ms": 1,
+      "offset_ms": 1844,
+      "input": {
+        "response_keys": [
+          "results",
+          "total"
+        ]
+      },
+      "output": {
+        "sources": [
+          "Agent observability: tracing every step (part 1)",
+          "Why silent failures are the hardest agent bugs (part 2)",
+          "Retry strategies for rate-limited tools (part 3)",
+          "Schema drift in upstream APIs (part 4)",
+          "Replaying agent runs against recorded inputs (part 5)",
+          "Baselines for agent latency and token use (part 6)",
+          "Agent observability: tracing every step (part 7)",
+          "Why silent failures are the hardest agent bugs (part 8)",
+          "Retry strategies for rate-limited tools (part 9)",
+          "Schema drift in upstream APIs (part 10)",
+          "Replaying agent runs against recorded inputs (part 11)",
+          "Baselines for agent latency and token use (part 12)",
+          "Agent observability: tracing every step (part 13)",
+          "Why silent failures are the hardest agent bugs (part 14)",
+          "Retry strategies for rate-limited tools (part 15)",
+          "Schema drift in upstream APIs (part 16)",
+          "Replaying agent runs against recorded inputs (part 17)",
+          "Baselines for agent latency and token use (part 18)",
+          "Agent observability: tracing every step (part 19)",
+          "Why silent failures are the hardest agent bugs (part 20)",
+          "Retry strategies for rate-limited tools (part 21)",
+          "Schema drift in upstream APIs (part 22)",
+          "Replaying agent runs against recorded inputs (part 23)",
+          "Baselines for agent latency and token use (part 24)"
+        ]
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000704",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "summarize",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T11:07:31.579Z",
+      "ended_at": "2026-11-14T11:07:34.529Z",
+      "duration_ms": 2950,
+      "offset_ms": 1846,
+      "input": {
+        "_truncated": true,
+        "original_bytes": 154932,
+        "preview": "{\"question\":\"How does schema drift break API consumers?\",\"sources\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and"
+      },
+      "output": {
+        "_truncated": true,
+        "original_bytes": 153164,
+        "preview": "{\"text\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent m"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 38743,
+      "tokens_output": 38275,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_00000000000000000000000000000006",
+      "type": "duration_spike",
+      "severity": "high",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "detected_at": "2026-11-14T11:07:34.530Z",
+      "rule_id": "duration_spike.v1",
+      "title": "Duration 6.1× above baseline",
+      "explanation": "Execution took 4,797 ms. Baseline median for research-assistant is 787.5 ms over 6 runs (p95 815 ms). Rule fires above max(3× median, 1.5× p95) = 2,362.5 ms. Severity is high above 5× median = 3,937.5 ms.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Duration of this execution",
+          "ref_id": "exe_00000000000000000000000000000007",
+          "field": "duration_ms",
+          "observed": 4797,
+          "expected": 2362.5,
+          "excerpt": null
+        },
+        {
+          "kind": "baseline",
+          "label": "Baseline duration over 6 completed runs",
+          "ref_id": null,
+          "field": "duration_ms",
+          "observed": {
+            "median": 787.5,
+            "p95": 815,
+            "runs": 6
+          },
+          "expected": null,
+          "excerpt": null
+        }
+      ]
+    },
+    {
+      "id": "anm_00000000000000000000000000000007",
+      "type": "token_spike",
+      "severity": "high",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "execution_id": "exe_00000000000000000000000000000007",
+      "detected_at": "2026-11-14T11:07:34.530Z",
+      "rule_id": "token_spike.v1",
+      "title": "Token usage 387.0× above baseline",
+      "explanation": "Execution used 77,018 tokens. Baseline median for research-assistant is 199 tokens over 6 runs (p95 199 tokens). Rule fires above max(2× median, p95) = 398 tokens. Severity is high above 4× median = 796 tokens.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Token usage of this execution",
+          "ref_id": "exe_00000000000000000000000000000007",
+          "field": "tokens_total",
+          "observed": 77018,
+          "expected": 398,
+          "excerpt": null
+        },
+        {
+          "kind": "baseline",
+          "label": "Baseline token usage over 6 completed runs",
+          "ref_id": null,
+          "field": "tokens_total",
+          "observed": {
+            "median": 199,
+            "p95": 199,
+            "runs": 6
+          },
+          "expected": null,
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 9
+}

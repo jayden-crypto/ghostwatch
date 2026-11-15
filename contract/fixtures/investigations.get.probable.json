@@ -1,0 +1,264 @@
+{
+  "id": "inv_00000000000000000000000000000004",
+  "execution_id": "exe_00000000000000000000000000000007",
+  "trigger": "auto_anomaly",
+  "created_at": "2026-11-14T11:07:34.568Z",
+  "status": "completed",
+  "provider": "fable",
+  "model": "claude-fable-5-2",
+  "completed_at": "2026-11-14T11:07:43.988Z",
+  "error": null,
+  "report": {
+    "summary": "The execution completed. Anomalies raised on it: duration_spike, token_spike. The root cause given is a hypothesis; it is not confirmed.",
+    "failing_step_id": null,
+    "root_cause": {
+      "status": "probable",
+      "statement": "The web_search tool returned far more content than usual, and that content was passed on to summarize, which inflated the prompt and the answer.",
+      "hypothesis_id": "H1",
+      "signature": null
+    },
+    "facts": [
+      {
+        "id": "F1",
+        "statement": "Execution of research-assistant ended with status completed after 4797 ms and 4 steps.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Final status of the execution",
+            "ref_id": "exe_00000000000000000000000000000007",
+            "field": "status",
+            "observed": "completed",
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F2",
+        "statement": "Step 2 web_search (tool_call, completed) has an output that was truncated at ingestion (155915 bytes; only a preview is stored).",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 2 web_search",
+            "ref_id": "stp_00000000000000000000000000000702",
+            "field": "output",
+            "observed": {
+              "_truncated": true,
+              "original_bytes": 155915,
+              "preview": "{\"results\":[{\"title\":\"Agent observability: tracing every step (part 1)\",\"url\":\"https://example.test/agent-observability\",\"snippet\":\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model "
+            },
+            "expected": null,
+            "excerpt": "{\"_truncated\":true,\"original_bytes\":155915,\"preview\":\"{\\\"results\\\":[{\\\"title\\\":\\\"Agent observability: tracing every step (part 1)\\\",\\\"url\\\":\\\"https://example.test/agent-observability\\\",\\\"snippet\\\":\\\"Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model"
+          }
+        ]
+      },
+      {
+        "id": "F3",
+        "statement": "Step 3 parse_results (reasoning, completed) returned an object with keys: sources.",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 3 parse_results",
+            "ref_id": "stp_00000000000000000000000000000703",
+            "field": "output",
+            "observed": [
+              "sources"
+            ],
+            "expected": null,
+            "excerpt": "{\"sources\":[\"Agent observability: tracing every step (part 1)\",\"Why silent failures are the hardest agent bugs (part 2)\",\"Retry strategies for rate-limited tools (part 3)\",\"Schema drift in upstream APIs (part 4)\",\"Replaying agent runs against recorded inputs (part 5)\",\"Baselines for agent latency and token use (part 6)\",\"Agent observability: tracing every step (part 7)\",\"Why silent failures are the hardest agent bugs (part 8)\",\"Retry strategies for rate-limited tools (part 9)\",\"Schema drift in u"
+          }
+        ]
+      },
+      {
+        "id": "F4",
+        "statement": "Step 4 summarize (llm_call, completed) has an output that was truncated at ingestion (153164 bytes; only a preview is stored).",
+        "evidence": [
+          {
+            "kind": "step",
+            "label": "Output of Step 4 summarize",
+            "ref_id": "stp_00000000000000000000000000000704",
+            "field": "output",
+            "observed": {
+              "_truncated": true,
+              "original_bytes": 153164,
+              "preview": "{\"text\":\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent m"
+            },
+            "expected": null,
+            "excerpt": "{\"_truncated\":true,\"original_bytes\":153164,\"preview\":\"{\\\"text\\\":\\\"Based on 24 sources: Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, with inputs and outputs. Tracing records each tool call and model call an agent makes, wit"
+          }
+        ]
+      },
+      {
+        "id": "F5",
+        "statement": "The execution is configured to expect these steps to complete: web_search, parse_results, summarize. Steps that completed: plan, web_search, parse_results, summarize. Expected steps that did not complete: none.",
+        "evidence": [
+          {
+            "kind": "execution",
+            "label": "Expected steps compared with completed steps",
+            "ref_id": "exe_00000000000000000000000000000007",
+            "field": "config.expected_steps",
+            "observed": [
+              "plan",
+              "web_search",
+              "parse_results",
+              "summarize"
+            ],
+            "expected": [
+              "web_search",
+              "parse_results",
+              "summarize"
+            ],
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F6",
+        "statement": "Anomaly duration_spike (high) was raised on this execution: Duration 6.1× above baseline.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule duration_spike.v1 fired",
+            "ref_id": "anm_00000000000000000000000000000006",
+            "field": "explanation",
+            "observed": "Duration 6.1× above baseline",
+            "expected": null,
+            "excerpt": "Execution took 4,797 ms. Baseline median for research-assistant is 787.5 ms over 6 runs (p95 815 ms). Rule fires above max(3× median, 1.5× p95) = 2,362.5 ms. Severity is high above 5× median = 3,937.5 ms."
+          },
+          {
+            "kind": "execution",
+            "label": "Duration of this execution",
+            "ref_id": "exe_00000000000000000000000000000007",
+            "field": "duration_ms",
+            "observed": 4797,
+            "expected": 2362.5,
+            "excerpt": null
+          },
+          {
+            "kind": "baseline",
+            "label": "Baseline duration over 6 completed runs",
+            "ref_id": null,
+            "field": "duration_ms",
+            "observed": {
+              "median": 787.5,
+              "p95": 815,
+              "runs": 6
+            },
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F7",
+        "statement": "Anomaly token_spike (high) was raised on this execution: Token usage 387.0× above baseline.",
+        "evidence": [
+          {
+            "kind": "anomaly",
+            "label": "Why rule token_spike.v1 fired",
+            "ref_id": "anm_00000000000000000000000000000007",
+            "field": "explanation",
+            "observed": "Token usage 387.0× above baseline",
+            "expected": null,
+            "excerpt": "Execution used 77,018 tokens. Baseline median for research-assistant is 199 tokens over 6 runs (p95 199 tokens). Rule fires above max(2× median, p95) = 398 tokens. Severity is high above 4× median = 796 tokens."
+          },
+          {
+            "kind": "execution",
+            "label": "Token usage of this execution",
+            "ref_id": "exe_00000000000000000000000000000007",
+            "field": "tokens_total",
+            "observed": 77018,
+            "expected": 398,
+            "excerpt": null
+          },
+          {
+            "kind": "baseline",
+            "label": "Baseline token usage over 6 completed runs",
+            "ref_id": null,
+            "field": "tokens_total",
+            "observed": {
+              "median": 199,
+              "p95": 199,
+              "runs": 6
+            },
+            "expected": null,
+            "excerpt": null
+          }
+        ]
+      },
+      {
+        "id": "F8",
+        "statement": "This execution took 4797 ms over 4 steps. Over the last 6 completed runs of research-assistant, the median duration is 787.5 ms (p95 815 ms) and the largest step count is 4.",
+        "evidence": [
+          {
+            "kind": "baseline",
+            "label": "This execution compared with 6 completed runs",
+            "ref_id": null,
+            "field": null,
+            "observed": {
+              "duration_ms": 4797,
+              "step_count": 4,
+              "tokens_total": 77018
+            },
+            "expected": {
+              "median_duration_ms": 787.5,
+              "p95_duration_ms": 815,
+              "max_step_count": 4,
+              "median_tokens_total": 199
+            },
+            "excerpt": null
+          }
+        ]
+      }
+    ],
+    "hypotheses": [
+      {
+        "id": "H1",
+        "statement": "The web_search tool returned far more content than usual, and that content was passed on to summarize, which inflated the prompt and the answer.",
+        "confidence": "medium",
+        "reasoning": "The web_search output was large enough to be truncated at ingestion, the token_spike rule fired on this run, and the run took several times its baseline duration. A much larger search response explains all three, but the full response is not stored, so its size per result cannot be checked.",
+        "supporting_fact_ids": [
+          "F2",
+          "F7",
+          "F8"
+        ],
+        "contradicting_fact_ids": []
+      },
+      {
+        "id": "H2",
+        "statement": "The spike comes from an unusually long question rather than from the search response.",
+        "confidence": "low",
+        "reasoning": "A longer question would raise prompt tokens. Nothing recorded supports a question long enough to account for the increase, and the truncated search output points elsewhere.",
+        "supporting_fact_ids": [
+          "F7"
+        ],
+        "contradicting_fact_ids": [
+          "F2"
+        ]
+      }
+    ],
+    "recommendations": [
+      {
+        "id": "R1",
+        "action": "Cap what parse_results passes to summarize: limit the number of sources and the length of each snippet.",
+        "rationale": "The prompt is built from every source the search tool returns, so its size is unbounded.",
+        "hypothesis_id": "H1"
+      },
+      {
+        "id": "R2",
+        "action": "Record the size of each tool response as step metadata.",
+        "rationale": "With sizes recorded, growth in a prompt can be attributed to a specific tool call even when the payload is truncated.",
+        "hypothesis_id": null
+      }
+    ],
+    "evidence_gaps": [
+      "At least one step output was larger than 64 KB and is stored only as a preview.",
+      "A hypothesis proposed by claude-fable-5-2 was discarded because it cited fact id(s) that do not exist (F12).",
+      "The full web_search response is not stored, so the number and size of the results it returned cannot be verified."
+    ],
+    "relevant_step_ids": [
+      "stp_00000000000000000000000000000702",
+      "stp_00000000000000000000000000000704"
+    ]
+  }
+}

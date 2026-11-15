@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "bad_request",
+    "message": "Unknown sort field 'agent'. Allowed: started_at, duration_ms, tokens_total, cost_usd.",
+    "details": null
+  }
+}

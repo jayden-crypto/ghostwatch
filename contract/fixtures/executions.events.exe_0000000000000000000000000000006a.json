@@ -1,0 +1,273 @@
+{
+  "items": [
+    {
+      "id": "evt_0000000000000000000000000006a001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:36.915Z",
+      "received_at": "2026-11-14T14:41:37.423Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a01",
+        "parent_step_id": null,
+        "name": "load_schedule",
+        "step_type": "input",
+        "input": {
+          "trigger": "cron",
+          "schedule": "0 */6 * * *"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T14:41:36.917Z",
+      "received_at": "2026-11-14T14:41:37.423Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a01",
+        "output": {
+          "since": "2026-11-14T08:41:36.914Z",
+          "until": "2026-11-14T14:41:36.914Z"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:36.918Z",
+      "received_at": "2026-11-14T14:41:37.423Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a02",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-14T08:41:36.914Z",
+          "until": "2026-11-14T14:41:36.914Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false,
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T14:41:37.554Z",
+      "received_at": "2026-11-14T14:41:37.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a02",
+        "output": {
+          "count": 29,
+          "pages": 2,
+          "first_ticket_ids": [
+            "TCK-88412",
+            "TCK-88413",
+            "TCK-88415"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:37.555Z",
+      "received_at": "2026-11-14T14:41:37.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a03",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "reasoning",
+        "input": {
+          "tickets": 29,
+          "batch_size": 20
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a006",
+      "seq": 6,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:37.556Z",
+      "received_at": "2026-11-14T14:41:37.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a04",
+        "parent_step_id": "stp_00000000000000000000000000006a03",
+        "name": "summarize_batch",
+        "step_type": "llm_call",
+        "input": {
+          "batch": 1,
+          "tickets": 20
+        },
+        "tool_name": null,
+        "model": "claude-haiku-5-5",
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a007",
+      "seq": 7,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T14:41:39.637Z",
+      "received_at": "2026-11-14T14:41:39.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a04",
+        "output": {
+          "text": "Batch 1: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.",
+          "usage": {
+            "input_tokens": 2070,
+            "output_tokens": 31
+          }
+        },
+        "tokens_input": 2070,
+        "tokens_output": 31,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a008",
+      "seq": 8,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:39.638Z",
+      "received_at": "2026-11-14T14:41:39.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a05",
+        "parent_step_id": "stp_00000000000000000000000000006a03",
+        "name": "summarize_batch",
+        "step_type": "llm_call",
+        "input": {
+          "batch": 2,
+          "tickets": 9
+        },
+        "tool_name": null,
+        "model": "claude-haiku-5-5",
+        "attempt": 1,
+        "metadata": {
+          "replay_source": "executed"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a009",
+      "seq": 9,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T14:41:41.713Z",
+      "received_at": "2026-11-14T14:41:41.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a05",
+        "output": {
+          "text": "Batch 2: 9 tickets. Most are billing questions about duplicate charges; 2 report login problems after a password change.",
+          "usage": {
+            "input_tokens": 955,
+            "output_tokens": 30
+          }
+        },
+        "tokens_input": 955,
+        "tokens_output": 30,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a00a",
+      "seq": 10,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T14:41:41.714Z",
+      "received_at": "2026-11-14T14:41:41.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a03",
+        "output": {
+          "batches": 2,
+          "summary_chars": 241
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a00b",
+      "seq": 11,
+      "type": "step.started",
+      "timestamp": "2026-11-14T14:41:41.715Z",
+      "received_at": "2026-11-14T14:41:41.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a06",
+        "parent_step_id": null,
+        "name": "send_digest",
+        "step_type": "tool_call",
+        "input": {
+          "channel": "#support-leads",
+          "summary_chars": 241
+        },
+        "tool_name": "send_digest",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true,
+          "replay_source": "blocked"
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a00c",
+      "seq": 12,
+      "type": "step.failed",
+      "timestamp": "2026-11-14T14:41:41.715Z",
+      "received_at": "2026-11-14T14:41:41.923Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006a06",
+        "error": {
+          "type": "SandboxRecordingMissing",
+          "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006a00d",
+      "seq": 13,
+      "type": "execution.failed",
+      "timestamp": "2026-11-14T14:41:41.716Z",
+      "received_at": "2026-11-14T14:41:41.923Z",
+      "payload": {
+        "error": {
+          "type": "SandboxRecordingMissing",
+          "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+        }
+      }
+    }
+  ],
+  "total": 13,
+  "limit": 200,
+  "offset": 0
+}

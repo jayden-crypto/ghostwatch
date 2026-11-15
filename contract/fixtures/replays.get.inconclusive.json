@@ -1,0 +1,121 @@
+{
+  "id": "rpl_00000000000000000000000000000006",
+  "original_execution_id": "exe_00000000000000000000000000000068",
+  "replay_execution_id": "exe_0000000000000000000000000000006a",
+  "mode": "sandbox",
+  "status": "completed",
+  "side_effects_authorized": false,
+  "note": null,
+  "requested_at": "2026-11-14T14:41:34.654Z",
+  "claimed_at": "2026-11-14T14:41:36.544Z",
+  "completed_at": "2026-11-14T14:41:41.740Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_00000000000000000000000000000068",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "status": "timed_out",
+      "started_at": "2026-11-14T12:00:00.409Z",
+      "ended_at": "2026-11-14T12:02:22.058Z",
+      "duration_ms": 141649,
+      "step_count": 2,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 2,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": {
+        "type": "TimeoutError",
+        "message": "Execution timed out after 141649 ms.",
+        "stacktrace": null
+      }
+    },
+    "replay": {
+      "id": "exe_0000000000000000000000000000006a",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "status": "failed",
+      "started_at": "2026-11-14T14:41:36.914Z",
+      "ended_at": "2026-11-14T14:41:41.716Z",
+      "duration_ms": 4802,
+      "step_count": 6,
+      "tokens_total": 3086,
+      "cost_usd": 0.000333,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": "exe_00000000000000000000000000000068",
+      "error": {
+        "type": "SandboxRecordingMissing",
+        "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+      }
+    },
+    "outcome": "inconclusive",
+    "duration_delta_ms": -136847,
+    "tokens_delta": null,
+    "step_count_delta": 4,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "load_schedule",
+        "original_step_id": "stp_00000000000000000000000000006801",
+        "replay_step_id": "stp_00000000000000000000000000006a01",
+        "change": "output_changed",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 2,
+        "name": "fetch_tickets",
+        "original_step_id": "stp_00000000000000000000000000006802",
+        "replay_step_id": "stp_00000000000000000000000000006a02",
+        "change": "status_changed",
+        "original_status": "running",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 3,
+        "name": "summarize",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000006a03",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 4,
+        "name": "summarize_batch",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000006a04",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 5,
+        "name": "summarize_batch",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000006a05",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 6,
+        "name": "send_digest",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000006a06",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "failed",
+        "replay_source": "blocked"
+      }
+    ]
+  }
+}

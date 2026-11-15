@@ -1,0 +1,653 @@
+{
+  "items": [
+    {
+      "id": "rpl_00000000000000000000000000000008",
+      "original_execution_id": "exe_00000000000000000000000000000065",
+      "replay_execution_id": null,
+      "mode": "sandbox",
+      "status": "claimed",
+      "side_effects_authorized": false,
+      "note": null,
+      "requested_at": "2026-11-14T17:59:53.200Z",
+      "claimed_at": "2026-11-14T17:59:54.500Z",
+      "completed_at": null,
+      "error": null,
+      "comparison": null
+    },
+    {
+      "id": "rpl_00000000000000000000000000000009",
+      "original_execution_id": "exe_00000000000000000000000000000066",
+      "replay_execution_id": null,
+      "mode": "sandbox",
+      "status": "pending",
+      "side_effects_authorized": false,
+      "note": null,
+      "requested_at": "2026-11-14T17:59:18.500Z",
+      "claimed_at": null,
+      "completed_at": null,
+      "error": null,
+      "comparison": null
+    },
+    {
+      "id": "rpl_00000000000000000000000000000004",
+      "original_execution_id": "exe_00000000000000000000000000000028",
+      "replay_execution_id": "exe_00000000000000000000000000000029",
+      "mode": "sandbox",
+      "status": "completed",
+      "side_effects_authorized": false,
+      "note": "Agent now raises when validation is unavailable.",
+      "requested_at": "2026-11-14T17:52:04.257Z",
+      "claimed_at": "2026-11-14T17:52:06.297Z",
+      "completed_at": "2026-11-14T17:52:06.975Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_00000000000000000000000000000028",
+          "agent_id": "agt_00000000000000000000000000000002",
+          "agent_name": "Invoice Processor",
+          "status": "completed",
+          "started_at": "2026-11-14T17:28:40.153Z",
+          "ended_at": "2026-11-14T17:28:40.366Z",
+          "duration_ms": 213,
+          "step_count": 2,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 1,
+          "has_investigation": true,
+          "replay_of": null,
+          "error": null
+        },
+        "replay": {
+          "id": "exe_00000000000000000000000000000029",
+          "agent_id": "agt_00000000000000000000000000000002",
+          "agent_name": "Invoice Processor",
+          "status": "failed",
+          "started_at": "2026-11-14T17:52:06.737Z",
+          "ended_at": "2026-11-14T17:52:06.951Z",
+          "duration_ms": 214,
+          "step_count": 2,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": "exe_00000000000000000000000000000028",
+          "error": {
+            "type": "ValidationUnavailable",
+            "message": "validation service returned HTTP 503",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+          }
+        },
+        "outcome": "regressed",
+        "duration_delta_ms": 1,
+        "tokens_delta": null,
+        "step_count_delta": 0,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "extract_fields",
+            "original_step_id": "stp_00000000000000000000000000002801",
+            "replay_step_id": "stp_00000000000000000000000000002901",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "validate",
+            "original_step_id": "stp_00000000000000000000000000002802",
+            "replay_step_id": "stp_00000000000000000000000000002902",
+            "change": "status_changed",
+            "original_status": "completed",
+            "replay_status": "failed",
+            "replay_source": "executed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rpl_00000000000000000000000000000003",
+      "original_execution_id": "exe_0000000000000000000000000000000a",
+      "replay_execution_id": "exe_0000000000000000000000000000000c",
+      "mode": "sandbox",
+      "status": "completed",
+      "side_effects_authorized": false,
+      "note": "After parser fix: accept both response shapes.",
+      "requested_at": "2026-11-14T17:45:26.146Z",
+      "claimed_at": "2026-11-14T17:45:27.356Z",
+      "completed_at": "2026-11-14T17:45:28.312Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_0000000000000000000000000000000a",
+          "agent_id": "agt_00000000000000000000000000000001",
+          "agent_name": "Research Assistant",
+          "status": "failed",
+          "started_at": "2026-11-14T17:20:14.592Z",
+          "ended_at": "2026-11-14T17:20:14.953Z",
+          "duration_ms": 361,
+          "step_count": 3,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": null,
+          "error": {
+            "type": "KeyError",
+            "message": "'results'",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+          }
+        },
+        "replay": {
+          "id": "exe_0000000000000000000000000000000c",
+          "agent_id": "agt_00000000000000000000000000000001",
+          "agent_name": "Research Assistant",
+          "status": "completed",
+          "started_at": "2026-11-14T17:45:27.806Z",
+          "ended_at": "2026-11-14T17:45:28.288Z",
+          "duration_ms": 482,
+          "step_count": 4,
+          "tokens_total": 197,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": false,
+          "replay_of": "exe_0000000000000000000000000000000a",
+          "error": null
+        },
+        "outcome": "fixed",
+        "duration_delta_ms": 121,
+        "tokens_delta": null,
+        "step_count_delta": 1,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "plan",
+            "original_step_id": "stp_00000000000000000000000000000a01",
+            "replay_step_id": "stp_00000000000000000000000000000c01",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "web_search",
+            "original_step_id": "stp_00000000000000000000000000000a02",
+            "replay_step_id": "stp_00000000000000000000000000000c02",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "recorded"
+          },
+          {
+            "ordinal": 3,
+            "name": "parse_results",
+            "original_step_id": "stp_00000000000000000000000000000a03",
+            "replay_step_id": "stp_00000000000000000000000000000c03",
+            "change": "status_changed",
+            "original_status": "failed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 4,
+            "name": "summarize",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000000c04",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "completed",
+            "replay_source": "executed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rpl_00000000000000000000000000000002",
+      "original_execution_id": "exe_0000000000000000000000000000000a",
+      "replay_execution_id": "exe_0000000000000000000000000000000b",
+      "mode": "sandbox",
+      "status": "completed",
+      "side_effects_authorized": false,
+      "note": "First attempt at a parser fix.",
+      "requested_at": "2026-11-14T17:34:00.188Z",
+      "claimed_at": "2026-11-14T17:34:01.588Z",
+      "completed_at": "2026-11-14T17:34:02.150Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_0000000000000000000000000000000a",
+          "agent_id": "agt_00000000000000000000000000000001",
+          "agent_name": "Research Assistant",
+          "status": "failed",
+          "started_at": "2026-11-14T17:20:14.592Z",
+          "ended_at": "2026-11-14T17:20:14.953Z",
+          "duration_ms": 361,
+          "step_count": 3,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": null,
+          "error": {
+            "type": "KeyError",
+            "message": "'results'",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+          }
+        },
+        "replay": {
+          "id": "exe_0000000000000000000000000000000b",
+          "agent_id": "agt_00000000000000000000000000000001",
+          "agent_name": "Research Assistant",
+          "status": "failed",
+          "started_at": "2026-11-14T17:34:02.118Z",
+          "ended_at": "2026-11-14T17:34:02.126Z",
+          "duration_ms": 8,
+          "step_count": 3,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": "exe_0000000000000000000000000000000a",
+          "error": {
+            "type": "TypeError",
+            "message": "list indices must be integers or slices, not str",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"data\"][\"results\"]]\nTypeError: list indices must be integers or slices, not str\n"
+          }
+        },
+        "outcome": "different_failure",
+        "duration_delta_ms": -353,
+        "tokens_delta": null,
+        "step_count_delta": 0,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "plan",
+            "original_step_id": "stp_00000000000000000000000000000a01",
+            "replay_step_id": "stp_00000000000000000000000000000b01",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "web_search",
+            "original_step_id": "stp_00000000000000000000000000000a02",
+            "replay_step_id": "stp_00000000000000000000000000000b02",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "recorded"
+          },
+          {
+            "ordinal": 3,
+            "name": "parse_results",
+            "original_step_id": "stp_00000000000000000000000000000a03",
+            "replay_step_id": "stp_00000000000000000000000000000b03",
+            "change": "unchanged",
+            "original_status": "failed",
+            "replay_status": "failed",
+            "replay_source": "executed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rpl_00000000000000000000000000000006",
+      "original_execution_id": "exe_00000000000000000000000000000068",
+      "replay_execution_id": "exe_0000000000000000000000000000006a",
+      "mode": "sandbox",
+      "status": "completed",
+      "side_effects_authorized": false,
+      "note": null,
+      "requested_at": "2026-11-14T14:41:34.654Z",
+      "claimed_at": "2026-11-14T14:41:36.544Z",
+      "completed_at": "2026-11-14T14:41:41.740Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_00000000000000000000000000000068",
+          "agent_id": "agt_00000000000000000000000000000004",
+          "agent_name": "Ticket Digest",
+          "status": "timed_out",
+          "started_at": "2026-11-14T12:00:00.409Z",
+          "ended_at": "2026-11-14T12:02:22.058Z",
+          "duration_ms": 141649,
+          "step_count": 2,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 2,
+          "has_investigation": true,
+          "replay_of": null,
+          "error": {
+            "type": "TimeoutError",
+            "message": "Execution timed out after 141649 ms.",
+            "stacktrace": null
+          }
+        },
+        "replay": {
+          "id": "exe_0000000000000000000000000000006a",
+          "agent_id": "agt_00000000000000000000000000000004",
+          "agent_name": "Ticket Digest",
+          "status": "failed",
+          "started_at": "2026-11-14T14:41:36.914Z",
+          "ended_at": "2026-11-14T14:41:41.716Z",
+          "duration_ms": 4802,
+          "step_count": 6,
+          "tokens_total": 3086,
+          "cost_usd": 0.000333,
+          "anomaly_count": 0,
+          "has_investigation": true,
+          "replay_of": "exe_00000000000000000000000000000068",
+          "error": {
+            "type": "SandboxRecordingMissing",
+            "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+          }
+        },
+        "outcome": "inconclusive",
+        "duration_delta_ms": -136847,
+        "tokens_delta": null,
+        "step_count_delta": 4,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "load_schedule",
+            "original_step_id": "stp_00000000000000000000000000006801",
+            "replay_step_id": "stp_00000000000000000000000000006a01",
+            "change": "output_changed",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "fetch_tickets",
+            "original_step_id": "stp_00000000000000000000000000006802",
+            "replay_step_id": "stp_00000000000000000000000000006a02",
+            "change": "status_changed",
+            "original_status": "running",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 3,
+            "name": "summarize",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000006a03",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 4,
+            "name": "summarize_batch",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000006a04",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 5,
+            "name": "summarize_batch",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000006a05",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 6,
+            "name": "send_digest",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000006a06",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "failed",
+            "replay_source": "blocked"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rpl_00000000000000000000000000000005",
+      "original_execution_id": "exe_00000000000000000000000000000063",
+      "replay_execution_id": "exe_00000000000000000000000000000069",
+      "mode": "sandbox",
+      "status": "completed",
+      "side_effects_authorized": false,
+      "note": null,
+      "requested_at": "2026-11-14T14:20:09.208Z",
+      "claimed_at": "2026-11-14T14:20:10.608Z",
+      "completed_at": "2026-11-14T14:20:23.143Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_00000000000000000000000000000063",
+          "agent_id": "agt_00000000000000000000000000000004",
+          "agent_name": "Ticket Digest",
+          "status": "failed",
+          "started_at": "2026-11-13T06:00:00.447Z",
+          "ended_at": "2026-11-13T06:00:12.535Z",
+          "duration_ms": 12088,
+          "step_count": 4,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 2,
+          "has_investigation": true,
+          "replay_of": null,
+          "error": {
+            "type": "HTTPError",
+            "message": "HTTP 503 Service Unavailable",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+          }
+        },
+        "replay": {
+          "id": "exe_00000000000000000000000000000069",
+          "agent_id": "agt_00000000000000000000000000000004",
+          "agent_name": "Ticket Digest",
+          "status": "failed",
+          "started_at": "2026-11-14T14:20:11.058Z",
+          "ended_at": "2026-11-14T14:20:23.119Z",
+          "duration_ms": 12061,
+          "step_count": 4,
+          "tokens_total": null,
+          "cost_usd": null,
+          "anomaly_count": 2,
+          "has_investigation": true,
+          "replay_of": "exe_00000000000000000000000000000063",
+          "error": {
+            "type": "HTTPError",
+            "message": "HTTP 503 Service Unavailable",
+            "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+          }
+        },
+        "outcome": "same_failure",
+        "duration_delta_ms": -27,
+        "tokens_delta": null,
+        "step_count_delta": 0,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "load_schedule",
+            "original_step_id": "stp_00000000000000000000000000006301",
+            "replay_step_id": "stp_00000000000000000000000000006901",
+            "change": "output_changed",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "fetch_tickets",
+            "original_step_id": "stp_00000000000000000000000000006302",
+            "replay_step_id": "stp_00000000000000000000000000006902",
+            "change": "unchanged",
+            "original_status": "failed",
+            "replay_status": "failed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 3,
+            "name": "fetch_tickets",
+            "original_step_id": "stp_00000000000000000000000000006303",
+            "replay_step_id": "stp_00000000000000000000000000006903",
+            "change": "unchanged",
+            "original_status": "failed",
+            "replay_status": "failed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 4,
+            "name": "fetch_tickets",
+            "original_step_id": "stp_00000000000000000000000000006304",
+            "replay_step_id": "stp_00000000000000000000000000006904",
+            "change": "unchanged",
+            "original_status": "failed",
+            "replay_status": "failed",
+            "replay_source": "executed"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rpl_00000000000000000000000000000007",
+      "original_execution_id": "exe_00000000000000000000000000000063",
+      "replay_execution_id": null,
+      "mode": "sandbox",
+      "status": "failed",
+      "side_effects_authorized": false,
+      "note": null,
+      "requested_at": "2026-11-14T14:12:48.300Z",
+      "claimed_at": "2026-11-14T14:12:49.450Z",
+      "completed_at": "2026-11-14T14:12:49.760Z",
+      "error": {
+        "type": "ReplayStartError",
+        "message": "The replay worker could not start the agent: no agent with slug ticket-digest is registered in this worker.",
+        "stacktrace": null
+      },
+      "comparison": null
+    },
+    {
+      "id": "rpl_00000000000000000000000000000001",
+      "original_execution_id": "exe_00000000000000000000000000000048",
+      "replay_execution_id": "exe_0000000000000000000000000000004b",
+      "mode": "live",
+      "status": "completed",
+      "side_effects_authorized": true,
+      "note": "Knowledge base rate limit raised; checking the run goes through.",
+      "requested_at": "2026-11-14T13:31:03.522Z",
+      "claimed_at": "2026-11-14T13:31:05.242Z",
+      "completed_at": "2026-11-14T13:31:06.837Z",
+      "error": null,
+      "comparison": {
+        "original": {
+          "id": "exe_00000000000000000000000000000048",
+          "agent_id": "agt_00000000000000000000000000000003",
+          "agent_name": "Support Triage",
+          "status": "completed",
+          "started_at": "2026-11-14T13:05:22.445Z",
+          "ended_at": "2026-11-14T13:05:24.664Z",
+          "duration_ms": 2219,
+          "step_count": 5,
+          "tokens_total": 107,
+          "cost_usd": null,
+          "anomaly_count": 1,
+          "has_investigation": false,
+          "replay_of": null,
+          "error": null
+        },
+        "replay": {
+          "id": "exe_0000000000000000000000000000004b",
+          "agent_id": "agt_00000000000000000000000000000003",
+          "agent_name": "Support Triage",
+          "status": "completed",
+          "started_at": "2026-11-14T13:31:05.672Z",
+          "ended_at": "2026-11-14T13:31:06.813Z",
+          "duration_ms": 1141,
+          "step_count": 3,
+          "tokens_total": 107,
+          "cost_usd": null,
+          "anomaly_count": 0,
+          "has_investigation": false,
+          "replay_of": "exe_00000000000000000000000000000048",
+          "error": null
+        },
+        "outcome": "both_succeeded",
+        "duration_delta_ms": -1078,
+        "tokens_delta": 0,
+        "step_count_delta": -2,
+        "step_diffs": [
+          {
+            "ordinal": 1,
+            "name": "classify",
+            "original_step_id": "stp_00000000000000000000000000004801",
+            "replay_step_id": "stp_00000000000000000000000000004b01",
+            "change": "unchanged",
+            "original_status": "completed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 2,
+            "name": "retrieve_kb",
+            "original_step_id": "stp_00000000000000000000000000004802",
+            "replay_step_id": "stp_00000000000000000000000000004b02",
+            "change": "status_changed",
+            "original_status": "failed",
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 3,
+            "name": "retrieve_kb",
+            "original_step_id": "stp_00000000000000000000000000004803",
+            "replay_step_id": null,
+            "change": "removed",
+            "original_status": "failed",
+            "replay_status": null,
+            "replay_source": null
+          },
+          {
+            "ordinal": 3,
+            "name": "draft_reply",
+            "original_step_id": null,
+            "replay_step_id": "stp_00000000000000000000000000004b03",
+            "change": "added",
+            "original_status": null,
+            "replay_status": "completed",
+            "replay_source": "executed"
+          },
+          {
+            "ordinal": 4,
+            "name": "retrieve_kb",
+            "original_step_id": "stp_00000000000000000000000000004804",
+            "replay_step_id": null,
+            "change": "removed",
+            "original_status": "completed",
+            "replay_status": null,
+            "replay_source": null
+          },
+          {
+            "ordinal": 5,
+            "name": "draft_reply",
+            "original_step_id": "stp_00000000000000000000000000004805",
+            "replay_step_id": null,
+            "change": "removed",
+            "original_status": "completed",
+            "replay_status": null,
+            "replay_source": null
+          }
+        ]
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 50,
+  "offset": 0
+}

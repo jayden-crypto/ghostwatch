@@ -1,0 +1,77 @@
+{
+  "id": "rpl_00000000000000000000000000000004",
+  "original_execution_id": "exe_00000000000000000000000000000028",
+  "replay_execution_id": "exe_00000000000000000000000000000029",
+  "mode": "sandbox",
+  "status": "completed",
+  "side_effects_authorized": false,
+  "note": "Agent now raises when validation is unavailable.",
+  "requested_at": "2026-11-14T17:52:04.257Z",
+  "claimed_at": "2026-11-14T17:52:06.297Z",
+  "completed_at": "2026-11-14T17:52:06.975Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_00000000000000000000000000000028",
+      "agent_id": "agt_00000000000000000000000000000002",
+      "agent_name": "Invoice Processor",
+      "status": "completed",
+      "started_at": "2026-11-14T17:28:40.153Z",
+      "ended_at": "2026-11-14T17:28:40.366Z",
+      "duration_ms": 213,
+      "step_count": 2,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 1,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": null
+    },
+    "replay": {
+      "id": "exe_00000000000000000000000000000029",
+      "agent_id": "agt_00000000000000000000000000000002",
+      "agent_name": "Invoice Processor",
+      "status": "failed",
+      "started_at": "2026-11-14T17:52:06.737Z",
+      "ended_at": "2026-11-14T17:52:06.951Z",
+      "duration_ms": 214,
+      "step_count": 2,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": "exe_00000000000000000000000000000028",
+      "error": {
+        "type": "ValidationUnavailable",
+        "message": "validation service returned HTTP 503",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/invoice_processor.py\", line 49, in run\n    verdict = invoices.validate(invoice)\n  File \"/app/demo/fake_services/invoice_api.py\", line 24, in validate\n    raise ValidationUnavailable(\"validation service returned HTTP 503\")\nValidationUnavailable: validation service returned HTTP 503\n"
+      }
+    },
+    "outcome": "regressed",
+    "duration_delta_ms": 1,
+    "tokens_delta": null,
+    "step_count_delta": 0,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "extract_fields",
+        "original_step_id": "stp_00000000000000000000000000002801",
+        "replay_step_id": "stp_00000000000000000000000000002901",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 2,
+        "name": "validate",
+        "original_step_id": "stp_00000000000000000000000000002802",
+        "replay_step_id": "stp_00000000000000000000000000002902",
+        "change": "status_changed",
+        "original_status": "completed",
+        "replay_status": "failed",
+        "replay_source": "executed"
+      }
+    ]
+  }
+}

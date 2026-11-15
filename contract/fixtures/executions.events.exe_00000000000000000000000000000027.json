@@ -1,0 +1,184 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000027001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T10:40:17.483Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002701",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2043\nVendor: Fabrikam Freight\nTotal: 312.75\nCurrency: EUR"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T10:40:17.484Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002701",
+        "output": {
+          "invoice_number": "INV-2043",
+          "vendor": "Fabrikam Freight",
+          "total": 312.75,
+          "currency": "EUR"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T10:40:17.485Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002702",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2043",
+          "vendor": "Fabrikam Freight",
+          "total": 312.75,
+          "currency": "EUR"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T10:40:17.695Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002702",
+        "output": {
+          "valid": true,
+          "problems": []
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T10:40:17.696Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002703",
+        "parent_step_id": null,
+        "name": "convert_currency",
+        "step_type": "tool_call",
+        "input": {
+          "amount": 312.75,
+          "from": "EUR",
+          "to": "USD"
+        },
+        "tool_name": "convert_currency",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T10:40:17.871Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002703",
+        "output": {
+          "amount": 337.77,
+          "rate": 1.08
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-14T10:40:17.872Z",
+      "received_at": "2026-11-14T10:40:17.991Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002704",
+        "parent_step_id": null,
+        "name": "submit_invoice",
+        "step_type": "tool_call",
+        "input": {
+          "invoice": {
+            "invoice_number": "INV-2043",
+            "vendor": "Fabrikam Freight",
+            "total": 312.75,
+            "currency": "EUR"
+          }
+        },
+        "tool_name": "submit_invoice",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T10:40:18.160Z",
+      "received_at": "2026-11-14T10:40:18.491Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002704",
+        "output": {
+          "submission_id": "SUB-INV-2043",
+          "status": "accepted"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000027009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-14T10:40:18.161Z",
+      "received_at": "2026-11-14T10:40:18.491Z",
+      "payload": {
+        "output": {
+          "status": "processed",
+          "invoice_number": "INV-2043"
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}
