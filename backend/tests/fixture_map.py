@@ -3,6 +3,10 @@
 Fixtures are named `<resource>.<operation>[.<variant>].json`. The (resource, operation) pair picks
 the schema; the variant is free text. A fixture that matches nothing here fails the conformance
 suite on purpose: either add its operation below or rename the fixture.
+
+The pairs are the names the fixtures in contract/fixtures/ use (X1, PR #35): one name per endpoint.
+Requesting a replay is `replays.create`, the raw event log is `executions.events`, and the ingest
+response is `executions.ingest`.
 """
 
 from typing import Any
@@ -30,9 +34,6 @@ SCHEMAS: dict[tuple[str, str], Any] = {
     ("executions", "trace"): Trace,
     ("executions", "events"): Page[StoredEvent],
     ("executions", "ingest"): IngestResponse,
-    ("executions", "replay"): Replay,
-    ("events", "list"): Page[StoredEvent],
-    ("events", "ingest"): IngestResponse,
     ("stats", "overview"): StatsOverview,
     ("stats", "timeseries"): StatsTimeseries,
     ("anomalies", "list"): Page[Anomaly],
