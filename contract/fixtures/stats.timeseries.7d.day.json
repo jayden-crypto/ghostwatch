@@ -46,10 +46,10 @@
     },
     {
       "bucket_start": "2026-11-14T00:00:00.000Z",
-      "completed": 13,
-      "failed": 4,
+      "completed": 12,
+      "failed": 5,
       "timed_out": 2,
-      "avg_duration_ms": 15520
+      "avg_duration_ms": 16199
     }
   ]
 }

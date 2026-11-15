@@ -18,7 +18,9 @@
         "tool_name": null,
         "model": null,
         "attempt": 1,
-        "metadata": {}
+        "metadata": {
+          "replay_source": "executed"
+        }
       }
     },
     {
@@ -57,7 +59,8 @@
         "model": null,
         "attempt": 1,
         "metadata": {
-          "side_effects": false
+          "side_effects": false,
+          "replay_source": "executed"
         }
       }
     },
@@ -65,8 +68,8 @@
       "id": "evt_00000000000000000000000000069004",
       "seq": 4,
       "type": "step.failed",
-      "timestamp": "2026-11-14T14:20:11.064Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:14.046Z",
+      "received_at": "2026-11-14T14:20:14.067Z",
       "payload": {
         "step_id": "stp_00000000000000000000000000006902",
         "error": {
@@ -81,8 +84,8 @@
       "id": "evt_00000000000000000000000000069005",
       "seq": 5,
       "type": "step.started",
-      "timestamp": "2026-11-14T14:20:11.065Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:15.047Z",
+      "received_at": "2026-11-14T14:20:15.067Z",
       "payload": {
         "step_id": "stp_00000000000000000000000000006903",
         "parent_step_id": null,
@@ -96,7 +99,8 @@
         "model": null,
         "attempt": 2,
         "metadata": {
-          "side_effects": false
+          "side_effects": false,
+          "replay_source": "executed"
         }
       }
     },
@@ -104,8 +108,8 @@
       "id": "evt_00000000000000000000000000069006",
       "seq": 6,
       "type": "step.failed",
-      "timestamp": "2026-11-14T14:20:11.067Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:18.107Z",
+      "received_at": "2026-11-14T14:20:18.567Z",
       "payload": {
         "step_id": "stp_00000000000000000000000000006903",
         "error": {
@@ -120,8 +124,8 @@
       "id": "evt_00000000000000000000000000069007",
       "seq": 7,
       "type": "step.started",
-      "timestamp": "2026-11-14T14:20:11.068Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:20.108Z",
+      "received_at": "2026-11-14T14:20:20.567Z",
       "payload": {
         "step_id": "stp_00000000000000000000000000006904",
         "parent_step_id": null,
@@ -135,7 +139,8 @@
         "model": null,
         "attempt": 3,
         "metadata": {
-          "side_effects": false
+          "side_effects": false,
+          "replay_source": "executed"
         }
       }
     },
@@ -143,8 +148,8 @@
       "id": "evt_00000000000000000000000000069008",
       "seq": 8,
       "type": "step.failed",
-      "timestamp": "2026-11-14T14:20:11.070Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:23.118Z",
+      "received_at": "2026-11-14T14:20:23.567Z",
       "payload": {
         "step_id": "stp_00000000000000000000000000006904",
         "error": {
@@ -159,8 +164,8 @@
       "id": "evt_00000000000000000000000000069009",
       "seq": 9,
       "type": "execution.failed",
-      "timestamp": "2026-11-14T14:20:11.071Z",
-      "received_at": "2026-11-14T14:20:11.567Z",
+      "timestamp": "2026-11-14T14:20:23.119Z",
+      "received_at": "2026-11-14T14:20:23.567Z",
       "payload": {
         "error": {
           "type": "HTTPError",

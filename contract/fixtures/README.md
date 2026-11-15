@@ -1,6 +1,6 @@
 # Contract fixtures
 
-Canonical example responses for every endpoint in `../API_CONTRACT.md` (v1.1). The frontend's mock
+Canonical example responses for every endpoint in `../API_CONTRACT.md` (v1.2). The frontend's mock
 mode serves these files; the backend's conformance tests (B15) validate each one against its schema.
 
 They are one consistent snapshot of a small world, observed at **2026-11-14T18:00:00.000Z**: the same ids appear in
@@ -21,7 +21,7 @@ and `executions.events.<execution id>.json` exist for every execution in `execut
 | `pr-reviewer` | idle | 0 executions, 0 open anomalies, id `agt_00000000000000000000000000000005` |
 | `research-assistant` | degraded | 11 executions, 2 open anomalies, id `agt_00000000000000000000000000000001` |
 | `support-triage` | healthy | 11 executions, 2 open anomalies, id `agt_00000000000000000000000000000003` |
-| `ticket-digest` | degraded | 10 executions, 5 open anomalies, id `agt_00000000000000000000000000000004` |
+| `ticket-digest` | failing | 10 executions, 5 open anomalies, id `agt_00000000000000000000000000000004` |
 
 ## Scenario executions
 
@@ -36,15 +36,15 @@ and `executions.events.<execution id>.json` exist for every execution in `execut
 | `ghost_invoice` | invoice-processor | completed | `exe_00000000000000000000000000000028` | The demo ghost completion: validation is down, the agent swallows it, never calls submit_invoice and reports completed. ghost_completion (critical). |
 | `replay_regressed` | invoice-processor | failed | `exe_00000000000000000000000000000029` | Sandbox replay of `ghost_invoice` after making the agent raise on a validation outage: it now fails, so the outcome rule says regressed. |
 | `rate_limit` | support-triage | completed | `exe_00000000000000000000000000000048` | The knowledge base answers HTTP 429 twice, then succeeds: excessive_retries (medium). Has no investigation yet; the manual-investigation fixtures are for this run. |
-| `replay_both_succeeded` | support-triage | completed | `exe_0000000000000000000000000000004b` | Live replay (authorized) of `rate_limit` after the knowledge base stopped rate limiting: outcome both_succeeded, and the two failed attempts are gone. |
+| `replay_both_succeeded` | support-triage | completed | `exe_0000000000000000000000000000004b` | Live replay (authorized) of `rate_limit` after the knowledge base stopped rate limiting: every step is executed, outcome both_succeeded, and the two failed attempts are gone. |
 | `slow` | support-triage | completed | `exe_00000000000000000000000000000049` | The knowledge base takes 3.5 s to answer: duration_spike (medium). |
 | `running` | support-triage | running | `exe_0000000000000000000000000000004a` | Still running at fixture time: classify is done, retrieve_kb is in flight. |
 | `fetch_failed` | ticket-digest | failed | `exe_00000000000000000000000000000063` | The ticket API answers HTTP 503 on all three attempts and the run fails: repeated_tool_failure (high) and excessive_retries (medium), both resolved. Its investigation itself failed. |
 | `timed_out_1` | ticket-digest | timed_out | `exe_00000000000000000000000000000065` | fetch_tickets never answers; the sweeper marks the run timed_out: stale_execution (high, acknowledged). |
 | `timed_out_2` | ticket-digest | timed_out | `exe_00000000000000000000000000000066` | Second hang in a row: stale_execution (high). |
 | `timed_out` | ticket-digest | timed_out | `exe_00000000000000000000000000000068` | Third hang within the agent's last 10 runs: stale_execution and repeated_timeouts (both high). |
-| `replay_same_failure` | ticket-digest | failed | `exe_00000000000000000000000000000069` | Sandbox replay of `fetch_failed`: the recorded 503s fail it the same way, outcome same_failure. |
-| `replay_inconclusive` | ticket-digest | completed | `exe_0000000000000000000000000000006a` | Sandbox replay of `timed_out`: it completes, but the original timed out, so the outcome is inconclusive. |
+| `replay_same_failure` | ticket-digest | failed | `exe_00000000000000000000000000000069` | Sandbox replay of `fetch_failed`: fetch_tickets is the job's own retrieval step, so it runs for real; the ticket API still answers 503 and the run fails the same way. Outcome same_failure. |
+| `replay_inconclusive` | ticket-digest | failed | `exe_0000000000000000000000000000006a` | Sandbox replay of `timed_out`: it gets past fetch_tickets, then reaches send_digest, a tool with side effects that the original never recorded. The sandbox blocks it (SandboxRecordingMissing) and the replay fails. The original timed out, so the outcome is inconclusive. |
 
 Routine healthy runs that form the baselines:
 
@@ -71,17 +71,27 @@ One per outcome (`replays.get.<outcome>.json`), plus `pending`, `claimed` and `f
 `replays.get.fixed.json` is the demo: the sandbox replay of `schema_change` after the parser fix.
 `replays.get.both_succeeded.json` is the only `live` replay and is authorized.
 
+Every step of a replay execution carries `metadata.replay_source` (contract §10), repeated in
+`StepDiff.replay_source`. All three values appear:
+
+- `recorded`: `web_search` in `fixed` and `different_failure`, served from the original's recording.
+- `executed`: the agent's own steps everywhere; `summarize` in `fixed` (an LLM call the original never
+  made); every step of the live replay.
+- `blocked`: `send_digest` in `inconclusive`. It is a tool with side effects that the original never
+  reached, so the sandbox does not run it: the step fails with `SandboxRecordingMissing` and so does
+  the replay.
+
 ## Things that are deliberately here
 
 - `_truncated` payload markers: step inputs and outputs and the execution output of `token_spike`.
 - Nested steps (`depth` 1): `summarize_batch` under `summarize` in the `ticket-digest` runs.
 - A retried step: `retrieve_kb` attempts 1–3 in `rate_limit`; `fetch_tickets` in `fetch_failed`.
-- `cost_usd` is `null` for `demo-llm-1` (no pricing) and set for the `ticket-digest` runs, using a
-  fixture-only price for `claude-haiku-5-5`. The backend's pricing table (B14) is not built yet.
+- `cost_usd` is `null` for `demo-llm-1` (no price) and set for the `ticket-digest` runs, at the
+  backend's list price for `claude-haiku-5-5` (`backend/app/services/pricing.py`).
 - Evidence of kind `event` (on the `ghost_completion` anomaly) and `metric` (on the `slow` run's
-  `duration_spike`). The backend's v1 rules do not emit these two kinds; they are here so every
-  `EvidenceKind` has an example.
-- Anomaly statuses `acknowledged` and `resolved`, although `PATCH /anomalies/{id}` is P1.
+  `duration_spike`). The backend's v1 rules do not emit these two kinds; they are the only thing here
+  the backend does not produce, and they exist so every `EvidenceKind` has an example.
+- Anomaly statuses `acknowledged` and `resolved` (set through `PATCH /anomalies/{id}`).
 - An empty page for each list endpoint and one file per error code.
 
 ## Regenerating

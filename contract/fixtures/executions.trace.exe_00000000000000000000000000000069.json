@@ -5,8 +5,8 @@
     "agent_name": "Ticket Digest",
     "status": "failed",
     "started_at": "2026-11-14T14:20:11.058Z",
-    "ended_at": "2026-11-14T14:20:11.071Z",
-    "duration_ms": 13,
+    "ended_at": "2026-11-14T14:20:23.119Z",
+    "duration_ms": 12061,
     "step_count": 4,
     "tokens_total": null,
     "cost_usd": null,
@@ -71,7 +71,9 @@
       "tokens_input": null,
       "tokens_output": null,
       "attempt": 1,
-      "metadata": {}
+      "metadata": {
+        "replay_source": "executed"
+      }
     },
     {
       "id": "stp_00000000000000000000000000006902",
@@ -83,8 +85,8 @@
       "type": "retrieval",
       "status": "failed",
       "started_at": "2026-11-14T14:20:11.062Z",
-      "ended_at": "2026-11-14T14:20:11.064Z",
-      "duration_ms": 2,
+      "ended_at": "2026-11-14T14:20:14.046Z",
+      "duration_ms": 2984,
       "offset_ms": 4,
       "input": {
         "since": "2026-11-14T08:20:11.058Z",
@@ -102,7 +104,8 @@
       "tokens_output": null,
       "attempt": 1,
       "metadata": {
-        "side_effects": false
+        "side_effects": false,
+        "replay_source": "executed"
       }
     },
     {
@@ -114,10 +117,10 @@
       "name": "fetch_tickets",
       "type": "retrieval",
       "status": "failed",
-      "started_at": "2026-11-14T14:20:11.065Z",
-      "ended_at": "2026-11-14T14:20:11.067Z",
-      "duration_ms": 2,
-      "offset_ms": 7,
+      "started_at": "2026-11-14T14:20:15.047Z",
+      "ended_at": "2026-11-14T14:20:18.107Z",
+      "duration_ms": 3060,
+      "offset_ms": 3989,
       "input": {
         "since": "2026-11-14T08:20:11.058Z",
         "until": "2026-11-14T14:20:11.058Z"
@@ -134,7 +137,8 @@
       "tokens_output": null,
       "attempt": 2,
       "metadata": {
-        "side_effects": false
+        "side_effects": false,
+        "replay_source": "executed"
       }
     },
     {
@@ -146,10 +150,10 @@
       "name": "fetch_tickets",
       "type": "retrieval",
       "status": "failed",
-      "started_at": "2026-11-14T14:20:11.068Z",
-      "ended_at": "2026-11-14T14:20:11.070Z",
-      "duration_ms": 2,
-      "offset_ms": 10,
+      "started_at": "2026-11-14T14:20:20.108Z",
+      "ended_at": "2026-11-14T14:20:23.118Z",
+      "duration_ms": 3010,
+      "offset_ms": 9050,
       "input": {
         "since": "2026-11-14T08:20:11.058Z",
         "until": "2026-11-14T14:20:11.058Z"
@@ -166,7 +170,8 @@
       "tokens_output": null,
       "attempt": 3,
       "metadata": {
-        "side_effects": false
+        "side_effects": false,
+        "replay_source": "executed"
       }
     }
   ],
@@ -179,7 +184,7 @@
       "agent_id": "agt_00000000000000000000000000000004",
       "agent_name": "Ticket Digest",
       "execution_id": "exe_00000000000000000000000000000069",
-      "detected_at": "2026-11-14T14:20:11.071Z",
+      "detected_at": "2026-11-14T14:20:23.119Z",
       "rule_id": "repeated_tool_failure.v1",
       "title": "Tool fetch_tickets failed 3 times in one execution",
       "explanation": "Tool fetch_tickets has 3 failed steps in this execution. Rule fires at 3 or more failed steps of the same tool in one execution.",
@@ -221,7 +226,7 @@
       "agent_id": "agt_00000000000000000000000000000004",
       "agent_name": "Ticket Digest",
       "execution_id": "exe_00000000000000000000000000000069",
-      "detected_at": "2026-11-14T14:20:11.071Z",
+      "detected_at": "2026-11-14T14:20:23.119Z",
       "rule_id": "excessive_retries.v1",
       "title": "2 retried steps, highest attempt 3",
       "explanation": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5.",
