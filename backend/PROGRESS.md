@@ -1,4 +1,4 @@
-# Backend progress — updated 2026-11-15T12:12Z
+# Backend progress — updated 2026-11-15T17:49Z
 
 ## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 472 backend tests and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
 
@@ -19,7 +19,7 @@ Not implemented: nothing.
 
 ## Next up
 - Get PR #36 (`jayden/backend` → `main`) reviewed by Adit and merged
-- Re-review Adit's fixtures PR #35 when he updates it. Reviewed at b391bae against contract v1.2: 138 of 145 pass; changes requested (missing `StepDiff.replay_source` and `metadata.replay_source`, a side-effecting tool completing in a sandbox replay, Ticket Digest costs 10× the backend's). His replay comparisons match the backend exactly.
+- Adit's fixtures PR #35 is approved at b0cf178 (145 of 145 fixtures pass B15 against contract v1.2; comparisons, replay sources and costs match the backend's own code). When it merges, merge `main` into `jayden/backend` so the fixture half of B15 runs in CI on #36.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
