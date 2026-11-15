@@ -90,7 +90,8 @@ def test_a_full_run_derives_steps_status_and_totals(
     assert detail["ended_at"] == ev.at(2000)
     assert detail["output"] == {"answer": 42}
     assert (detail["tokens_input"], detail["tokens_output"], detail["tokens_total"]) == (1200, 300, 1500)
-    assert (detail["cost_usd"], detail["error"]) == (None, None)
+    assert detail["cost_usd"] == 0.0216  # claude-fable-5-2: 1200 in at $8/MTok + 300 out at $40/MTok
+    assert detail["error"] is None
     assert event_count(db_session, execution) == 12
     assert execution.last_event_at > T0
 

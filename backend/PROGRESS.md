@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T10:42Z
+# Backend progress — updated 2026-11-15T11:13Z
 
-## Status: every backend P0 issue is done (B1–B11, B15, B16), and P1's B12 (replay API) and B13 (SDK sandbox replay and worker) are done and unpushed. 445 backend tests and 39 SDK tests pass locally on docker compose Postgres; 1 backend test fails on purpose until docs/API.md is regenerated with the replay endpoints. B14 and PATCH /anomalies/{anomaly_id} are not started.
+## Status: every backend P0 issue is done (B1–B11, B15, B16), and P1's B12 (replay API), B13 (SDK sandbox replay and worker) and B14 (cost from a pricing table) are done and unpushed. 464 backend tests and 39 SDK tests pass locally on docker compose Postgres; 1 backend test fails on purpose until docs/API.md is regenerated with the replay endpoints. PATCH /anomalies/{anomaly_id} is not started.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -12,13 +12,13 @@
 - POST /investigations/{execution_id}, GET /investigations/{execution_id}, GET /investigations
 - POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim 🔑 (implemented and tested; not in docs/API.md yet)
 
-Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}. `cost_usd` is always null until B14.
+Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}.
 
 ## In progress
 - nothing
 
 ## Next up
-- B14 token cost (#18), then PATCH /anomalies/{anomaly_id}
+- PATCH /anomalies/{anomaly_id}
 - Regenerate docs/API.md with the replay endpoints (`scripts/api_docs.py` needs replay sections and its "Not implemented" table updated), then push `jayden/backend`
 - Review Adit's fixtures PR (#35) on GitHub. Its 145 fixtures all passed B15 when checked out locally.
 - Open the `jayden/backend` → `main` PR when Jayden says so (he asked for it not to be opened yet).
@@ -56,7 +56,8 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}. `cost_usd` is alw
 - **Replay demo result**: replaying the schema-change failure gives `same_failure` with the agent as shipped and `fixed` with the parser fix (web_search `recorded`, summarize `added` and `executed`).
 - **Investigations**: start automatically on failed or timed_out executions and on anomalies of high or above. `confirmed` only comes from a signature; with `rule_based` and no matching signature the root cause is `insufficient_evidence`. `provider` is `fable` only when the model's answer was used; otherwise `rule_based`, with the reason in `evidence_gaps`. `summary` is a deterministic template. POST returns the in-flight investigation (202) if one is queued or running.
 - **`/health`**: `llm_configured` is true when the configured provider can run; `llm_model` is null for `rule_based`.
-- **Demo data**: the fake LLM is `demo-llm-1`, which has no price, so `cost_usd` is null on every demo run.
+- **Cost**: `cost_usd` is set when an execution ends, from each step's own `model` and tokens at Anthropic's published list prices (`backend/app/services/pricing.py`). It is null when no step reported tokens, and also when any step that reported tokens has an unpriced or missing model or reported only input or only output; a partial sum is never shown. It covers reported input and output tokens only: no prompt-cache, batch or fast-mode pricing. Executions that ended before B14 keep null.
+- **Demo data**: the fake LLM is `demo-llm-1`, which has no price, so `cost_usd` is null on every demo run. Label it as unknown, not as $0.
 
 ## Decisions (backend-internal)
 - 405 responses use the envelope with code `bad_request` (the contract lists no code for 405).
@@ -70,6 +71,7 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}. `cost_usd` is alw
 - Demo seed backdates over 6 days so all of it is inside the 7-day window. Scenarios change only a fake service.
 - Replay: the server never runs agent code. A worker (`gw.ReplayWorker`) polls for pending replays of agents it has registered, claims one (a conditional UPDATE, so exactly one worker wins) and runs the agent's own function with the original input. The comparison is computed when the replay's execution ends.
 - Sandbox: recordings are matched per tool or step name in call order. A recorded failure is raised again as the same exception class when the agent's module or the builtins have it. A recording that was truncated (over 64 KB) is blocked rather than served, and a truncated original input fails the replay with `ReplayNotPossible`. A served LLM recording reports no tokens for the replay.
+- Pricing: exact model ids only (no prefix or fuzzy matching), so a Bedrock or Vertex id is unpriced. Claude Haiku 5.5 uses its higher price when a step's input is over 100,000 tokens. Retired and retiring models are not in the table. Prices were read from the published page on 2026-11-15; update the table and the date together.
 - `@gw.tool` without `side_effects` means `side_effects=True`. The demo's read-only tools (`web_search`, `retrieve_kb`) declare `side_effects=False`.
 - The sandbox only governs `@gw.tool` and `@gw.llm_call`. Code an agent runs outside those decorators runs in every mode.
 - The schemas enforce contract invariants (citations resolve, `signature` exactly when `confirmed`, `report` exactly when `completed`, a live replay is authorized, ≥ 1 evidence item, title ≤ 80 chars), so fixtures that break them fail B15.

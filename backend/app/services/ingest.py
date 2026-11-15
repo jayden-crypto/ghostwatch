@@ -8,13 +8,14 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app import ids
 from app.errors import ApiError, not_found
 from app.models import Event, Execution, Step
 from app.schemas import events as schemas
+from app.services import pricing
 from app.services import replay as replay_service
 from app.services.anomaly import engine as anomaly_engine
 from app.services.anomaly.rules import StaleInfo
@@ -258,7 +259,7 @@ def _finalize(
     payload: dict[str, Any],
     stale: StaleInfo | None,
 ) -> str | None:
-    """Apply a terminal event: status, end time, duration and token totals, then run the anomaly rules."""
+    """Apply a terminal event: status, end time, duration, token totals and cost, then run the anomaly rules."""
     execution.status = TERMINAL_EVENT_STATUS[event.type]
     execution.ended_at = event.timestamp
     execution.duration_ms = milliseconds_between(execution.started_at, event.timestamp)
@@ -275,6 +276,16 @@ def _finalize(
             Step.execution_id == execution.id
         )
     ).one()
+    # Cost needs each step's own model, so it is priced step by step. None unless every step that
+    # reported tokens can be priced: a partial sum is never stored as the total.
+    execution.cost_usd = pricing.execution_cost(
+        session.execute(
+            select(Step.model, Step.tokens_input, Step.tokens_output).where(
+                Step.execution_id == execution.id,
+                or_(Step.tokens_input.is_not(None), Step.tokens_output.is_not(None)),
+            )
+        ).all()
+    )
 
     raised = anomaly_engine.evaluate(session, execution, stale=stale)
 

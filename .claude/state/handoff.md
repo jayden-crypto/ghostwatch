@@ -8,8 +8,9 @@
 - Contract v1.1 and v1.2 went to main on Jayden's instruction; Adit has to confirm both.
 - Open question: make the handoff per-developer (handoff.jayden.md / handoff.adit.md) before .claude/ and CLAUDE.md reach main, since Adit's session would write the same file. Recommended; not done.
 ## Half-finished (verify before continuing)
-- Local, unpushed: 14e4650 (B12 replay API), the .claude hooks commits and the B13 commit ("feat(sdk): sandbox replay and replay worker"). Push only with a regenerated docs/API.md (`uv run python -m scripts.api_docs` on a seeded server; the script needs replay sections first); the docs-coverage test fails until then.
-- B13 was shown to Jayden live: schema-change → `replay.py worker --fixed` → `replay.py request <id>` gave outcome `fixed`. Verify Jayden accepted it before treating B13 as closed.
+- Local, unpushed: 14e4650 (B12 replay API), the .claude hooks commits, d4350c0 (B13) and the B14 commit ("feat(pricing): execution cost from a table of published prices"). Push only with a regenerated docs/API.md (`uv run python -m scripts.api_docs` on a seeded server; the script needs replay sections first); the docs-coverage test fails until then.
+- B13 was shown to Jayden live (outcome `fixed`) and he said to go on to B14.
+- B14 prices come from the published Anthropic pricing page read on 2026-11-15; cost is null unless every step that reported tokens can be priced.
 - Adit's fixtures PR #35: all 145 fixtures passed B15 in a scratch worktree; the PR itself is not reviewed on GitHub yet.
 ## Next step
-- B14 (token cost from a pricing table; `cost_usd` null unless every model is priced), then PATCH /anomalies/{id}, regenerate docs, push.
+- PATCH /anomalies/{id}, then regenerate docs (also fix the `cost_usd` line in scripts/api_docs.py), push.
