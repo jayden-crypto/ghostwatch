@@ -42,7 +42,7 @@ def classify(ticket: str) -> dict:
     )
 
 
-@gw.tool
+@gw.tool(side_effects=False)  # read-only: a sandbox replay may run it when it has no recording
 def retrieve_kb(category: str) -> dict:
     return kb.lookup(category)
 

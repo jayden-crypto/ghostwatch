@@ -13,7 +13,7 @@ from app.schemas.traces import Trace
 from tests.test_conformance import validate
 
 
-@gw.tool
+@gw.tool(side_effects=False)
 def web_search(query: str) -> dict:
     if query == "rate-limited":
         raise RuntimeError("HTTP 429")

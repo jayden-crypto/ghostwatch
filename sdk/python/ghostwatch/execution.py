@@ -11,6 +11,8 @@ from datetime import datetime, timezone
 from types import TracebackType
 from typing import Any
 
+from ghostwatch.replay import EXECUTED, ReplaySession, take_pending
+
 _current_execution: contextvars.ContextVar[Execution | None] = contextvars.ContextVar(
     "ghostwatch_execution", default=None
 )
@@ -96,10 +98,17 @@ class Step:
                 "tool_name": self.tool_name,
                 "model": self.model,
                 "attempt": self.attempt,
-                "metadata": to_json(self._start_metadata),
+                "metadata": to_json(self._metadata_at_start()),
             },
         )
         return self
+
+    def _metadata_at_start(self) -> dict[str, Any]:
+        metadata = dict(self._start_metadata)
+        if self._execution.replay is not None:
+            # The agent's own steps always run. Decorated calls set this themselves.
+            metadata.setdefault("replay_source", EXECUTED)
+        return metadata
 
     def __exit__(
         self, exc_type: type[BaseException] | None, exc: BaseException | None, tb: TracebackType | None
@@ -143,6 +152,7 @@ class Execution:
         self.tags = tags or []
         self.replay_of = replay_of
         self.replay_id = replay_id
+        self.replay: ReplaySession | None = None  # set when this execution is the run of a replay
         self.output: Any = None
         self._sdk = sdk
         self._seq = 0
@@ -194,6 +204,11 @@ class Execution:
         self._started_at = self._sdk.now()
         self._token = _current_execution.set(self)
         self._sdk.last_execution = self
+        session = take_pending()
+        if session is not None:
+            self.replay = session
+            self.replay_of = session.original["id"]
+            self.replay_id = session.replay_id
         return self
 
     def __exit__(

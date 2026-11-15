@@ -16,7 +16,7 @@ STEP_ID = re.compile(r"stp_[0-9a-f]{32}")
 TIMESTAMP = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z")
 
 
-@gw.tool
+@gw.tool(side_effects=False)
 def web_search(query: str, limit: int = 3) -> dict:
     return {"results": [f"{query}-{index}" for index in range(limit)]}
 
@@ -453,3 +453,22 @@ def test_llm_calls_are_recorded_with_model_and_token_usage(sdk: StubApi) -> None
 
 def test_last_execution_is_none_before_any_run() -> None:
     assert gw.last_execution() is None
+
+
+def test_a_tool_that_does_not_declare_side_effects_is_treated_as_having_them(sdk: StubApi) -> None:
+    @gw.tool
+    def send_email(to: str) -> str:
+        return "sent"
+
+    @gw.tool(name="lookup")
+    def find(key: str) -> str:
+        return key
+
+    assert send_email.__ghostwatch_tool__ == {"name": "send_email", "side_effects": True}
+    assert find.__ghostwatch_tool__ == {"name": "lookup", "side_effects": True}  # unknown means unsafe
+    assert web_search.__ghostwatch_tool__ == {"name": "web_search", "side_effects": False}
+    with gw.execution():
+        send_email("a@example.test")
+    gw.flush()
+    started = [event["payload"] for event in sdk.events() if event["type"] == "step.started"]
+    assert started[0]["metadata"] == {"side_effects": True}  # and an ordinary run carries no replay_source

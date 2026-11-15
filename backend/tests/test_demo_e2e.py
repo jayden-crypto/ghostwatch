@@ -19,6 +19,7 @@ from app.schemas.anomalies import Anomaly
 from app.schemas.common import Page
 from app.schemas.executions import ExecutionSummary
 from app.schemas.investigations import Investigation
+from app.schemas.replays import Replay
 from app.schemas.stats import StatsTimeseries
 from app.schemas.traces import Trace
 from tests.test_conformance import validate
@@ -32,14 +33,16 @@ def demo(live_api: str, monkeypatch: pytest.MonkeyPatch) -> SimpleNamespace:
     monkeypatch.syspath_prepend(str(DEMO_DIR))
     monkeypatch.setenv("GHOSTWATCH_API_URL", live_api)
     monkeypatch.setenv("GHOSTWATCH_API_KEY", get_settings().ghostwatch_api_key)
-    names = ("seed", "run_scenario", "runner", "scenarios")
+    names = ("seed", "run_scenario", "runner", "scenarios", "replay")
     modules = SimpleNamespace(**{name: importlib.import_module(name) for name in names})
     modules.timing = importlib.import_module("fake_services.timing").timing
     modules.invoices = importlib.import_module("agents.invoice_processor").invoices
     modules.invoices.submitted.clear()
+    modules.research = importlib.import_module("agents.research_assistant")
     modules.http = httpx2.Client(base_url=live_api)
     yield modules
     modules.http.close()
+    modules.research.PARSER_FIX_DEPLOYED = False
     modules.timing.use_real_time()
     modules.scenarios.reset_services()
 
@@ -238,6 +241,87 @@ def test_rate_limit_scenario_retries_and_is_flagged(demo: SimpleNamespace) -> No
     assert [(a.type, a.title) for a in trace.anomalies] == [
         ("excessive_retries", "2 retried steps, highest attempt 3")
     ]
+
+
+def replay_in_sandbox(demo: SimpleNamespace, execution_id: str, *, fixed: bool) -> Replay:
+    """Request a sandbox replay as the dashboard does, let a demo worker run it, and read it back."""
+    response = demo.http.post(f"/executions/{execution_id}/replay", json={"mode": "sandbox"})
+    assert response.status_code == 201, response.text
+    replay_id = response.json()["id"]
+    assert demo.replay.build_worker(fixed=fixed).run_once() == [replay_id]
+    return get(demo, Replay, f"/replays/{replay_id}")
+
+
+def diffs(replay: Replay) -> list[tuple]:
+    return [
+        (diff.name, diff.change, diff.original_status, diff.replay_status, diff.replay_source)
+        for diff in replay.comparison.step_diffs
+    ]
+
+
+def test_replaying_the_schema_change_failure_is_fixed_only_once_the_parser_is(demo: SimpleNamespace) -> None:
+    failed = demo.run_scenario.run("schema-change")
+    assert isinstance(failed.error, KeyError)
+
+    # The agent as it shipped: the recorded search response breaks it in exactly the same way.
+    unfixed = replay_in_sandbox(demo, failed.execution.id, fixed=False)
+    assert (unfixed.status, unfixed.comparison.outcome) == ("completed", "same_failure")
+    assert diffs(unfixed) == [
+        ("plan", "unchanged", "completed", "completed", "executed"),
+        ("web_search", "unchanged", "completed", "completed", "recorded"),
+        ("parse_results", "unchanged", "failed", "failed", "executed"),
+    ]
+
+    # With the fix deployed, the same recorded response is parsed and the run completes.
+    fixed = replay_in_sandbox(demo, failed.execution.id, fixed=True)
+    assert (fixed.status, fixed.mode, fixed.side_effects_authorized) == ("completed", "sandbox", False)
+    assert fixed.comparison.outcome == "fixed"
+    assert (fixed.comparison.original.status, fixed.comparison.replay.status) == ("failed", "completed")
+    assert diffs(fixed) == [
+        ("plan", "unchanged", "completed", "completed", "executed"),
+        ("web_search", "unchanged", "completed", "completed", "recorded"),
+        ("parse_results", "status_changed", "failed", "completed", "executed"),
+        ("summarize", "added", None, "completed", "executed"),  # no recording: a model call may run
+    ]
+    assert fixed.comparison.step_count_delta == 1
+
+    original, replayed = trace_of(demo, failed.execution.id), trace_of(demo, fixed.replay_execution_id)
+    assert (replayed.execution.replay_of, replayed.execution.status) == (failed.execution.id, "completed")
+    assert replayed.execution.input == original.execution.input
+    # web_search was served the recording byte for byte: the new response shape, not a live v1 answer.
+    assert replayed.steps[1].output == original.steps[1].output
+    assert sorted(replayed.steps[1].output) == ["data", "meta"]
+    assert [step.metadata["replay_source"] for step in replayed.steps] == [
+        "executed", "recorded", "executed", "executed",
+    ]  # fmt: skip
+    assert replayed.execution.output["sources"] == [hit["title"] for hit in original.steps[1].output["data"]]
+
+    listed = get(demo, Page[Replay], f"/replays?original_execution_id={failed.execution.id}")
+    assert [item.id for item in listed.items] == [fixed.id, unfixed.id]
+
+
+def test_a_sandbox_replay_never_submits_an_invoice(demo: SimpleNamespace) -> None:
+    healthy = demo.run_scenario.run("healthy", "invoice-processor")
+    assert demo.invoices.submitted == ["INV-2041"]
+
+    # The original run submitted the invoice, so the replay is served that recording.
+    replay = replay_in_sandbox(demo, healthy.execution.id, fixed=False)
+    assert demo.invoices.submitted == ["INV-2041"]  # not submitted a second time
+    assert replay.comparison.outcome == "both_succeeded"
+    assert diffs(replay)[-1] == ("submit_invoice", "unchanged", "completed", "completed", "recorded")
+
+    # The ghost run never reached submit_invoice. Replayed now that validation is back up, the agent
+    # does reach it, there is no recording, and the sandbox blocks the call instead of running it.
+    ghost = demo.run_scenario.run("ghost-invoice")
+    replay = replay_in_sandbox(demo, ghost.execution.id, fixed=False)
+    assert demo.invoices.submitted == ["INV-2041"]
+    assert diffs(replay)[-1] == ("submit_invoice", "added", None, "failed", "blocked")
+    assert replay.comparison.outcome == "regressed"
+    blocked = trace_of(demo, replay.replay_execution_id).steps[-1]
+    assert (blocked.error.type, blocked.metadata) == (
+        "SandboxRecordingMissing",
+        {"side_effects": True, "replay_source": "blocked"},
+    )
 
 
 def test_the_demo_never_touches_the_database() -> None:

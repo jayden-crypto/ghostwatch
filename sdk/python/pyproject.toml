@@ -28,3 +28,5 @@ target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
+# The formatter wraps code at the line length; what is left over is long strings, which read better whole.
+ignore = ["E501"]

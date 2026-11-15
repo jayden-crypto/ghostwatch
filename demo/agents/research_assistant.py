@@ -24,8 +24,13 @@ CONFIG = {
 search = SearchApi()
 llm = FakeLLM()
 
+# The fix for the schema-change failure: also accept the search API's new response shape. It is off
+# so that the agent runs as it shipped; `replay.py worker --fixed` turns it on, as deploying the
+# patch would. (Editing parse_results by hand and starting the worker without --fixed is the same.)
+PARSER_FIX_DEPLOYED = False
 
-@gw.tool
+
+@gw.tool(side_effects=False)  # read-only: a sandbox replay may run it when it has no recording
 def web_search(query: str) -> dict:
     return search.search(query, max_results=CONFIG["params"]["max_results"])
 
@@ -39,6 +44,8 @@ def summarize(question: str, sources: list) -> dict:
 
 def parse_results(payload: dict) -> list:
     """Pick the fields the summary needs out of the search API's response."""
+    if PARSER_FIX_DEPLOYED and "results" not in payload:
+        payload = {"results": payload["data"]}  # since 2026-11 the hits are under "data"
     return [{"title": item["title"], "snippet": item["snippet"]} for item in payload["results"]]
 
 

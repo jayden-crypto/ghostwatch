@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-14T20:50Z
+# Backend progress — updated 2026-11-15T10:42Z
 
-## Status: every backend P0 issue is done (B1–B11, B15, B16). 417 backend tests and 22 SDK tests pass locally on docker compose Postgres. P1 (B12–B14) not started. Nothing from the frontend side exists in the repo yet.
+## Status: every backend P0 issue is done (B1–B11, B15, B16), and P1's B12 (replay API) and B13 (SDK sandbox replay and worker) are done and unpushed. 445 backend tests and 39 SDK tests pass locally on docker compose Postgres; 1 backend test fails on purpose until docs/API.md is regenerated with the replay endpoints. B14 and PATCH /anomalies/{anomaly_id} are not started.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -10,20 +10,23 @@
 - GET /stats/overview, GET /stats/timeseries
 - GET /anomalies, GET /anomalies/{anomaly_id}
 - POST /investigations/{execution_id}, GET /investigations/{execution_id}, GET /investigations
+- POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim 🔑 (implemented and tested; not in docs/API.md yet)
 
-Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/{execution_id}/replay, GET /replays, GET /replays/{replay_id}, POST /replays/{replay_id}/claim. `cost_usd` is always null until B14.
+Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}. `cost_usd` is always null until B14.
 
 ## In progress
 - nothing
 
 ## Next up
-- P1, in order: B12 replay API (#16) → B13 SDK sandbox replay + worker (#17) → B14 token cost (#18), plus PATCH /anomalies/{anomaly_id}
-- Review Adit's X1 fixtures PR (#2) when it appears. `backend/tests/fixture_map.py` guesses his file names from the brief and will probably need adjusting; the conformance test fails loudly on any unmapped or invalid fixture.
+- B14 token cost (#18), then PATCH /anomalies/{anomaly_id}
+- Regenerate docs/API.md with the replay endpoints (`scripts/api_docs.py` needs replay sections and its "Not implemented" table updated), then push `jayden/backend`
+- Review Adit's fixtures PR (#35) on GitHub. Its 145 fixtures all passed B15 when checked out locally.
 - Open the `jayden/backend` → `main` PR when Jayden says so (he asked for it not to be opened yet).
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
-- No fixtures exist, so the fixture half of B15 has never run (it skips with a stated reason).
+- The fixture half of B15 skips on this branch (no fixtures here until Adit's PR #35 merges).
+- A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
 - Nothing has been exercised from a browser: there is no frontend in the repo.
 
 ## How to run
@@ -31,6 +34,7 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/
 - Live API docs: http://localhost:8000/docs. Reference with real examples: `docs/API.md`
 - Seed: `cd demo && uv run python seed.py` (baselines plus the support-triage incidents; `--all` adds the schema-change and ghost-invoice failures; `--append` if data already exists)
 - One demo step: `cd demo && uv run python run_scenario.py list`
+- Replay: `cd demo && uv run python replay.py worker --fixed` in one terminal (without `--fixed` the agents run as shipped), then `uv run python replay.py request <execution_id>` in another, or the dashboard's Replay button
 - Tests: `cd backend && uv run ruff check . && uv run pytest -q`; `cd sdk/python && uv run pytest -q`
 - Smoke test over real HTTP against a running server: `cd backend && uv run python -m scripts.smoke`
 - Regenerate docs/API.md from a seeded server: `cd backend && uv run python -m scripts.api_docs`
@@ -47,6 +51,9 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/
 - **Trace**: `depth` 0 for a step whose parent is unknown; `offset_ms` never negative. A completed run with zero steps returns `steps: []` and a critical `ghost_completion` anomaly.
 - **Stats**: a window is whole UTC buckets ending with the current one (24 hours, 7 days, 30 days). Overview totals equal the sum of the default timeseries. Running executions are in the overview, not in the points. `open_anomalies` and `total_agents` are not windowed.
 - **Anomalies**: agent-level ones carry an `execution_id` (contract v1.1). `PATCH` is not implemented.
+- **Replay** (contract v1.2): `POST /executions/{id}/replay` returns `pending`; nothing runs until a replay worker is up, so a replay can stay `pending` indefinitely. Poll `GET /replays/{id}` until `completed`; `comparison` is null before that. A replay whose agent fails is still `completed` (the outcome says how it went). `live` without `authorize_side_effects: true` is `422 side_effect_authorization_required`, and the flag must be the JSON value `true`. Replaying a running execution is `409`.
+- **Replay sources**: every step of a replay execution has `metadata.replay_source` (`recorded`, `executed` or `blocked`), mirrored in `StepDiff.replay_source` (null for a `removed` step). A blocked step fails with error type `SandboxRecordingMissing`. The Replay dialog's old line ("nothing external runs") is wrong; the corrected copy is in the message of commit 4b7568d.
+- **Replay demo result**: replaying the schema-change failure gives `same_failure` with the agent as shipped and `fixed` with the parser fix (web_search `recorded`, summarize `added` and `executed`).
 - **Investigations**: start automatically on failed or timed_out executions and on anomalies of high or above. `confirmed` only comes from a signature; with `rule_based` and no matching signature the root cause is `insufficient_evidence`. `provider` is `fable` only when the model's answer was used; otherwise `rule_based`, with the reason in `evidence_gaps`. `summary` is a deterministic template. POST returns the in-flight investigation (202) if one is queued or running.
 - **`/health`**: `llm_configured` is true when the configured provider can run; `llm_model` is null for `rule_based`.
 - **Demo data**: the fake LLM is `demo-llm-1`, which has no price, so `cost_usd` is null on every demo run.
@@ -61,6 +68,10 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/
 - Fable requests use structured outputs (`output_config.format`), effort `medium`, and the server-side refusal fallback; `model` records the model that answered. Forced tool use is not used: the model rejects it.
 - SDK: zero runtime dependencies; the execution is created lazily by the background thread, so the agent never waits on Ghostwatch. `@gw.llm_call` reads token usage from a returned `usage` dict.
 - Demo seed backdates over 6 days so all of it is inside the 7-day window. Scenarios change only a fake service.
+- Replay: the server never runs agent code. A worker (`gw.ReplayWorker`) polls for pending replays of agents it has registered, claims one (a conditional UPDATE, so exactly one worker wins) and runs the agent's own function with the original input. The comparison is computed when the replay's execution ends.
+- Sandbox: recordings are matched per tool or step name in call order. A recorded failure is raised again as the same exception class when the agent's module or the builtins have it. A recording that was truncated (over 64 KB) is blocked rather than served, and a truncated original input fails the replay with `ReplayNotPossible`. A served LLM recording reports no tokens for the replay.
+- `@gw.tool` without `side_effects` means `side_effects=True`. The demo's read-only tools (`web_search`, `retrieve_kb`) declare `side_effects=False`.
+- The sandbox only governs `@gw.tool` and `@gw.llm_call`. Code an agent runs outside those decorators runs in every mode.
 - The schemas enforce contract invariants (citations resolve, `signature` exactly when `confirmed`, `report` exactly when `completed`, a live replay is authorized, ≥ 1 evidence item, title ≤ 80 chars), so fixtures that break them fail B15.
 - OpenAPI: FastAPI's default validation-error schema is removed; every documented error is the envelope.
 - Tooling: tests use `httpx2`; pytest treats warnings as errors; long literal lines are allowed in tests.
@@ -69,5 +80,6 @@ Not implemented (404 envelope): PATCH /anomalies/{anomaly_id}, POST /executions/
 - none
 
 ## Known issues / tech debt
+- The contract has no way for a worker to report that it could not start a replay. The worker instead opens the replay's execution and fails it with `ReplayNotPossible`, so the reason is visible. A replay that no worker ever claims stays `pending`.
 - Issues #3–#15 stay open until `jayden/backend` merges to `main`.
 - `GHOSTWATCH_API_KEY` in `.env` is still the placeholder from `.env.example`.

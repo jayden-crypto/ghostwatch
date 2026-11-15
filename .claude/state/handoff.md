@@ -8,8 +8,8 @@
 - Contract v1.1 and v1.2 went to main on Jayden's instruction; Adit has to confirm both.
 - Open question: make the handoff per-developer (handoff.jayden.md / handoff.adit.md) before .claude/ and CLAUDE.md reach main, since Adit's session would write the same file. Recommended; not done.
 ## Half-finished (verify before continuing)
-- Local, unpushed: 14e4650 (B12 replay API) and the .claude hooks commits. Push only with a regenerated docs/API.md (`uv run python -m scripts.api_docs` on a seeded server); the docs-coverage test fails until then.
-- B13 is uncommitted in sdk/python (replay.py, worker.py, tools.py, execution.py, tests). SDK tests were not rerun after the last edits. Still to do: SDK replay tests; mark read-only demo tools (web_search, retrieve_kb) side_effects=False; demo worker and parser-fix switch.
+- Local, unpushed: 14e4650 (B12 replay API), the .claude hooks commits and the B13 commit ("feat(sdk): sandbox replay and replay worker"). Push only with a regenerated docs/API.md (`uv run python -m scripts.api_docs` on a seeded server; the script needs replay sections first); the docs-coverage test fails until then.
+- B13 was shown to Jayden live: schema-change → `replay.py worker --fixed` → `replay.py request <id>` gave outcome `fixed`. Verify Jayden accepted it before treating B13 as closed.
 - Adit's fixtures PR #35: all 145 fixtures passed B15 in a scratch worktree; the PR itself is not reviewed on GitHub yet.
 ## Next step
-- Finish B13, then run schema-change → parser fix → sandbox replay and show Jayden outcome `fixed` (web_search recorded, summarize executed) before calling it done. Then B14, PATCH /anomalies/{id}, regenerate docs, push.
+- B14 (token cost from a pricing table; `cost_usd` null unless every model is priced), then PATCH /anomalies/{id}, regenerate docs, push.

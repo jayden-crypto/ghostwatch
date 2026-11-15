@@ -24,6 +24,7 @@ class StubApi:
 
     def __init__(self) -> None:
         self.requests: list[tuple[str, dict[str, Any], str | None]] = []
+        self.replays: dict[str, dict[str, Any]] = {}  # replay id -> {"claim", "agent_slug", "status"}
         self._failures: list[int] = []
         self._lock = threading.Lock()
         self._server = ThreadingHTTPServer(("127.0.0.1", 0), self._handler())
@@ -39,6 +40,23 @@ class StubApi:
     def stop(self) -> None:
         self._server.shutdown()
         self._server.server_close()
+
+    def add_replay(self, claim: dict[str, Any], agent_slug: str, status: str = "pending") -> None:
+        """A replay request waiting for a worker, with the claim response it will be given."""
+        self.replays[claim["replay"]["id"]] = {"claim": claim, "agent_slug": agent_slug, "status": status}
+
+    def _read(self, path: str) -> tuple[int, dict[str, Any]]:
+        with self._lock:
+            if path.startswith("/replays?"):
+                pending = [r["claim"]["replay"] for r in self.replays.values() if r["status"] == "pending"]
+                return 200, {"items": pending, "total": len(pending), "limit": 50, "offset": 0}
+            for replay in self.replays.values():
+                original = replay["claim"]["bundle"]["original_execution"]
+                if path == f"/executions/{original['id']}":
+                    return 200, original
+                if path == f"/agents/{original['agent_id']}":
+                    return 200, {"id": original["agent_id"], "slug": replay["agent_slug"]}
+            return 404, {"error": {"code": "not_found", "message": path, "details": None}}
 
     def fail_next(self, count: int, status: int) -> None:
         with self._lock:
@@ -62,10 +80,16 @@ class StubApi:
         api = self
 
         class Handler(BaseHTTPRequestHandler):
+            def do_GET(self) -> None:
+                self._send(*api._read(self.path.removeprefix("/api/v1")))
+
             def do_POST(self) -> None:
-                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                raw = self.rfile.read(int(self.headers.get("Content-Length") or 0))
+                body = json.loads(raw) if raw else {}
                 path = self.path.removeprefix("/api/v1")
-                status, response = api._respond(path, body, self.headers.get("Authorization"))
+                self._send(*api._respond(path, body, self.headers.get("Authorization")))
+
+            def _send(self, status: int, response: dict[str, Any]) -> None:
                 payload = json.dumps(response).encode()
                 self.send_response(status)
                 self.send_header("Content-Type", "application/json")
@@ -96,6 +120,12 @@ class StubApi:
                     "error": {"code": "stub", "message": f"stub failure {status}", "details": None}
                 }
             self.requests.append((path, body, authorization))
+            if path.startswith("/replays/") and path.endswith("/claim"):
+                replay = self.replays.get(path.split("/")[2])
+                if replay is None or replay["status"] != "pending":
+                    return 409, {"error": {"code": "conflict", "message": "already claimed", "details": None}}
+                replay["status"] = "claimed"
+                return 200, replay["claim"]
             if path == "/agents":
                 return 201, {"id": "agt_" + "a" * 32}
             if path == "/executions":

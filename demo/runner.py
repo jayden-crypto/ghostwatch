@@ -57,6 +57,22 @@ def api_get(path: str) -> dict | None:
         raise
 
 
+def api_post(path: str, body: dict) -> dict:
+    """POST JSON to the Ghostwatch API. Raises SystemExit with the API's own message if it refuses."""
+    request = urllib.request.Request(
+        settings.api_url() + path,
+        data=json.dumps(body).encode(),
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=10) as response:
+            return json.loads(response.read())
+    except urllib.error.HTTPError as exc:
+        error = json.loads(exc.read())["error"]
+        raise SystemExit(f"Ghostwatch refused ({exc.code} {error['code']}): {error['message']}") from None
+
+
 def require_api() -> None:
     """Stop with a clear message unless the API and its database are up."""
     try:

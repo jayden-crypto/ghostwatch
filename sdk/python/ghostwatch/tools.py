@@ -8,6 +8,7 @@ from collections.abc import Callable
 from typing import Any, TypeVar, overload
 
 from ghostwatch.execution import current_execution
+from ghostwatch.replay import BLOCKED, EXECUTED, RECORDED, SandboxRecordingMissing, recorded_exception
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -27,6 +28,12 @@ def _recorded(function: F, *, step_type: str, name: str, model: str | None, info
             call_input: Any = dict(bound.arguments)
         except TypeError:
             call_input = {"args": list(args), "kwargs": kwargs}  # the call itself will raise below
+        metadata: dict[str, Any] = {"side_effects": info["side_effects"]} if is_tool else {}
+        source, recording, blocked_because = EXECUTED, None, None
+        if run.replay is not None:
+            safe = not info["side_effects"]
+            source, recording, blocked_because = run.replay.resolve(step_type, name, safe=safe)
+            metadata["replay_source"] = source
         step = run.step(
             name,
             step_type,
@@ -34,18 +41,23 @@ def _recorded(function: F, *, step_type: str, name: str, model: str | None, info
             tool_name=name if is_tool else None,
             model=model,
             attempt=run._next_attempt(name),
-            metadata={"side_effects": info["side_effects"]} if is_tool else None,
+            metadata=metadata,
         )
         with step:
             try:
-                result = function(*args, **kwargs)
+                if source == BLOCKED:
+                    raise SandboxRecordingMissing(blocked_because)
+                if source == RECORDED and recording["error"] is not None:
+                    raise recorded_exception(recording["error"], function)
+                result = recording["output"] if source == RECORDED else function(*args, **kwargs)
             except BaseException:
                 run._record_tool_result(name, failed=True)
                 raise
             run._record_tool_result(name, failed=False)
             step.output = result
             usage = result.get("usage") if isinstance(result, dict) else None
-            if not is_tool and isinstance(usage, dict):
+            if not is_tool and isinstance(usage, dict) and source == EXECUTED:
+                # A served recording used no tokens in this run, so none are reported for it.
                 step.tokens_input = usage.get("input_tokens")
                 step.tokens_output = usage.get("output_tokens")
             return result
@@ -57,14 +69,17 @@ def _recorded(function: F, *, step_type: str, name: str, model: str | None, info
 @overload
 def tool(func: F) -> F: ...
 @overload
-def tool(*, side_effects: bool = False, name: str | None = None) -> Callable[[F], F]: ...
+def tool(*, side_effects: bool = True, name: str | None = None) -> Callable[[F], F]: ...
 
 
-def tool(func: Any = None, *, side_effects: bool = False, name: str | None = None) -> Any:
+def tool(func: Any = None, *, side_effects: bool = True, name: str | None = None) -> Any:
     """Record calls of the decorated function as tool_call steps of the current execution.
 
-    `side_effects=True` marks a tool that changes the outside world (sends, writes, pays). The flag
-    is stored with every call, and such a tool is never executed during a sandbox replay.
+    `side_effects` says whether the tool changes the outside world (sends, writes, pays). It defaults
+    to True: a tool that does not say otherwise is treated as unsafe. Declare `side_effects=False` for
+    read-only tools. The flag is stored with every call and decides what a sandbox replay may do: a
+    recorded call is always served from the recording, and a call with no recording runs only if the
+    tool is declared `side_effects=False`.
     Outside an execution the function runs exactly as if it were not decorated.
     """
 
@@ -91,7 +106,7 @@ def llm_call(func: Any = None, *, model: str | None = None, name: str | None = N
 
     def decorate(function: F) -> F:
         step_name = name or function.__name__
-        info = {"name": step_name, "side_effects": False}
+        info = {"name": step_name, "side_effects": False}  # a model call reads, it does not act
         return _recorded(function, step_type="llm_call", name=step_name, model=model, info=info)
 
     return decorate(func) if func is not None else decorate

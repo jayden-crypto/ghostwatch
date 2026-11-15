@@ -30,11 +30,17 @@ from typing import Any
 
 from ghostwatch.client import NullTransport, Transport
 from ghostwatch.execution import Execution, Step, current_execution
+from ghostwatch.replay import RecordedCallError, ReplayNotPossible, SandboxRecordingMissing
 from ghostwatch.tools import llm_call, tool
+from ghostwatch.worker import ReplayWorker
 
 __all__ = [
     "Agent",
     "Execution",
+    "RecordedCallError",
+    "ReplayNotPossible",
+    "ReplayWorker",
+    "SandboxRecordingMissing",
     "Step",
     "current_execution",
     "execution",
