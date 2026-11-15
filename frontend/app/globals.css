@@ -26,6 +26,9 @@
   --color-sev-medium: var(--sev-medium);
   --color-sev-high: var(--sev-high);
   --color-sev-critical: var(--sev-critical);
+  --color-json-string: var(--json-string);
+  --color-json-number: var(--json-number);
+  --color-json-keyword: var(--json-keyword);
   /* Type scale 12 / 13 / 14 / 16 / 20 / 24: text-xs, text-13, text-sm, text-base, text-xl, text-2xl. */
   --text-13: 0.8125rem;
   --text-13--line-height: 1.25rem;
@@ -90,6 +93,11 @@
   --sev-medium: #d29922;
   --sev-high: #f0883e;
   --sev-critical: #f85149;
+
+  /* JSON syntax. Desaturated on purpose so payloads never compete with status colour. */
+  --json-string: #a8c7a0;
+  --json-number: #d9b88a;
+  --json-keyword: #93b4d9;
 
   /* shadcn/ui variables, mapped onto the tokens above. */
   --card: var(--surface);

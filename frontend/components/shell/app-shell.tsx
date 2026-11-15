@@ -7,7 +7,8 @@ import { Sidebar, SidebarFallback } from "./sidebar";
 
 export function AppShell({ children }: { children: ReactNode }) {
   return (
-    <div className="grid h-full grid-cols-[208px_minmax(0,1fr)]">
+    // One row capped at the viewport height, so <main> scrolls instead of the row growing with it.
+    <div className="grid h-full grid-cols-[208px_minmax(0,1fr)] grid-rows-[minmax(0,1fr)]">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded-md focus:bg-raised focus:px-3 focus:py-1.5"
