@@ -21,3 +21,6 @@ test-results/
 # OS / misc
 .DS_Store
 *.log
+
+# Claude Code: the auto-generated session snapshot is machine-local (handoff.md is committed)
+.claude/state/snapshot.md

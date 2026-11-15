@@ -33,3 +33,11 @@ Ghostwatch is an observability and reliability platform for AI agents, built by 
 - Prefer the simplest design that satisfies the contract and the definition of done. Don't add abstractions, config options or files the task doesn't need.
 - Write general, correct implementations. Never special-case a test or a demo scenario to make it pass.
 - At the end of every task, update your `PROGRESS.md` (format is in your kickoff prompt) so a fresh session or the other developer can pick up instantly.
+
+## Session handoff (`.claude/state/handoff.md`)
+- Update it before any compact, and whenever a significant decision is made or something is declined.
+- It holds: decisions and the reasoning behind them, work left half-finished, what was explicitly declined, and the next concrete step.
+- Keep it under 20 lines. Replace stale lines instead of appending.
+- Write lines that stay true: "verify X completed" rather than "X is running"; name commits and files rather than "just now".
+- Commit it alongside the work it describes.
+- `.claude/state/snapshot.md` is written by a hook and git-ignored; never edit it by hand.
