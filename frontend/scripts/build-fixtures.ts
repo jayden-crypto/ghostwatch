@@ -29,6 +29,7 @@ import type {
   ReplayClaim,
   ReplayComparison,
   ReplayOutcome,
+  ReplaySource,
   StatsBucket,
   StatsOverview,
   StatsTimeseries,
@@ -215,6 +216,7 @@ function compare(original: RunView, replayed: RunView): ReplayComparison {
                 : "unchanged",
         original_status: x?.status ?? null,
         replay_status: y?.status ?? null,
+        replay_source: (y?.metadata.replay_source as ReplaySource | undefined) ?? null,
       };
     })
     .sort((p, q) => p.ordinal - q.ordinal || (p.original_step_id ? -1 : 1));
@@ -398,7 +400,8 @@ const claim: ReplayClaim = {
   bundle: {
     original_execution: claimedOriginal.detail,
     recorded_calls: claimedOriginal.steps
-      .filter((step) => step.tool_name !== null || step.type === "llm_call")
+      // The calls a sandbox replay can serve from the recording (backend: RECORDED_STEP_TYPES).
+      .filter((step) => step.type === "tool_call" || step.type === "llm_call")
       .map((step): RecordedCall => {
         const key = `${step.type}:${step.tool_name ?? step.name}`;
         occurrences.set(key, (occurrences.get(key) ?? 0) + 1);
@@ -529,7 +532,7 @@ const routineRows = agents
   .filter(Boolean);
 const readme = `# Contract fixtures
 
-Canonical example responses for every endpoint in \`../API_CONTRACT.md\` (v1.1). The frontend's mock
+Canonical example responses for every endpoint in \`../API_CONTRACT.md\` (v1.2). The frontend's mock
 mode serves these files; the backend's conformance tests (B15) validate each one against its schema.
 
 They are one consistent snapshot of a small world, observed at **${iso(NOW)}**: the same ids appear in
@@ -576,17 +579,27 @@ One per outcome (\`replays.get.<outcome>.json\`), plus \`pending\`, \`claimed\` 
 \`replays.get.fixed.json\` is the demo: the sandbox replay of \`schema_change\` after the parser fix.
 \`replays.get.both_succeeded.json\` is the only \`live\` replay and is authorized.
 
+Every step of a replay execution carries \`metadata.replay_source\` (contract §10), repeated in
+\`StepDiff.replay_source\`. All three values appear:
+
+- \`recorded\`: \`web_search\` in \`fixed\` and \`different_failure\`, served from the original's recording.
+- \`executed\`: the agent's own steps everywhere; \`summarize\` in \`fixed\` (an LLM call the original never
+  made); every step of the live replay.
+- \`blocked\`: \`send_digest\` in \`inconclusive\`. It is a tool with side effects that the original never
+  reached, so the sandbox does not run it: the step fails with \`SandboxRecordingMissing\` and so does
+  the replay.
+
 ## Things that are deliberately here
 
 - \`_truncated\` payload markers: step inputs and outputs and the execution output of \`token_spike\`.
 - Nested steps (\`depth\` 1): \`summarize_batch\` under \`summarize\` in the \`ticket-digest\` runs.
 - A retried step: \`retrieve_kb\` attempts 1–3 in \`rate_limit\`; \`fetch_tickets\` in \`fetch_failed\`.
-- \`cost_usd\` is \`null\` for \`demo-llm-1\` (no pricing) and set for the \`ticket-digest\` runs, using a
-  fixture-only price for \`${"claude-haiku-5-5"}\`. The backend's pricing table (B14) is not built yet.
+- \`cost_usd\` is \`null\` for \`demo-llm-1\` (no price) and set for the \`ticket-digest\` runs, at the
+  backend's list price for \`claude-haiku-5-5\` (\`backend/app/services/pricing.py\`).
 - Evidence of kind \`event\` (on the \`ghost_completion\` anomaly) and \`metric\` (on the \`slow\` run's
-  \`duration_spike\`). The backend's v1 rules do not emit these two kinds; they are here so every
-  \`EvidenceKind\` has an example.
-- Anomaly statuses \`acknowledged\` and \`resolved\`, although \`PATCH /anomalies/{id}\` is P1.
+  \`duration_spike\`). The backend's v1 rules do not emit these two kinds; they are the only thing here
+  the backend does not produce, and they exist so every \`EvidenceKind\` has an example.
+- Anomaly statuses \`acknowledged\` and \`resolved\` (set through \`PATCH /anomalies/{id}\`).
 - An empty page for each list endpoint and one file per error code.
 
 ## Regenerating

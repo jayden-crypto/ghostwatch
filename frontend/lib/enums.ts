@@ -10,6 +10,7 @@ import {
   ArrowDownToLine,
   ArrowLeftRight,
   ArrowUpFromLine,
+  Ban,
   Box,
   Braces,
   CheckCheck,
@@ -24,6 +25,7 @@ import {
   Clock,
   ClockAlert,
   DatabaseZap,
+  Disc3,
   Equal,
   FileDiff,
   Gauge,
@@ -35,6 +37,7 @@ import {
   MessageSquareText,
   Minus,
   OctagonAlert,
+  Play,
   Plus,
   Radio,
   RotateCw,
@@ -63,6 +66,7 @@ import type {
   InvestigationTrigger,
   ReplayMode,
   ReplayOutcome,
+  ReplaySource,
   ReplayStatus,
   RootCauseStatus,
   Severity,
@@ -270,6 +274,18 @@ export const REPLAY_OUTCOME: Record<ReplayOutcome, EnumMeta> = {
   different_failure: { label: "Different failure", icon: Shuffle, tone: "timed-out", hint: "Both failed, but not in the same way." },
   both_succeeded: { label: "Both succeeded", icon: CheckCheck, tone: "muted", hint: "The original and the replay both completed." },
   inconclusive: { label: "Inconclusive", icon: CircleHelp, tone: "subtle", hint: "A timeout or missing data prevents a comparison." },
+};
+
+/** Contract §10: what really happened for a step of a replay. */
+export const REPLAY_SOURCE: Record<ReplaySource, EnumMeta> = {
+  recorded: { label: "Recorded", icon: Disc3, tone: "muted", hint: "Served from the original run's recording. Nothing ran." },
+  executed: { label: "Executed", icon: Play, tone: "muted", hint: "This step really ran during the replay." },
+  blocked: {
+    label: "Blocked",
+    icon: Ban,
+    tone: "timed-out",
+    hint: "A tool with side effects and no recording. The sandbox did not run it, so the step failed.",
+  },
 };
 
 export const STEP_CHANGE: Record<StepChange, EnumMeta> = {

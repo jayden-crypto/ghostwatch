@@ -13,8 +13,9 @@ import { useEffect, useMemo, useRef } from "react";
 
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { ID } from "@/lib/api/types";
-import { metaOf, STEP_STATUS, STEP_TYPE, TONE_TEXT } from "@/lib/enums";
+import { metaOf, REPLAY_SOURCE, STEP_STATUS, STEP_TYPE, TONE_TEXT } from "@/lib/enums";
 import { formatDuration } from "@/lib/format";
+import { replaySourceOf } from "@/lib/json";
 import { axisTicks, barFor, tickLabel } from "@/lib/trace/layout";
 import type { TraceRow } from "@/lib/trace/tree";
 import { cn } from "@/lib/utils";
@@ -114,6 +115,10 @@ export function Waterfall({ rows, span, nowOffset, selectedId, cursorId, highlig
             const status = metaOf(STEP_STATUS, step.status, "StepStatus");
             const TypeIcon = type.icon;
             const StatusIcon = status.icon;
+            // Only steps of a replay execution carry a replay source (contract §10).
+            const replaySource = replaySourceOf(step);
+            const source = replaySource && metaOf(REPLAY_SOURCE, replaySource, "ReplaySource");
+            const SourceIcon = source?.icon;
             const bar = barFor(step, span, nowOffset);
             const selected = step.id === selectedId;
             const flash = focusRequest?.stepId === step.id;
@@ -178,7 +183,14 @@ export function Waterfall({ rows, span, nowOffset, selectedId, cursorId, highlig
                       +{row.node.descendantCount}
                     </span>
                   )}
-                  <span title={status.label} className="ml-auto shrink-0">
+                  {source && SourceIcon && (
+                    <span title={`${source.label}: ${source.hint}`} className="ml-auto flex shrink-0 items-center gap-1 text-[10px] text-fg-subtle">
+                      <SourceIcon className={cn("size-3", TONE_TEXT[source.tone])} aria-hidden="true" />
+                      <span className={cn("hidden font-mono min-[1400px]:inline", TONE_TEXT[source.tone])}>{source.label.toLowerCase()}</span>
+                      <span className="sr-only min-[1400px]:hidden">{source.label}</span>
+                    </span>
+                  )}
+                  <span title={status.label} className={cn("shrink-0", !source && "ml-auto")}>
                     <StatusIcon
                       className={cn("size-3.5", TONE_TEXT[status.tone], status.spin && "animate-spin [animation-duration:1.4s]", step.status === "completed" && "opacity-60")}
                       aria-hidden="true"

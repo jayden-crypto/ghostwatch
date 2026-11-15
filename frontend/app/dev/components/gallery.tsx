@@ -14,6 +14,7 @@ import {
   OutcomeBadge,
   ProviderBadge,
   ReplayModeBadge,
+  ReplaySourceBadge,
   ReplayStatusBadge,
   RootCauseBadge,
   SeverityBadge,
@@ -42,6 +43,7 @@ import {
   INVESTIGATION_TRIGGERS,
   REPLAY_MODES,
   REPLAY_OUTCOMES,
+  REPLAY_SOURCES,
   REPLAY_STATUSES,
   ROOT_CAUSE_STATUSES,
   SEVERITIES,
@@ -96,6 +98,7 @@ export function Gallery() {
         <Row name="ReplayMode">{REPLAY_MODES.map((v) => <ReplayModeBadge key={v} mode={v} />)}</Row>
         <Row name="ReplayStatus">{REPLAY_STATUSES.map((v) => <ReplayStatusBadge key={v} status={v} />)}</Row>
         <Row name="ReplayOutcome">{REPLAY_OUTCOMES.map((v) => <OutcomeBadge key={v} outcome={v} />)}</Row>
+        <Row name="ReplaySource">{REPLAY_SOURCES.map((v) => <ReplaySourceBadge key={v} source={v} />)}</Row>
         <Row name="StepChange">{STEP_CHANGES.map((v) => <StepChangeBadge key={v} change={v} />)}</Row>
         <Row name="EventType">{EVENT_TYPES.map((v) => <EventTypeLabel key={v} type={v} />)}</Row>
       </Panel>

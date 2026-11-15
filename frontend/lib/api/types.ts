@@ -1,5 +1,5 @@
 /**
- * Mirror of contract/API_CONTRACT.md v1.1. Section numbers refer to that file.
+ * Mirror of contract/API_CONTRACT.md v1.2. Section numbers refer to that file.
  *
  * Keys are snake_case exactly as they cross the wire: nothing here is renamed or converted.
  * Every listed key is always present; "absent" is `null`, never a missing key.
@@ -82,6 +82,10 @@ export type ReplayOutcome = (typeof REPLAY_OUTCOMES)[number];
 
 export const STEP_CHANGES = ["unchanged", "status_changed", "output_changed", "added", "removed"] as const;
 export type StepChange = (typeof STEP_CHANGES)[number];
+
+/** §10: what really happened for a step of a replay execution. */
+export const REPLAY_SOURCES = ["recorded", "executed", "blocked"] as const;
+export type ReplaySource = (typeof REPLAY_SOURCES)[number];
 
 export const EVENT_TYPES = [
   "step.started",
@@ -410,6 +414,8 @@ export interface StepDiff {
   change: StepChange;
   original_status: StepStatus | null;
   replay_status: StepStatus | null;
+  /** `metadata.replay_source` of the replay step; null when there is no replay step. */
+  replay_source: ReplaySource | null;
 }
 
 export interface ReplayComparison {

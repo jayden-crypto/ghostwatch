@@ -32,6 +32,7 @@ import {
   INVESTIGATION_TRIGGERS,
   REPLAY_MODES,
   REPLAY_OUTCOMES,
+  REPLAY_SOURCES,
   REPLAY_STATUSES,
   ROOT_CAUSE_STATUSES,
   SEVERITIES,
@@ -196,10 +197,60 @@ for (const summary of executions) {
   }
 }
 
-// ── 4. Coverage ─────────────────────────────────────────────────────────────
-
 const all = (prefix: string): Node[] =>
   [...docs].filter(([file]) => file.startsWith(prefix)).flatMap(([, doc]) => (isRecord(doc) && Array.isArray(doc.items) ? doc.items : [doc]));
+
+// Contract §10 (v1.2): what a replay's steps must say about themselves.
+const replayModeOf = new Map<string, string>();
+for (const replay of [...itemsOf("replays.list.json")]) {
+  if (typeof replay.replay_execution_id === "string") replayModeOf.set(replay.replay_execution_id, String(replay.mode));
+}
+for (const summary of executions) {
+  const id = String(summary.id);
+  const trace = docs.get(`executions.trace.${id}.json`);
+  if (!isRecord(trace ?? null)) continue;
+  const steps = (trace as { steps: { [k: string]: Node }[] }).steps;
+  const mode = replayModeOf.get(id);
+  for (const step of steps) {
+    const metadata = isRecord(step.metadata) ? step.metadata : {};
+    const source = metadata.replay_source;
+    const where = `executions.trace.${id}.json: step ${String(step.ordinal)} ${String(step.name)}`;
+    if (summary.replay_of === null) {
+      if (source !== undefined) fail(`${where} has metadata.replay_source, but the execution is not a replay`);
+      continue;
+    }
+    if (typeof source !== "string" || !(REPLAY_SOURCES as readonly string[]).includes(source)) {
+      fail(`${where}: every step of a replay needs metadata.replay_source (recorded, executed or blocked)`);
+      continue;
+    }
+    if (mode === undefined) fail(`${where}: the execution is a replay, but no replay in replays.list.json points at it`);
+    if (mode === "sandbox" && metadata.side_effects === true && source === "executed") {
+      fail(`${where}: a tool with side effects ran in a sandbox replay`);
+    }
+    if (mode === "live" && source !== "executed") fail(`${where}: a live replay serves nothing, so every step is executed`);
+    if (source === "blocked" && (step.status !== "failed" || !isRecord(step.error) || step.error.type !== "SandboxRecordingMissing")) {
+      fail(`${where}: a blocked step must be failed with error type SandboxRecordingMissing`);
+    }
+    if (source === "recorded" && (step.tokens_input !== null || step.tokens_output !== null)) {
+      fail(`${where}: a step served from a recording used no tokens in the replay`);
+    }
+  }
+}
+for (const replay of all("replays.").filter(isRecord)) {
+  const comparison = replay.comparison;
+  if (!isRecord(comparison) || !Array.isArray(comparison.step_diffs)) continue;
+  const trace = docs.get(`executions.trace.${String(replay.replay_execution_id)}.json`);
+  const steps = isRecord(trace ?? null) ? (trace as { steps: { [k: string]: Node }[] }).steps : [];
+  for (const diff of comparison.step_diffs.filter(isRecord)) {
+    const step = steps.find((candidate) => candidate.id === diff.replay_step_id);
+    const expected = step && isRecord(step.metadata) ? (step.metadata.replay_source ?? null) : null;
+    if (diff.replay_source !== expected) {
+      fail(`replay ${String(replay.id)}: step_diffs ordinal ${String(diff.ordinal)} replay_source is ${String(diff.replay_source)}, the replay step says ${String(expected)}`);
+    }
+  }
+}
+
+// ── 4. Coverage ─────────────────────────────────────────────────────────────
 
 /** Every value found at `key` in objects that have all of `shape`'s keys, anywhere under `roots`. */
 function valuesAt(roots: Node[], key: string, shape: string[]): Set<Node> {
@@ -231,13 +282,15 @@ const coverage: [string, readonly string[], Set<Node>][] = [
   ["ReplayStatus", REPLAY_STATUSES, valuesAt(all("replays."), "status", ["side_effects_authorized"])],
   ["ReplayOutcome", REPLAY_OUTCOMES, valuesAt(all("replays."), "outcome", ["step_diffs"])],
   ["StepChange", STEP_CHANGES, valuesAt(all("replays."), "change", ["original_step_id", "replay_step_id"])],
+  ["ReplaySource", REPLAY_SOURCES, valuesAt(all("replays."), "replay_source", ["original_step_id", "replay_step_id"])],
   ["EventType", EVENT_TYPES, valuesAt(all("executions.events."), "type", ["seq", "received_at"])],
   ["ErrorCode", ERROR_CODES, valuesAt(all("error."), "code", ["message", "details"])],
 ];
 for (const [name, values, found] of coverage) {
   const missing = values.filter((value) => !found.has(value));
   if (missing.length) fail(`coverage: no fixture exercises ${name} = ${missing.join(", ")}`);
-  const unknown = [...found].filter((value) => !values.includes(String(value)));
+  // null is how the contract says "absent"; it is not a value of the enum.
+  const unknown = [...found].filter((value) => value !== null && !values.includes(String(value)));
   if (unknown.length) fail(`coverage: ${name} has values outside the contract: ${unknown.map(String).join(", ")}`);
 }
 
@@ -259,6 +312,8 @@ const special: [string, boolean][] = [
   ["a hypothesis with a contradicting fact", has(all("investigations."), (n) => Array.isArray(n.contradicting_fact_ids) && n.contradicting_fact_ids.length > 0)],
   ["a report with evidence gaps", has(all("investigations."), (n) => Array.isArray(n.evidence_gaps) && n.evidence_gaps.length > 0)],
   ["a live replay", has(all("replays."), (n) => n.mode === "live" && n.side_effects_authorized === true)],
+  ["a step blocked by the sandbox", has(traces, (n) => "ordinal" in n && isRecord(n.metadata) && n.metadata.replay_source === "blocked")],
+  ["a step served from a recording", has(traces, (n) => "ordinal" in n && isRecord(n.metadata) && n.metadata.replay_source === "recorded")],
   ["an agent with no executions", has(all("agents.list."), (n) => "last_execution" in n && n.last_execution === null)],
 ];
 for (const [what, present] of special) if (!present) fail(`coverage: no fixture has ${what}`);

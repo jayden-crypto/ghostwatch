@@ -407,8 +407,12 @@ interface DigestOptions {
   /** ok: completes. fetch_fail: the ticket API answers 503 on all three attempts. hang: it never answers. */
   mode?: "ok" | "fetch_fail" | "hang";
   tickets?: number;
-  /** Sandbox replay: tool calls return at once. */
-  sandbox?: boolean;
+  /**
+   * A sandbox replay of a run that never reached send_digest. fetch_tickets is the job's own
+   * retrieval step, not an SDK tool call, so it runs for real; send_digest is a tool with side
+   * effects and no recording, so the sandbox blocks it.
+   */
+  sendBlocked?: boolean;
 }
 
 function digestRun(n: number, key: string, startedAt: number, note: string, o: DigestOptions = {}): Run {
@@ -420,8 +424,8 @@ function digestRun(n: number, key: string, startedAt: number, note: string, o: D
   const mode = o.mode ?? "ok";
   if (mode === "fetch_fail") {
     for (let attempt = 1; attempt <= 3; attempt++) {
-      run.step({ ...fetch, ms: o.sandbox ? 2 : vary(3040, 60), attempt, error: TICKET_API_DOWN });
-      if (attempt < 3) run.wait(o.sandbox ? 0 : 1000 * attempt);
+      run.step({ ...fetch, ms: vary(3040, 60), attempt, error: TICKET_API_DOWN });
+      if (attempt < 3) run.wait(1000 * attempt);
     }
     return run.fail(TICKET_API_DOWN);
   }
@@ -435,7 +439,7 @@ function digestRun(n: number, key: string, startedAt: number, note: string, o: D
   const batches = Math.ceil(count / 20);
   run.step({
     ...fetch,
-    ms: o.sandbox ? 2 : vary(620, 60),
+    ms: vary(620, 60),
     output: { count, pages: batches, first_ticket_ids: ["TCK-88412", "TCK-88413", "TCK-88415"] },
   });
   const parent = run.open({ name: "summarize", type: "reasoning", input: { tickets: count, batch_size: 20 } });
@@ -457,13 +461,28 @@ function digestRun(n: number, key: string, startedAt: number, note: string, o: D
     });
   }
   run.close(parent, { batches, summary_chars: summaryChars });
-  run.step({
+  const send = {
     name: "send_digest",
     type: "tool_call",
     tool: true,
     sideEffects: true,
-    ms: o.sandbox ? 2 : vary(240, 20),
     input: { channel: "#support-leads", summary_chars: summaryChars },
+  } as const;
+  if (o.sendBlocked) {
+    const error = pythonError(
+      "SandboxRecordingMissing",
+      "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+      [
+        [DIGEST_FILE, 104, "run", "send_digest(channel=CHANNEL, summary=summary)"],
+        ["/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py", 49, "wrapper", "raise SandboxRecordingMissing(blocked_because)"],
+      ],
+    );
+    run.step({ ...send, ms: 0, error });
+    return run.fail(error);
+  }
+  run.step({
+    ...send,
+    ms: vary(240, 20),
     output: { message_id: `MSG-${(startedAt / 1000) % 100000}`, status: "sent" },
   });
   const result = { tickets: count, batches, delivered: true };
@@ -575,7 +594,7 @@ const rateLimitReplay = supportRun(
   "replay_both_succeeded",
   at("2026-11-14T13:31:05.672Z"),
   0,
-  "Live replay (authorized) of `rate_limit` after the knowledge base stopped rate limiting: outcome both_succeeded, and the two failed attempts are gone.",
+  "Live replay (authorized) of `rate_limit` after the knowledge base stopped rate limiting: every step is executed, outcome both_succeeded, and the two failed attempts are gone.",
 );
 export const slow = supportRun(
   0x49,
@@ -631,15 +650,15 @@ const fetchFailedReplay = digestRun(
   0x69,
   "replay_same_failure",
   at("2026-11-14T14:20:11.058Z"),
-  "Sandbox replay of `fetch_failed`: the recorded 503s fail it the same way, outcome same_failure.",
-  { mode: "fetch_fail", sandbox: true },
+  "Sandbox replay of `fetch_failed`: fetch_tickets is the job's own retrieval step, so it runs for real; the ticket API still answers 503 and the run fails the same way. Outcome same_failure.",
+  { mode: "fetch_fail" },
 );
 const timedOutReplay = digestRun(
   0x6a,
   "replay_inconclusive",
   at("2026-11-14T14:41:36.914Z"),
-  "Sandbox replay of `timed_out`: it completes, but the original timed out, so the outcome is inconclusive.",
-  { tickets: 29, sandbox: true },
+  "Sandbox replay of `timed_out`: it gets past fetch_tickets, then reaches send_digest, a tool with side effects that the original never recorded. The sandbox blocks it (SandboxRecordingMissing) and the replay fails. The original timed out, so the outcome is inconclusive.",
+  { tickets: 29, sendBlocked: true },
 );
 
 // ── Replays ─────────────────────────────────────────────────────────────────
@@ -665,7 +684,7 @@ const replay = (
   replayRun: Run | null,
   rest: Partial<Omit<ReplaySpec, "n" | "key" | "original" | "replay">> & { requestedAt: number },
 ): ReplaySpec => {
-  replayRun?.asReplayOf(original, n);
+  replayRun?.asReplayOf(original, n, rest.mode ?? "sandbox");
   return { n, key, original, replay: replayRun, mode: "sandbox", status: "completed", note: null, claimedAfter: 1_400, error: null, ...rest };
 };
 

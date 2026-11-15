@@ -7,12 +7,13 @@
 import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
-import { StepStatusBadge, StepTypeBadge } from "@/components/data/badges";
+import { ReplaySourceBadge, StepStatusBadge, StepTypeBadge } from "@/components/data/badges";
 import { JsonViewer } from "@/components/data/json-viewer";
 import { CopyButton, Duration, IdChip, Timestamp, Tokens } from "@/components/data/values";
 import { Button } from "@/components/ui/button";
 import type { ID, Step } from "@/lib/api/types";
 import { DASH, formatDuration } from "@/lib/format";
+import { replaySourceOf } from "@/lib/json";
 import { cn } from "@/lib/utils";
 
 export const INSPECTOR_TABS = ["overview", "input", "output", "error", "metadata"] as const;
@@ -43,11 +44,17 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 const Absent = ({ children = DASH }: { children?: ReactNode }) => <span className="text-fg-subtle">{children}</span>;
 
 function Overview({ step, attempts, onSelectStep }: { step: Step; attempts: number; onSelectStep: (id: ID) => void }) {
+  const replaySource = replaySourceOf(step);
   return (
     <dl>
       <Field label="Status">
         <StepStatusBadge status={step.status} />
       </Field>
+      {replaySource && (
+        <Field label="In this replay">
+          <ReplaySourceBadge source={replaySource} />
+        </Field>
+      )}
       <Field label="Type">
         <StepTypeBadge type={step.type} />
       </Field>

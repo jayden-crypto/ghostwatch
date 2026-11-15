@@ -14,6 +14,7 @@ import {
   OutcomeBadge,
   ProviderBadge,
   ReplayModeBadge,
+  ReplaySourceBadge,
   ReplayStatusBadge,
   RootCauseBadge,
   SeverityBadge,
@@ -48,6 +49,7 @@ const ENUMS: [string, readonly string[], Record<string, E.EnumMeta>, (value: nev
   ["ReplayMode", T.REPLAY_MODES, E.REPLAY_MODE, (v) => <ReplayModeBadge mode={v} />],
   ["ReplayStatus", T.REPLAY_STATUSES, E.REPLAY_STATUS, (v) => <ReplayStatusBadge status={v} />],
   ["ReplayOutcome", T.REPLAY_OUTCOMES, E.REPLAY_OUTCOME, (v) => <OutcomeBadge outcome={v} />],
+  ["ReplaySource", T.REPLAY_SOURCES, E.REPLAY_SOURCE, (v) => <ReplaySourceBadge source={v} />],
   ["StepChange", T.STEP_CHANGES, E.STEP_CHANGE, (v) => <StepChangeBadge change={v} />],
   ["EventType", T.EVENT_TYPES, E.EVENT_TYPE, (v) => <EventTypeLabel type={v} />],
 ];

@@ -15,6 +15,7 @@ import type {
   InvestigationTrigger,
   ReplayMode,
   ReplayOutcome,
+  ReplaySource,
   ReplayStatus,
   RootCauseStatus,
   Severity,
@@ -36,6 +37,7 @@ import {
   metaOf,
   REPLAY_MODE,
   REPLAY_OUTCOME,
+  REPLAY_SOURCE,
   REPLAY_STATUS,
   ROOT_CAUSE_STATUS,
   SEVERITY,
@@ -127,6 +129,10 @@ export const ReplayStatusBadge = ({ status, ...props }: BadgeProps & { status: R
 
 export const OutcomeBadge = ({ outcome, ...props }: BadgeProps & { outcome: ReplayOutcome }) => (
   <EnumBadge meta={metaOf(REPLAY_OUTCOME, outcome, "ReplayOutcome")} enumName="ReplayOutcome" {...props} />
+);
+
+export const ReplaySourceBadge = ({ source, ...props }: BadgeProps & { source: ReplaySource }) => (
+  <EnumBadge meta={metaOf(REPLAY_SOURCE, source, "ReplaySource")} enumName="ReplaySource" {...props} />
 );
 
 export const StepChangeBadge = ({ change, ...props }: BadgeProps & { change: StepChange }) => (

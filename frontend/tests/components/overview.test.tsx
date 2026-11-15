@@ -47,7 +47,13 @@ describe("Overview", () => {
     const health = within((await screen.findByRole("heading", { name: "Agent health" })).closest("section")!);
     await health.findByRole("link", { name: "Invoice Processor" });
     const names = health.getAllByRole("link").map((link) => link.textContent);
-    expect(names.slice(1)).toEqual(["Invoice Processor", "Research Assistant", "Ticket Digest", "Support Triage", "PR Reviewer"]);
+    const rank = { failing: 0, degraded: 1, healthy: 2, idle: 3 };
+    const expected = [...fixtures["agents.list"].items]
+      .sort((a, b) => rank[a.stats.health] - rank[b.stats.health] || a.name.localeCompare(b.name))
+      .map((agent) => agent.name);
+    expect(names.slice(1)).toEqual(expected);
+    // The fixture world has at least one agent in every state, so the order is really exercised.
+    expect(new Set(fixtures["agents.list"].items.map((agent) => agent.stats.health)).size).toBe(4);
     expect(health.getByText("never run")).toBeInTheDocument();
 
     const anomalies = within(screen.getByRole("heading", { name: "Open anomalies" }).closest("section")!);

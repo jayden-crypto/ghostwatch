@@ -14,6 +14,8 @@ import type {
   ID,
   Json,
   LogLevel,
+  ReplayMode,
+  ReplaySource,
   Step,
   StepType,
   StoredEvent,
@@ -46,10 +48,11 @@ export function rng(seed: number): () => number {
 }
 
 /**
- * Price per million tokens (input, output) used to fill `cost_usd`. Fixture values only: the
- * backend's pricing table (B14) is not built yet. Models missing here get `cost_usd: null`.
+ * USD per million tokens (input, output), in cents so the arithmetic is exact. Copied from the
+ * backend's table (`backend/app/services/pricing.py`, prompts up to 100,000 tokens) for the models
+ * the fixture story uses. A model missing here has no price, as on the backend.
  */
-const FIXTURE_PRICES: Record<string, [number, number]> = { "claude-haiku-5-5": [1, 5] };
+const PRICE_CENTS_PER_MILLION: Record<string, [number, number]> = { "claude-haiku-5-5": [10, 50] };
 
 export interface AgentSpec {
   n: number;
@@ -119,6 +122,7 @@ export class Run {
   end: RunEnd | null = null;
   replayOf: Run | null = null;
   replayN: number | null = null;
+  replayMode: ReplayMode | null = null;
   private cursor = 0;
 
   constructor(
@@ -203,9 +207,10 @@ export class Run {
     return this;
   }
 
-  asReplayOf(original: Run, replayN: number): this {
+  asReplayOf(original: Run, replayN: number, mode: ReplayMode): this {
     this.replayOf = original;
     this.replayN = replayN;
+    this.replayMode = mode;
     return this;
   }
 
@@ -216,10 +221,63 @@ export class Run {
 
 // ── Derivations ─────────────────────────────────────────────────────────────
 
+const isCall = (spec: StepSpec): boolean => spec.type === "tool_call" || spec.type === "llm_call";
+const callKey = (spec: StepSpec): string => `${spec.type}:${spec.tool_name ?? spec.name}`;
+const isTruncated = (value: Json): boolean =>
+  typeof value === "object" && value !== null && !Array.isArray(value) && value._truncated === true;
+
+/**
+ * `metadata.replay_source` for each step of a replay, decided the way the SDK decides it
+ * (contract §10, `sdk/python/ghostwatch/replay.py`); null for every step of an ordinary run.
+ *
+ * Only tool and LLM calls go through the sandbox. In sandbox mode the n-th call of a tool is
+ * served from the original's n-th recording of it; a call with no recording runs only if it is an
+ * LLM call or a tool declared `side_effects: false`; any other tool is blocked. Everything else,
+ * and every call of a live replay, is executed.
+ *
+ * The story describes replay runs by hand, so this also checks them: a step served from a
+ * recording must carry the recorded output and error, and a blocked step must have failed with
+ * SandboxRecordingMissing. A story that breaks the sandbox rule does not generate.
+ */
+export function replaySources(run: Run): (ReplaySource | null)[] {
+  const original = run.replayOf;
+  if (!original) return run.steps.map(() => null);
+  const recordings = new Map<string, StepSpec[]>();
+  for (const spec of original.steps.filter(isCall)) recordings.set(callKey(spec), [...(recordings.get(callKey(spec)) ?? []), spec]);
+  const served = new Map<string, number>();
+  const problem = (spec: StepSpec, what: string): never => {
+    throw new Error(`${run.key}: step ${spec.ordinal} ${spec.name} ${what}`);
+  };
+  return run.steps.map((spec) => {
+    if (!isCall(spec) || run.replayMode === "live") return "executed";
+    const index = served.get(callKey(spec)) ?? 0;
+    served.set(callKey(spec), index + 1);
+    const recording = recordings.get(callKey(spec))?.[index];
+    if (recording && !(recording.error === null && isTruncated(recording.output))) {
+      if (JSON.stringify([spec.output, spec.error]) !== JSON.stringify([recording.output, recording.error])) {
+        problem(spec, "is served from a recording but does not carry the recorded output and error");
+      }
+      if (spec.tokens !== null) problem(spec, "is served from a recording, so it must not report tokens");
+      return "recorded";
+    }
+    const safe = spec.type === "llm_call" || spec.startMetadata.side_effects === false;
+    if (!recording && safe) return "executed";
+    if (spec.error?.type !== "SandboxRecordingMissing") {
+      problem(spec, "has no usable recording and may not run in a sandbox, so it must be blocked (SandboxRecordingMissing)");
+    }
+    return "blocked";
+  });
+}
+
+/** A step's start metadata, with `replay_source` added for a replay. */
+const startMetadataOf = (spec: StepSpec, source: ReplaySource | null): { [k: string]: Json } =>
+  source === null ? spec.startMetadata : { ...spec.startMetadata, replay_source: source };
+
 export function deriveSteps(run: Run): Step[] {
   const depthOf = (spec: StepSpec): number =>
     spec.parent === null ? 0 : 1 + depthOf(run.steps[spec.parent - 1]);
-  return run.steps.map((spec) => ({
+  const sources = replaySources(run);
+  return run.steps.map((spec, index) => ({
     id: run.stepId(spec.ordinal),
     execution_id: run.id,
     parent_step_id: spec.parent === null ? null : run.stepId(spec.parent),
@@ -240,7 +298,7 @@ export function deriveSteps(run: Run): Step[] {
     tokens_input: spec.tokens?.[0] ?? null,
     tokens_output: spec.tokens?.[1] ?? null,
     attempt: spec.attempt,
-    metadata: { ...spec.startMetadata, ...spec.endMetadata },
+    metadata: { ...startMetadataOf(spec, sources[index]), ...spec.endMetadata },
   }));
 }
 
@@ -252,7 +310,8 @@ export function deriveEvents(run: Run): StoredEvent[] {
   type Draft = Pick<StoredEvent, "type" | "payload"> & { at: number; order: number; received?: number };
   const drafts: Draft[] = [];
   let order = 0;
-  for (const spec of run.steps) {
+  const sources = replaySources(run);
+  for (const [index, spec] of run.steps.entries()) {
     const step_id = run.stepId(spec.ordinal);
     drafts.push({
       at: spec.start,
@@ -267,7 +326,7 @@ export function deriveEvents(run: Run): StoredEvent[] {
         tool_name: spec.tool_name,
         model: spec.model,
         attempt: spec.attempt,
-        metadata: spec.startMetadata,
+        metadata: startMetadataOf(spec, sources[index]),
       },
     });
     if (spec.duration === null) continue;
@@ -330,14 +389,21 @@ export function deriveEvents(run: Run): StoredEvent[] {
   }));
 }
 
+/**
+ * The backend's rule (`pricing.py`): the reported tokens of every step at its model's list price,
+ * rounded half up to the micro-dollar. Null when no step reported tokens, and also when any step
+ * that did cannot be priced; a partial sum is never shown.
+ */
 function costOf(run: Run): number | null {
-  let cost: number | null = null;
-  for (const spec of run.steps) {
-    const price = spec.model ? FIXTURE_PRICES[spec.model] : undefined;
-    if (!price || !spec.tokens) continue;
-    cost = (cost ?? 0) + (spec.tokens[0] * price[0] + spec.tokens[1] * price[1]) / 1_000_000;
+  const reported = run.steps.filter((spec) => spec.tokens !== null);
+  if (reported.length === 0) return null;
+  let hundredthsOfMicroDollar = 0;
+  for (const spec of reported) {
+    const price = spec.model ? PRICE_CENTS_PER_MILLION[spec.model] : undefined;
+    if (!price) return null;
+    hundredthsOfMicroDollar += spec.tokens![0] * price[0] + spec.tokens![1] * price[1];
   }
-  return cost === null ? null : Math.round(cost * 1_000_000) / 1_000_000;
+  return Math.floor((hundredthsOfMicroDollar + 50) / 100) / 1_000_000;
 }
 
 export interface ExecutionLinks {
