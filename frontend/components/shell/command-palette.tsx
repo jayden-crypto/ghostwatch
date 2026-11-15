@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import {
+  Command,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -46,18 +47,21 @@ export function CommandPalette() {
         <kbd className="rounded-sm border border-line px-1 font-mono text-[10px] leading-4 text-fg-subtle">Ctrl K</kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen} title="Jump to" description="Go to a page.">
-        <CommandInput placeholder="Go to a page…" />
-        <CommandList>
-          <CommandEmpty>Nothing matches.</CommandEmpty>
-          <CommandGroup heading="Pages">
-            {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-              <CommandItem key={href} value={label} onSelect={() => go(href)}>
-                <Icon aria-hidden="true" />
-                {label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
+        {/* CommandDialog is only the dialog; the list state lives in Command. */}
+        <Command>
+          <CommandInput placeholder="Go to a page…" />
+          <CommandList>
+            <CommandEmpty>Nothing matches.</CommandEmpty>
+            <CommandGroup heading="Pages">
+              {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
+                <CommandItem key={href} value={label} onSelect={() => go(href)}>
+                  <Icon aria-hidden="true" />
+                  {label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
       </CommandDialog>
     </>
   );
