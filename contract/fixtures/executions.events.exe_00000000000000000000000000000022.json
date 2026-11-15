@@ -1,0 +1,143 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000022001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-12T16:30:12.775Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002201",
+        "parent_step_id": null,
+        "name": "extract_fields",
+        "step_type": "reasoning",
+        "input": {
+          "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T16:30:12.776Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002201",
+        "output": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-12T16:30:12.777Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002202",
+        "parent_step_id": null,
+        "name": "validate",
+        "step_type": "custom",
+        "input": {
+          "invoice_number": "INV-2042",
+          "vendor": "Contoso Cloud",
+          "total": 9400,
+          "currency": "USD"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T16:30:12.969Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002202",
+        "output": {
+          "valid": true,
+          "problems": []
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-12T16:30:12.970Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002203",
+        "parent_step_id": null,
+        "name": "submit_invoice",
+        "step_type": "tool_call",
+        "input": {
+          "invoice": {
+            "invoice_number": "INV-2042",
+            "vendor": "Contoso Cloud",
+            "total": 9400,
+            "currency": "USD"
+          }
+        },
+        "tool_name": "submit_invoice",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T16:30:13.259Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000002203",
+        "output": {
+          "submission_id": "SUB-INV-2042",
+          "status": "accepted"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000022007",
+      "seq": 7,
+      "type": "execution.completed",
+      "timestamp": "2026-11-12T16:30:13.260Z",
+      "received_at": "2026-11-12T16:30:13.283Z",
+      "payload": {
+        "output": {
+          "status": "processed",
+          "invoice_number": "INV-2042"
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

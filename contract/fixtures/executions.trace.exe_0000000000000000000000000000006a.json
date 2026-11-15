@@ -1,0 +1,250 @@
+{
+  "execution": {
+    "id": "exe_0000000000000000000000000000006a",
+    "agent_id": "agt_00000000000000000000000000000004",
+    "agent_name": "Ticket Digest",
+    "status": "failed",
+    "started_at": "2026-11-14T14:41:36.914Z",
+    "ended_at": "2026-11-14T14:41:41.716Z",
+    "duration_ms": 4802,
+    "step_count": 6,
+    "tokens_total": 3086,
+    "cost_usd": 0.000333,
+    "anomaly_count": 0,
+    "has_investigation": true,
+    "replay_of": "exe_00000000000000000000000000000068",
+    "error": {
+      "type": "SandboxRecordingMissing",
+      "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+      "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+    },
+    "input": {
+      "trigger": "cron",
+      "schedule": "0 */6 * * *"
+    },
+    "output": null,
+    "config": {
+      "model": "claude-haiku-5-5",
+      "params": {
+        "batch_size": 20
+      },
+      "expected_steps": [
+        "fetch_tickets",
+        "summarize",
+        "send_digest"
+      ],
+      "timeout_ms": 120000,
+      "schedule": "0 */6 * * *"
+    },
+    "tokens_input": 3025,
+    "tokens_output": 61,
+    "tags": [
+      "scheduled"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000006a01",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "load_schedule",
+      "type": "input",
+      "status": "completed",
+      "started_at": "2026-11-14T14:41:36.915Z",
+      "ended_at": "2026-11-14T14:41:36.917Z",
+      "duration_ms": 2,
+      "offset_ms": 1,
+      "input": {
+        "trigger": "cron",
+        "schedule": "0 */6 * * *"
+      },
+      "output": {
+        "since": "2026-11-14T08:41:36.914Z",
+        "until": "2026-11-14T14:41:36.914Z"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "replay_source": "executed"
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006a02",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "fetch_tickets",
+      "type": "retrieval",
+      "status": "completed",
+      "started_at": "2026-11-14T14:41:36.918Z",
+      "ended_at": "2026-11-14T14:41:37.554Z",
+      "duration_ms": 636,
+      "offset_ms": 4,
+      "input": {
+        "since": "2026-11-14T08:41:36.914Z",
+        "until": "2026-11-14T14:41:36.914Z"
+      },
+      "output": {
+        "count": 29,
+        "pages": 2,
+        "first_ticket_ids": [
+          "TCK-88412",
+          "TCK-88413",
+          "TCK-88415"
+        ]
+      },
+      "error": null,
+      "tool_name": "fetch_tickets",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false,
+        "replay_source": "executed"
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006a03",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "summarize",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T14:41:37.555Z",
+      "ended_at": "2026-11-14T14:41:41.714Z",
+      "duration_ms": 4159,
+      "offset_ms": 641,
+      "input": {
+        "tickets": 29,
+        "batch_size": 20
+      },
+      "output": {
+        "batches": 2,
+        "summary_chars": 241
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "replay_source": "executed"
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006a04",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": "stp_00000000000000000000000000006a03",
+      "ordinal": 4,
+      "depth": 1,
+      "name": "summarize_batch",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T14:41:37.556Z",
+      "ended_at": "2026-11-14T14:41:39.637Z",
+      "duration_ms": 2081,
+      "offset_ms": 642,
+      "input": {
+        "batch": 1,
+        "tickets": 20
+      },
+      "output": {
+        "text": "Batch 1: 20 tickets. Most are billing questions about duplicate charges; 4 report login problems after a password change.",
+        "usage": {
+          "input_tokens": 2070,
+          "output_tokens": 31
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "claude-haiku-5-5",
+      "tokens_input": 2070,
+      "tokens_output": 31,
+      "attempt": 1,
+      "metadata": {
+        "replay_source": "executed"
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006a05",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": "stp_00000000000000000000000000006a03",
+      "ordinal": 5,
+      "depth": 1,
+      "name": "summarize_batch",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T14:41:39.638Z",
+      "ended_at": "2026-11-14T14:41:41.713Z",
+      "duration_ms": 2075,
+      "offset_ms": 2724,
+      "input": {
+        "batch": 2,
+        "tickets": 9
+      },
+      "output": {
+        "text": "Batch 2: 9 tickets. Most are billing questions about duplicate charges; 2 report login problems after a password change.",
+        "usage": {
+          "input_tokens": 955,
+          "output_tokens": 30
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "claude-haiku-5-5",
+      "tokens_input": 955,
+      "tokens_output": 30,
+      "attempt": 1,
+      "metadata": {
+        "replay_source": "executed"
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000006a06",
+      "execution_id": "exe_0000000000000000000000000000006a",
+      "parent_step_id": null,
+      "ordinal": 6,
+      "depth": 0,
+      "name": "send_digest",
+      "type": "tool_call",
+      "status": "failed",
+      "started_at": "2026-11-14T14:41:41.715Z",
+      "ended_at": "2026-11-14T14:41:41.715Z",
+      "duration_ms": 0,
+      "offset_ms": 4801,
+      "input": {
+        "channel": "#support-leads",
+        "summary_chars": 241
+      },
+      "output": null,
+      "error": {
+        "type": "SandboxRecordingMissing",
+        "message": "send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 104, in run\n    send_digest(channel=CHANNEL, summary=summary)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 49, in wrapper\n    raise SandboxRecordingMissing(blocked_because)\nSandboxRecordingMissing: send_digest has no recording for call 1 (the original execution made 0) and is not declared side_effects=False, so it is not run in a sandbox replay\n"
+      },
+      "tool_name": "send_digest",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": true,
+        "replay_source": "blocked"
+      }
+    }
+  ],
+  "anomalies": [],
+  "event_count": 13
+}

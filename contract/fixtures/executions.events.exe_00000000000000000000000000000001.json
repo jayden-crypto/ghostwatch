@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000001001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-12T09:14:07.319Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000101",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "Why do agents report success after skipping a step?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T09:14:07.320Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000101",
+        "output": {
+          "query": "why do agents report success after skipping a step"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-12T09:14:07.321Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000102",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "why do agents report success after skipping a step",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T09:14:07.649Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000102",
+        "output": {
+          "results": [
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Retry strategies for rate-limited tools",
+              "url": "https://example.test/retry-strategies",
+              "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+            }
+          ],
+          "total": 3
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-12T09:14:07.650Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000103",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T09:14:07.651Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000103",
+        "output": {
+          "sources": [
+            "Why silent failures are the hardest agent bugs",
+            "Agent observability: tracing every step",
+            "Retry strategies for rate-limited tools"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-12T09:14:07.652Z",
+      "received_at": "2026-11-12T09:14:07.827Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000104",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "question": "Why do agents report success after skipping a step?",
+          "sources": [
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Retry strategies for rate-limited tools",
+              "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-12T09:14:08.094Z",
+      "received_at": "2026-11-12T09:14:08.327Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000104",
+        "output": {
+          "text": "Based on 3 sources: An agent can report success while skipping the step that mattered. Tracing records each tool call and model call an agent makes, with inputs and outputs. Exponential backoff with a retry budget keeps rate limits from cascading.",
+          "usage": {
+            "input_tokens": 137,
+            "output_tokens": 62
+          }
+        },
+        "tokens_input": 137,
+        "tokens_output": 62,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000001009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-12T09:14:08.095Z",
+      "received_at": "2026-11-12T09:14:08.327Z",
+      "payload": {
+        "output": {
+          "answer": "Based on 3 sources: An agent can report success while skipping the step that mattered. Tracing records each tool call and model call an agent makes, with inputs and outputs. Exponential backoff with a retry budget keeps rate limits from cascading.",
+          "sources": [
+            "Why silent failures are the hardest agent bugs",
+            "Agent observability: tracing every step",
+            "Retry strategies for rate-limited tools"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

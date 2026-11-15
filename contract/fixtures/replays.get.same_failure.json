@@ -1,0 +1,101 @@
+{
+  "id": "rpl_00000000000000000000000000000005",
+  "original_execution_id": "exe_00000000000000000000000000000063",
+  "replay_execution_id": "exe_00000000000000000000000000000069",
+  "mode": "sandbox",
+  "status": "completed",
+  "side_effects_authorized": false,
+  "note": null,
+  "requested_at": "2026-11-14T14:20:09.208Z",
+  "claimed_at": "2026-11-14T14:20:10.608Z",
+  "completed_at": "2026-11-14T14:20:23.143Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_00000000000000000000000000000063",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "status": "failed",
+      "started_at": "2026-11-13T06:00:00.447Z",
+      "ended_at": "2026-11-13T06:00:12.535Z",
+      "duration_ms": 12088,
+      "step_count": 4,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 2,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": {
+        "type": "HTTPError",
+        "message": "HTTP 503 Service Unavailable",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+      }
+    },
+    "replay": {
+      "id": "exe_00000000000000000000000000000069",
+      "agent_id": "agt_00000000000000000000000000000004",
+      "agent_name": "Ticket Digest",
+      "status": "failed",
+      "started_at": "2026-11-14T14:20:11.058Z",
+      "ended_at": "2026-11-14T14:20:23.119Z",
+      "duration_ms": 12061,
+      "step_count": 4,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 2,
+      "has_investigation": true,
+      "replay_of": "exe_00000000000000000000000000000063",
+      "error": {
+        "type": "HTTPError",
+        "message": "HTTP 503 Service Unavailable",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/srv/jobs/ticket_digest.py\", line 71, in fetch_with_retries\n    return fetch_tickets(since, until)\n  File \"/srv/venv/lib/python3.12/site-packages/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/srv/jobs/ticket_digest.py\", line 38, in fetch_tickets\n    response.raise_for_status()\nHTTPError: HTTP 503 Service Unavailable\n"
+      }
+    },
+    "outcome": "same_failure",
+    "duration_delta_ms": -27,
+    "tokens_delta": null,
+    "step_count_delta": 0,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "load_schedule",
+        "original_step_id": "stp_00000000000000000000000000006301",
+        "replay_step_id": "stp_00000000000000000000000000006901",
+        "change": "output_changed",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 2,
+        "name": "fetch_tickets",
+        "original_step_id": "stp_00000000000000000000000000006302",
+        "replay_step_id": "stp_00000000000000000000000000006902",
+        "change": "unchanged",
+        "original_status": "failed",
+        "replay_status": "failed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 3,
+        "name": "fetch_tickets",
+        "original_step_id": "stp_00000000000000000000000000006303",
+        "replay_step_id": "stp_00000000000000000000000000006903",
+        "change": "unchanged",
+        "original_status": "failed",
+        "replay_status": "failed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 4,
+        "name": "fetch_tickets",
+        "original_step_id": "stp_00000000000000000000000000006304",
+        "replay_step_id": "stp_00000000000000000000000000006904",
+        "change": "unchanged",
+        "original_status": "failed",
+        "replay_status": "failed",
+        "replay_source": "executed"
+      }
+    ]
+  }
+}

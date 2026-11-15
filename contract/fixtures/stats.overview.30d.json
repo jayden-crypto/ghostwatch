@@ -1,0 +1,12 @@
+{
+  "window": "30d",
+  "total_agents": 5,
+  "total_executions": 41,
+  "completed": 31,
+  "failed": 6,
+  "timed_out": 3,
+  "running": 1,
+  "success_rate": 0.775,
+  "avg_duration_ms": 12279,
+  "open_anomalies": 10
+}

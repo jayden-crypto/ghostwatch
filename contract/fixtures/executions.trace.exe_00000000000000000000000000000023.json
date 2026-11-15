@@ -1,0 +1,141 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000023",
+    "agent_id": "agt_00000000000000000000000000000002",
+    "agent_name": "Invoice Processor",
+    "status": "completed",
+    "started_at": "2026-11-13T09:45:55.230Z",
+    "ended_at": "2026-11-13T09:45:55.743Z",
+    "duration_ms": 513,
+    "step_count": 3,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "document": "Invoice: INV-2044\nVendor: Adatum Legal\nTotal: 5600.00\nCurrency: GBP"
+    },
+    "output": {
+      "status": "processed",
+      "invoice_number": "INV-2044"
+    },
+    "config": {
+      "model": null,
+      "params": {},
+      "expected_steps": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000002301",
+      "execution_id": "exe_00000000000000000000000000000023",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "extract_fields",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-13T09:45:55.231Z",
+      "ended_at": "2026-11-13T09:45:55.232Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "document": "Invoice: INV-2044\nVendor: Adatum Legal\nTotal: 5600.00\nCurrency: GBP"
+      },
+      "output": {
+        "invoice_number": "INV-2044",
+        "vendor": "Adatum Legal",
+        "total": 5600,
+        "currency": "GBP"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002302",
+      "execution_id": "exe_00000000000000000000000000000023",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "validate",
+      "type": "custom",
+      "status": "completed",
+      "started_at": "2026-11-13T09:45:55.233Z",
+      "ended_at": "2026-11-13T09:45:55.440Z",
+      "duration_ms": 207,
+      "offset_ms": 3,
+      "input": {
+        "invoice_number": "INV-2044",
+        "vendor": "Adatum Legal",
+        "total": 5600,
+        "currency": "GBP"
+      },
+      "output": {
+        "valid": true,
+        "problems": []
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002303",
+      "execution_id": "exe_00000000000000000000000000000023",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "submit_invoice",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T09:45:55.441Z",
+      "ended_at": "2026-11-13T09:45:55.742Z",
+      "duration_ms": 301,
+      "offset_ms": 211,
+      "input": {
+        "invoice": {
+          "invoice_number": "INV-2044",
+          "vendor": "Adatum Legal",
+          "total": 5600,
+          "currency": "GBP"
+        }
+      },
+      "output": {
+        "submission_id": "SUB-INV-2044",
+        "status": "accepted"
+      },
+      "error": null,
+      "tool_name": "submit_invoice",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": true
+      }
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}

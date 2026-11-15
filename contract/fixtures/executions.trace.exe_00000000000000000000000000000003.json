@@ -1,0 +1,204 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000003",
+    "agent_id": "agt_00000000000000000000000000000001",
+    "agent_name": "Research Assistant",
+    "status": "completed",
+    "started_at": "2026-11-13T08:05:33.127Z",
+    "ended_at": "2026-11-13T08:05:33.898Z",
+    "duration_ms": 771,
+    "step_count": 4,
+    "tokens_total": 194,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "question": "How does schema drift break API consumers?"
+    },
+    "output": {
+      "answer": "Based on 3 sources: A renamed response field breaks every consumer that indexes it directly. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+      "sources": [
+        "Schema drift in upstream APIs",
+        "Agent observability: tracing every step",
+        "Why silent failures are the hardest agent bugs"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_results": 3
+      },
+      "expected_steps": [
+        "web_search",
+        "parse_results",
+        "summarize"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 132,
+    "tokens_output": 62,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000000301",
+      "execution_id": "exe_00000000000000000000000000000003",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "plan",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-13T08:05:33.128Z",
+      "ended_at": "2026-11-13T08:05:33.129Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "question": "How does schema drift break API consumers?"
+      },
+      "output": {
+        "query": "how does schema drift break api consumers"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000302",
+      "execution_id": "exe_00000000000000000000000000000003",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "web_search",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T08:05:33.130Z",
+      "ended_at": "2026-11-13T08:05:33.464Z",
+      "duration_ms": 334,
+      "offset_ms": 3,
+      "input": {
+        "query": "how does schema drift break api consumers",
+        "max_results": 3
+      },
+      "output": {
+        "results": [
+          {
+            "title": "Schema drift in upstream APIs",
+            "url": "https://example.test/schema-drift",
+            "snippet": "A renamed response field breaks every consumer that indexes it directly."
+          },
+          {
+            "title": "Agent observability: tracing every step",
+            "url": "https://example.test/agent-observability",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "url": "https://example.test/silent-failures",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          }
+        ],
+        "total": 3
+      },
+      "error": null,
+      "tool_name": "web_search",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000000303",
+      "execution_id": "exe_00000000000000000000000000000003",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "parse_results",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-13T08:05:33.465Z",
+      "ended_at": "2026-11-13T08:05:33.466Z",
+      "duration_ms": 1,
+      "offset_ms": 338,
+      "input": {
+        "response_keys": [
+          "results",
+          "total"
+        ]
+      },
+      "output": {
+        "sources": [
+          "Schema drift in upstream APIs",
+          "Agent observability: tracing every step",
+          "Why silent failures are the hardest agent bugs"
+        ]
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000304",
+      "execution_id": "exe_00000000000000000000000000000003",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "summarize",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T08:05:33.467Z",
+      "ended_at": "2026-11-13T08:05:33.897Z",
+      "duration_ms": 430,
+      "offset_ms": 340,
+      "input": {
+        "question": "How does schema drift break API consumers?",
+        "sources": [
+          {
+            "title": "Schema drift in upstream APIs",
+            "snippet": "A renamed response field breaks every consumer that indexes it directly."
+          },
+          {
+            "title": "Agent observability: tracing every step",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          }
+        ]
+      },
+      "output": {
+        "text": "Based on 3 sources: A renamed response field breaks every consumer that indexes it directly. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+        "usage": {
+          "input_tokens": 132,
+          "output_tokens": 62
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 132,
+      "tokens_output": 62,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 9
+}

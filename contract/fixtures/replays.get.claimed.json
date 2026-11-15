@@ -1,0 +1,14 @@
+{
+  "id": "rpl_00000000000000000000000000000008",
+  "original_execution_id": "exe_00000000000000000000000000000065",
+  "replay_execution_id": null,
+  "mode": "sandbox",
+  "status": "claimed",
+  "side_effects_authorized": false,
+  "note": null,
+  "requested_at": "2026-11-14T17:59:53.200Z",
+  "claimed_at": "2026-11-14T17:59:54.500Z",
+  "completed_at": null,
+  "error": null,
+  "comparison": null
+}

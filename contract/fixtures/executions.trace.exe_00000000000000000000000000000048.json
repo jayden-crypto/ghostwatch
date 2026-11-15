@@ -1,0 +1,252 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000048",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-14T13:05:22.445Z",
+    "ended_at": "2026-11-14T13:05:24.664Z",
+    "duration_ms": 2219,
+    "step_count": 5,
+    "tokens_total": 107,
+    "cost_usd": null,
+    "anomaly_count": 1,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "I was charged twice for my subscription and need a refund."
+    },
+    "output": {
+      "category": "billing",
+      "reply": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+      "articles": [
+        "KB-101"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 89,
+    "tokens_output": 18,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000001"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004801",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T13:05:22.446Z",
+      "ended_at": "2026-11-14T13:05:22.871Z",
+      "duration_ms": 425,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "I was charged twice for my subscription and need a refund."
+      },
+      "output": {
+        "text": "billing",
+        "usage": {
+          "input_tokens": 31,
+          "output_tokens": 2
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 31,
+      "tokens_output": 2,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004802",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "failed",
+      "started_at": "2026-11-14T13:05:22.872Z",
+      "ended_at": "2026-11-14T13:05:23.133Z",
+      "duration_ms": 261,
+      "offset_ms": 427,
+      "input": {
+        "category": "billing"
+      },
+      "output": null,
+      "error": {
+        "type": "RateLimited",
+        "message": "HTTP 429 Too Many Requests",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/support_triage.py\", line 63, in retrieve_with_retries\n    return retrieve_kb(category)\n  File \"/app/sdk/python/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/app/demo/agents/support_triage.py\", line 47, in retrieve_kb\n    return kb.lookup(category)\n  File \"/app/demo/fake_services/kb_api.py\", line 41, in lookup\n    raise RateLimited(\"HTTP 429 Too Many Requests\")\nRateLimited: HTTP 429 Too Many Requests\n"
+      },
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004803",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "failed",
+      "started_at": "2026-11-14T13:05:23.334Z",
+      "ended_at": "2026-11-14T13:05:23.583Z",
+      "duration_ms": 249,
+      "offset_ms": 889,
+      "input": {
+        "category": "billing"
+      },
+      "output": null,
+      "error": {
+        "type": "RateLimited",
+        "message": "HTTP 429 Too Many Requests",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/support_triage.py\", line 63, in retrieve_with_retries\n    return retrieve_kb(category)\n  File \"/app/sdk/python/ghostwatch/tools.py\", line 43, in wrapper\n    result = function(*args, **kwargs)\n  File \"/app/demo/agents/support_triage.py\", line 47, in retrieve_kb\n    return kb.lookup(category)\n  File \"/app/demo/fake_services/kb_api.py\", line 41, in lookup\n    raise RateLimited(\"HTTP 429 Too Many Requests\")\nRateLimited: HTTP 429 Too Many Requests\n"
+      },
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 2,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004804",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T13:05:23.984Z",
+      "ended_at": "2026-11-14T13:05:24.235Z",
+      "duration_ms": 251,
+      "offset_ms": 1539,
+      "input": {
+        "category": "billing"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-101",
+            "title": "How refunds are processed",
+            "body": "Refunds reach the card in 5-7 days."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 3,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004805",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "parent_step_id": null,
+      "ordinal": 5,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T13:05:24.236Z",
+      "ended_at": "2026-11-14T13:05:24.663Z",
+      "duration_ms": 427,
+      "offset_ms": 1791,
+      "input": {
+        "ticket": "I was charged twice for my subscription and need a refund.",
+        "articles": [
+          {
+            "id": "KB-101",
+            "title": "How refunds are processed",
+            "body": "Refunds reach the card in 5-7 days."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+        "usage": {
+          "input_tokens": 58,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 58,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_0000000000000000000000000000000a",
+      "type": "excessive_retries",
+      "severity": "medium",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000003",
+      "agent_name": "Support Triage",
+      "execution_id": "exe_00000000000000000000000000000048",
+      "detected_at": "2026-11-14T13:05:24.664Z",
+      "rule_id": "excessive_retries.v1",
+      "title": "2 retried steps, highest attempt 3",
+      "explanation": "The highest attempt number in this execution is 3 and the sum of (attempt - 1) over all steps is 3. Rule fires when any step has attempt >= 3 or the sum is >= 5.",
+      "evidence": [
+        {
+          "kind": "step",
+          "label": "Step 4 retrieve_kb (attempt 3) is a retry",
+          "ref_id": "stp_00000000000000000000000000004804",
+          "field": "attempt",
+          "observed": 3,
+          "expected": "below 3",
+          "excerpt": null
+        },
+        {
+          "kind": "step",
+          "label": "Step 3 retrieve_kb (attempt 2) is a retry",
+          "ref_id": "stp_00000000000000000000000000004803",
+          "field": "attempt",
+          "observed": 2,
+          "expected": "below 3",
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 11
+}

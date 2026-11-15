@@ -1,0 +1,155 @@
+{
+  "items": [
+    {
+      "id": "evt_0000000000000000000000000000a001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:20:14.593Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a01",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "How do teams trace what an AI agent did?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T17:20:14.594Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a01",
+        "output": {
+          "query": "how do teams trace what an ai agent did"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:20:14.595Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a02",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "how do teams trace what an ai agent did",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-14T17:20:14.950Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a02",
+        "output": {
+          "data": [
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            },
+            {
+              "title": "Replaying agent runs against recorded inputs",
+              "url": "https://example.test/replay",
+              "snippet": "Deterministic replay turns a production failure into a local test case."
+            }
+          ],
+          "meta": {
+            "total": 3,
+            "api_version": "2026-11"
+          }
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-14T17:20:14.951Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a03",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "data",
+            "meta"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a006",
+      "seq": 6,
+      "type": "step.failed",
+      "timestamp": "2026-11-14T17:20:14.952Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000a03",
+        "error": {
+          "type": "KeyError",
+          "message": "'results'",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+        },
+        "output": null
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000000a007",
+      "seq": 7,
+      "type": "execution.failed",
+      "timestamp": "2026-11-14T17:20:14.953Z",
+      "received_at": "2026-11-14T17:20:15.101Z",
+      "payload": {
+        "error": {
+          "type": "KeyError",
+          "message": "'results'",
+          "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+        }
+      }
+    }
+  ],
+  "total": 7,
+  "limit": 200,
+  "offset": 0
+}

@@ -1,0 +1,21 @@
+{
+  "id": "agt_00000000000000000000000000000005",
+  "name": "PR Reviewer",
+  "slug": "pr-reviewer",
+  "description": null,
+  "framework": null,
+  "metadata": {},
+  "created_at": "2026-11-14T16:10:44.530Z",
+  "stats": {
+    "total_executions": 0,
+    "completed": 0,
+    "failed": 0,
+    "timed_out": 0,
+    "running": 0,
+    "success_rate": null,
+    "avg_duration_ms": null,
+    "open_anomalies": 0,
+    "last_execution": null,
+    "health": "idle"
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000049",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-14T15:26:41.190Z",
+    "ended_at": "2026-11-14T15:26:45.609Z",
+    "duration_ms": 4419,
+    "step_count": 3,
+    "tokens_total": 99,
+    "cost_usd": null,
+    "anomaly_count": 1,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "I can't login after changing my password."
+    },
+    "output": {
+      "category": "access",
+      "reply": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+      "articles": [
+        "KB-204"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 81,
+    "tokens_output": 18,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004901",
+      "execution_id": "exe_00000000000000000000000000000049",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T15:26:41.191Z",
+      "ended_at": "2026-11-14T15:26:41.637Z",
+      "duration_ms": 446,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "I can't login after changing my password."
+      },
+      "output": {
+        "text": "access",
+        "usage": {
+          "input_tokens": 27,
+          "output_tokens": 2
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 27,
+      "tokens_output": 2,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004902",
+      "execution_id": "exe_00000000000000000000000000000049",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T15:26:41.638Z",
+      "ended_at": "2026-11-14T15:26:45.138Z",
+      "duration_ms": 3500,
+      "offset_ms": 448,
+      "input": {
+        "category": "access"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-204",
+            "title": "Resetting two-factor login",
+            "body": "Use a recovery code, then re-enrol."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004903",
+      "execution_id": "exe_00000000000000000000000000000049",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T15:26:45.139Z",
+      "ended_at": "2026-11-14T15:26:45.608Z",
+      "duration_ms": 469,
+      "offset_ms": 3949,
+      "input": {
+        "ticket": "I can't login after changing my password.",
+        "articles": [
+          {
+            "id": "KB-204",
+            "title": "Resetting two-factor login",
+            "body": "Use a recovery code, then re-enrol."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Use a recovery code, then re-enrol.",
+        "usage": {
+          "input_tokens": 54,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 54,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_0000000000000000000000000000000d",
+      "type": "duration_spike",
+      "severity": "medium",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000003",
+      "agent_name": "Support Triage",
+      "execution_id": "exe_00000000000000000000000000000049",
+      "detected_at": "2026-11-14T15:26:45.609Z",
+      "rule_id": "duration_spike.v1",
+      "title": "Duration 3.8× above baseline",
+      "explanation": "Execution took 4,419 ms. Baseline median for support-triage is 1,159.5 ms over 8 runs (p95 2,219 ms). Rule fires above max(3× median, 1.5× p95) = 3,478.5 ms. Severity is high above 5× median = 5,797.5 ms.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Duration of this execution",
+          "ref_id": "exe_00000000000000000000000000000049",
+          "field": "duration_ms",
+          "observed": 4419,
+          "expected": 3478.5,
+          "excerpt": null
+        },
+        {
+          "kind": "baseline",
+          "label": "Baseline duration over 8 completed runs",
+          "ref_id": null,
+          "field": "duration_ms",
+          "observed": {
+            "median": 1159.5,
+            "p95": 2219,
+            "runs": 8
+          },
+          "expected": null,
+          "excerpt": null
+        },
+        {
+          "kind": "metric",
+          "label": "Share of the execution spent in retrieve_kb",
+          "ref_id": null,
+          "field": "steps.duration_ms",
+          "observed": {
+            "step": "retrieve_kb",
+            "duration_ms": 3500,
+            "share": 0.792
+          },
+          "expected": null,
+          "excerpt": null
+        }
+      ]
+    }
+  ],
+  "event_count": 7
+}

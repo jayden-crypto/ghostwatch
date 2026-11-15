@@ -1,0 +1,18 @@
+{
+  "id": "rpl_00000000000000000000000000000007",
+  "original_execution_id": "exe_00000000000000000000000000000063",
+  "replay_execution_id": null,
+  "mode": "sandbox",
+  "status": "failed",
+  "side_effects_authorized": false,
+  "note": null,
+  "requested_at": "2026-11-14T14:12:48.300Z",
+  "claimed_at": "2026-11-14T14:12:49.450Z",
+  "completed_at": "2026-11-14T14:12:49.760Z",
+  "error": {
+    "type": "ReplayStartError",
+    "message": "The replay worker could not start the agent: no agent with slug ticket-digest is registered in this worker.",
+    "stacktrace": null
+  },
+  "comparison": null
+}

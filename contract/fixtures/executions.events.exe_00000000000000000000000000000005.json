@@ -1,0 +1,213 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000005001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T19:48:02.456Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000501",
+        "parent_step_id": null,
+        "name": "plan",
+        "step_type": "reasoning",
+        "input": {
+          "question": "How are latency baselines used to catch regressions?"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T19:48:02.457Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000501",
+        "output": {
+          "query": "how are latency baselines used to catch regressions"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T19:48:02.458Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000502",
+        "parent_step_id": null,
+        "name": "web_search",
+        "step_type": "tool_call",
+        "input": {
+          "query": "how are latency baselines used to catch regressions",
+          "max_results": 3
+        },
+        "tool_name": "web_search",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T19:48:02.823Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000502",
+        "output": {
+          "results": [
+            {
+              "title": "Baselines for agent latency and token use",
+              "url": "https://example.test/baselines",
+              "snippet": "Comparing a run with the agent's own history catches regressions early."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "url": "https://example.test/agent-observability",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "url": "https://example.test/silent-failures",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ],
+          "total": 3
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T19:48:02.824Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000503",
+        "parent_step_id": null,
+        "name": "parse_results",
+        "step_type": "reasoning",
+        "input": {
+          "response_keys": [
+            "results",
+            "total"
+          ]
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005006",
+      "seq": 6,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T19:48:02.825Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000503",
+        "output": {
+          "sources": [
+            "Baselines for agent latency and token use",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005007",
+      "seq": 7,
+      "type": "step.started",
+      "timestamp": "2026-11-13T19:48:02.826Z",
+      "received_at": "2026-11-13T19:48:02.964Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000504",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "llm_call",
+        "input": {
+          "question": "How are latency baselines used to catch regressions?",
+          "sources": [
+            {
+              "title": "Baselines for agent latency and token use",
+              "snippet": "Comparing a run with the agent's own history catches regressions early."
+            },
+            {
+              "title": "Agent observability: tracing every step",
+              "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+            },
+            {
+              "title": "Why silent failures are the hardest agent bugs",
+              "snippet": "An agent can report success while skipping the step that mattered."
+            }
+          ]
+        },
+        "tool_name": null,
+        "model": "demo-llm-1",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T19:48:03.252Z",
+      "received_at": "2026-11-13T19:48:03.464Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000000504",
+        "output": {
+          "text": "Based on 3 sources: Comparing a run with the agent's own history catches regressions early. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "usage": {
+            "input_tokens": 137,
+            "output_tokens": 62
+          }
+        },
+        "tokens_input": 137,
+        "tokens_output": 62,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000005009",
+      "seq": 9,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T19:48:03.253Z",
+      "received_at": "2026-11-13T19:48:03.464Z",
+      "payload": {
+        "output": {
+          "answer": "Based on 3 sources: Comparing a run with the agent's own history catches regressions early. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+          "sources": [
+            "Baselines for agent latency and token use",
+            "Agent observability: tracing every step",
+            "Why silent failures are the hardest agent bugs"
+          ]
+        }
+      }
+    }
+  ],
+  "total": 9,
+  "limit": 200,
+  "offset": 0
+}

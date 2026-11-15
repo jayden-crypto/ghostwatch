@@ -1,0 +1,204 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000006",
+    "agent_id": "agt_00000000000000000000000000000001",
+    "agent_name": "Research Assistant",
+    "status": "completed",
+    "started_at": "2026-11-14T09:31:46.081Z",
+    "ended_at": "2026-11-14T09:31:46.830Z",
+    "duration_ms": 749,
+    "step_count": 4,
+    "tokens_total": 199,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "question": "What is a good retry strategy for rate-limited tools?"
+    },
+    "output": {
+      "answer": "Based on 3 sources: Exponential backoff with a retry budget keeps rate limits from cascading. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+      "sources": [
+        "Retry strategies for rate-limited tools",
+        "Agent observability: tracing every step",
+        "Why silent failures are the hardest agent bugs"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_results": 3
+      },
+      "expected_steps": [
+        "web_search",
+        "parse_results",
+        "summarize"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 137,
+    "tokens_output": 62,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000000601",
+      "execution_id": "exe_00000000000000000000000000000006",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "plan",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T09:31:46.082Z",
+      "ended_at": "2026-11-14T09:31:46.083Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "question": "What is a good retry strategy for rate-limited tools?"
+      },
+      "output": {
+        "query": "what is a good retry strategy for rate-limited tools"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000602",
+      "execution_id": "exe_00000000000000000000000000000006",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "web_search",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-14T09:31:46.084Z",
+      "ended_at": "2026-11-14T09:31:46.405Z",
+      "duration_ms": 321,
+      "offset_ms": 3,
+      "input": {
+        "query": "what is a good retry strategy for rate-limited tools",
+        "max_results": 3
+      },
+      "output": {
+        "results": [
+          {
+            "title": "Retry strategies for rate-limited tools",
+            "url": "https://example.test/retry-strategies",
+            "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+          },
+          {
+            "title": "Agent observability: tracing every step",
+            "url": "https://example.test/agent-observability",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "url": "https://example.test/silent-failures",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          }
+        ],
+        "total": 3
+      },
+      "error": null,
+      "tool_name": "web_search",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000000603",
+      "execution_id": "exe_00000000000000000000000000000006",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "parse_results",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T09:31:46.406Z",
+      "ended_at": "2026-11-14T09:31:46.407Z",
+      "duration_ms": 1,
+      "offset_ms": 325,
+      "input": {
+        "response_keys": [
+          "results",
+          "total"
+        ]
+      },
+      "output": {
+        "sources": [
+          "Retry strategies for rate-limited tools",
+          "Agent observability: tracing every step",
+          "Why silent failures are the hardest agent bugs"
+        ]
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000000604",
+      "execution_id": "exe_00000000000000000000000000000006",
+      "parent_step_id": null,
+      "ordinal": 4,
+      "depth": 0,
+      "name": "summarize",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-14T09:31:46.408Z",
+      "ended_at": "2026-11-14T09:31:46.829Z",
+      "duration_ms": 421,
+      "offset_ms": 327,
+      "input": {
+        "question": "What is a good retry strategy for rate-limited tools?",
+        "sources": [
+          {
+            "title": "Retry strategies for rate-limited tools",
+            "snippet": "Exponential backoff with a retry budget keeps rate limits from cascading."
+          },
+          {
+            "title": "Agent observability: tracing every step",
+            "snippet": "Tracing records each tool call and model call an agent makes, with inputs and outputs."
+          },
+          {
+            "title": "Why silent failures are the hardest agent bugs",
+            "snippet": "An agent can report success while skipping the step that mattered."
+          }
+        ]
+      },
+      "output": {
+        "text": "Based on 3 sources: Exponential backoff with a retry budget keeps rate limits from cascading. Tracing records each tool call and model call an agent makes, with inputs and outputs. An agent can report success while skipping the step that mattered.",
+        "usage": {
+          "input_tokens": 137,
+          "output_tokens": 62
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 137,
+      "tokens_output": 62,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 9
+}

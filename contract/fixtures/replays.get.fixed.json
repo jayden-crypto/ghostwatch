@@ -1,0 +1,97 @@
+{
+  "id": "rpl_00000000000000000000000000000003",
+  "original_execution_id": "exe_0000000000000000000000000000000a",
+  "replay_execution_id": "exe_0000000000000000000000000000000c",
+  "mode": "sandbox",
+  "status": "completed",
+  "side_effects_authorized": false,
+  "note": "After parser fix: accept both response shapes.",
+  "requested_at": "2026-11-14T17:45:26.146Z",
+  "claimed_at": "2026-11-14T17:45:27.356Z",
+  "completed_at": "2026-11-14T17:45:28.312Z",
+  "error": null,
+  "comparison": {
+    "original": {
+      "id": "exe_0000000000000000000000000000000a",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "status": "failed",
+      "started_at": "2026-11-14T17:20:14.592Z",
+      "ended_at": "2026-11-14T17:20:14.953Z",
+      "duration_ms": 361,
+      "step_count": 3,
+      "tokens_total": null,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": true,
+      "replay_of": null,
+      "error": {
+        "type": "KeyError",
+        "message": "'results'",
+        "stacktrace": "Traceback (most recent call last):\n  File \"/app/demo/agents/research_assistant.py\", line 56, in run\n    sources = parse_results(payload)\n  File \"/app/demo/agents/research_assistant.py\", line 43, in parse_results\n    return [{\"title\": item[\"title\"], \"snippet\": item[\"snippet\"]} for item in payload[\"results\"]]\nKeyError: 'results'\n"
+      }
+    },
+    "replay": {
+      "id": "exe_0000000000000000000000000000000c",
+      "agent_id": "agt_00000000000000000000000000000001",
+      "agent_name": "Research Assistant",
+      "status": "completed",
+      "started_at": "2026-11-14T17:45:27.806Z",
+      "ended_at": "2026-11-14T17:45:28.288Z",
+      "duration_ms": 482,
+      "step_count": 4,
+      "tokens_total": 197,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": false,
+      "replay_of": "exe_0000000000000000000000000000000a",
+      "error": null
+    },
+    "outcome": "fixed",
+    "duration_delta_ms": 121,
+    "tokens_delta": null,
+    "step_count_delta": 1,
+    "step_diffs": [
+      {
+        "ordinal": 1,
+        "name": "plan",
+        "original_step_id": "stp_00000000000000000000000000000a01",
+        "replay_step_id": "stp_00000000000000000000000000000c01",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 2,
+        "name": "web_search",
+        "original_step_id": "stp_00000000000000000000000000000a02",
+        "replay_step_id": "stp_00000000000000000000000000000c02",
+        "change": "unchanged",
+        "original_status": "completed",
+        "replay_status": "completed",
+        "replay_source": "recorded"
+      },
+      {
+        "ordinal": 3,
+        "name": "parse_results",
+        "original_step_id": "stp_00000000000000000000000000000a03",
+        "replay_step_id": "stp_00000000000000000000000000000c03",
+        "change": "status_changed",
+        "original_status": "failed",
+        "replay_status": "completed",
+        "replay_source": "executed"
+      },
+      {
+        "ordinal": 4,
+        "name": "summarize",
+        "original_step_id": null,
+        "replay_step_id": "stp_00000000000000000000000000000c04",
+        "change": "added",
+        "original_status": null,
+        "replay_status": "completed",
+        "replay_source": "executed"
+      }
+    ]
+  }
+}

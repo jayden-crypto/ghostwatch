@@ -1,0 +1,146 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000028",
+    "agent_id": "agt_00000000000000000000000000000002",
+    "agent_name": "Invoice Processor",
+    "status": "completed",
+    "started_at": "2026-11-14T17:28:40.153Z",
+    "ended_at": "2026-11-14T17:28:40.366Z",
+    "duration_ms": 213,
+    "step_count": 2,
+    "tokens_total": null,
+    "cost_usd": null,
+    "anomaly_count": 1,
+    "has_investigation": true,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+    },
+    "output": {
+      "status": "processed",
+      "invoice_number": "INV-2042"
+    },
+    "config": {
+      "model": null,
+      "params": {},
+      "expected_steps": [
+        "extract_fields",
+        "validate",
+        "submit_invoice"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": null,
+    "tokens_output": null,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": [
+      "rpl_00000000000000000000000000000004"
+    ]
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000002801",
+      "execution_id": "exe_00000000000000000000000000000028",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "extract_fields",
+      "type": "reasoning",
+      "status": "completed",
+      "started_at": "2026-11-14T17:28:40.154Z",
+      "ended_at": "2026-11-14T17:28:40.155Z",
+      "duration_ms": 1,
+      "offset_ms": 1,
+      "input": {
+        "document": "Invoice: INV-2042\nVendor: Contoso Cloud\nTotal: 9400.00\nCurrency: USD"
+      },
+      "output": {
+        "invoice_number": "INV-2042",
+        "vendor": "Contoso Cloud",
+        "total": 9400,
+        "currency": "USD"
+      },
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000002802",
+      "execution_id": "exe_00000000000000000000000000000028",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "validate",
+      "type": "custom",
+      "status": "completed",
+      "started_at": "2026-11-14T17:28:40.156Z",
+      "ended_at": "2026-11-14T17:28:40.365Z",
+      "duration_ms": 209,
+      "offset_ms": 3,
+      "input": {
+        "invoice_number": "INV-2042",
+        "vendor": "Contoso Cloud",
+        "total": 9400,
+        "currency": "USD"
+      },
+      "output": null,
+      "error": null,
+      "tool_name": null,
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [
+    {
+      "id": "anm_0000000000000000000000000000000e",
+      "type": "ghost_completion",
+      "severity": "critical",
+      "status": "open",
+      "agent_id": "agt_00000000000000000000000000000002",
+      "agent_name": "Invoice Processor",
+      "execution_id": "exe_00000000000000000000000000000028",
+      "detected_at": "2026-11-14T17:28:40.366Z",
+      "rule_id": "ghost_completion.v1",
+      "title": "Reported completed, but submit_invoice never completed",
+      "explanation": "The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all.",
+      "evidence": [
+        {
+          "kind": "execution",
+          "label": "Expected step submit_invoice never started",
+          "ref_id": "exe_00000000000000000000000000000028",
+          "field": "config.expected_steps",
+          "observed": [
+            "extract_fields",
+            "validate"
+          ],
+          "expected": [
+            "extract_fields",
+            "validate",
+            "submit_invoice"
+          ],
+          "excerpt": null
+        },
+        {
+          "kind": "event",
+          "label": "Warning logged at event 4",
+          "ref_id": "evt_00000000000000000000000000028004",
+          "field": "payload.message",
+          "observed": "validation skipped: validation service returned HTTP 503",
+          "expected": null,
+          "excerpt": "validation skipped: validation service returned HTTP 503"
+        }
+      ]
+    }
+  ],
+  "event_count": 6
+}

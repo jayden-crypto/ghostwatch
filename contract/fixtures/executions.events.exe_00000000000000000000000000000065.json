@@ -1,0 +1,76 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000065001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T18:00:00.422Z",
+      "received_at": "2026-11-13T18:00:00.930Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006501",
+        "parent_step_id": null,
+        "name": "load_schedule",
+        "step_type": "input",
+        "input": {
+          "trigger": "cron",
+          "schedule": "0 */6 * * *"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000065002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T18:00:00.424Z",
+      "received_at": "2026-11-13T18:00:00.930Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006501",
+        "output": {
+          "since": "2026-11-13T12:00:00.421Z",
+          "until": "2026-11-13T18:00:00.421Z"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000065003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T18:00:00.425Z",
+      "received_at": "2026-11-13T18:00:00.930Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006502",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-13T12:00:00.421Z",
+          "until": "2026-11-13T18:00:00.421Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000065004",
+      "seq": 4,
+      "type": "execution.timed_out",
+      "timestamp": "2026-11-13T18:02:24.464Z",
+      "received_at": "2026-11-13T18:02:24.464Z",
+      "payload": {}
+    }
+  ],
+  "total": 4,
+  "limit": 200,
+  "offset": 0
+}

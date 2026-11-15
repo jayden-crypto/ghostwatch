@@ -1,0 +1,38 @@
+{
+  "id": "exe_0000000000000000000000000000007f",
+  "agent_id": "agt_00000000000000000000000000000001",
+  "agent_name": "Research Assistant",
+  "status": "running",
+  "started_at": "2026-11-14T17:59:59.860Z",
+  "ended_at": null,
+  "duration_ms": null,
+  "step_count": 0,
+  "tokens_total": null,
+  "cost_usd": null,
+  "anomaly_count": 0,
+  "has_investigation": false,
+  "replay_of": null,
+  "error": null,
+  "input": {
+    "question": "How does schema drift break API consumers?"
+  },
+  "output": null,
+  "config": {
+    "model": "demo-llm-1",
+    "params": {
+      "max_results": 3
+    },
+    "expected_steps": [
+      "web_search",
+      "parse_results",
+      "summarize"
+    ],
+    "timeout_ms": null
+  },
+  "tokens_input": null,
+  "tokens_output": null,
+  "tags": [
+    "demo"
+  ],
+  "replay_ids": []
+}

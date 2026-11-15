@@ -1,0 +1,8 @@
+{
+  "status": "ok",
+  "version": "0.1.0",
+  "database": "ok",
+  "llm_provider": "rule_based",
+  "llm_configured": true,
+  "llm_model": null
+}

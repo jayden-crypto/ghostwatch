@@ -1,0 +1,36 @@
+{
+  "id": "agt_00000000000000000000000000000003",
+  "name": "Support Triage",
+  "slug": "support-triage",
+  "description": "Classifies a support ticket, looks up the knowledge base and drafts a reply.",
+  "framework": "custom",
+  "metadata": {},
+  "created_at": "2026-11-12T08:00:01.577Z",
+  "stats": {
+    "total_executions": 11,
+    "completed": 10,
+    "failed": 0,
+    "timed_out": 0,
+    "running": 1,
+    "success_rate": 1,
+    "avg_duration_ms": 1585,
+    "open_anomalies": 2,
+    "last_execution": {
+      "id": "exe_0000000000000000000000000000004a",
+      "agent_id": "agt_00000000000000000000000000000003",
+      "agent_name": "Support Triage",
+      "status": "running",
+      "started_at": "2026-11-14T17:59:57.660Z",
+      "ended_at": null,
+      "duration_ms": null,
+      "step_count": 2,
+      "tokens_total": 28,
+      "cost_usd": null,
+      "anomaly_count": 0,
+      "has_investigation": false,
+      "replay_of": null,
+      "error": null
+    },
+    "health": "healthy"
+  }
+}

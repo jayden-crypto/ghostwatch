@@ -1,0 +1,259 @@
+{
+  "items": [
+    {
+      "id": "evt_00000000000000000000000000062001",
+      "seq": 1,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:00.386Z",
+      "received_at": "2026-11-13T00:00:00.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006201",
+        "parent_step_id": null,
+        "name": "load_schedule",
+        "step_type": "input",
+        "input": {
+          "trigger": "cron",
+          "schedule": "0 */6 * * *"
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062002",
+      "seq": 2,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:00.388Z",
+      "received_at": "2026-11-13T00:00:00.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006201",
+        "output": {
+          "since": "2026-11-12T18:00:00.385Z",
+          "until": "2026-11-13T00:00:00.385Z"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062003",
+      "seq": 3,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:00.389Z",
+      "received_at": "2026-11-13T00:00:00.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006202",
+        "parent_step_id": null,
+        "name": "fetch_tickets",
+        "step_type": "retrieval",
+        "input": {
+          "since": "2026-11-12T18:00:00.385Z",
+          "until": "2026-11-13T00:00:00.385Z"
+        },
+        "tool_name": "fetch_tickets",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": false
+        }
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062004",
+      "seq": 4,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:01.059Z",
+      "received_at": "2026-11-13T00:00:01.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006202",
+        "output": {
+          "count": 12,
+          "pages": 1,
+          "first_ticket_ids": [
+            "TCK-88412",
+            "TCK-88413",
+            "TCK-88415"
+          ]
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062005",
+      "seq": 5,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:01.060Z",
+      "received_at": "2026-11-13T00:00:01.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006203",
+        "parent_step_id": null,
+        "name": "summarize",
+        "step_type": "reasoning",
+        "input": {
+          "tickets": 12,
+          "batch_size": 20
+        },
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062006",
+      "seq": 6,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:01.061Z",
+      "received_at": "2026-11-13T00:00:01.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006204",
+        "parent_step_id": "stp_00000000000000000000000000006203",
+        "name": "summarize_batch",
+        "step_type": "llm_call",
+        "input": {
+          "batch": 1,
+          "tickets": 12
+        },
+        "tool_name": null,
+        "model": "claude-haiku-5-5",
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062007",
+      "seq": 7,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:03.165Z",
+      "received_at": "2026-11-13T00:00:03.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006204",
+        "output": {
+          "text": "Batch 1: 12 tickets. Most are billing questions about duplicate charges; 3 report login problems after a password change.",
+          "usage": {
+            "input_tokens": 1296,
+            "output_tokens": 31
+          }
+        },
+        "tokens_input": 1296,
+        "tokens_output": 31,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062008",
+      "seq": 8,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:03.166Z",
+      "received_at": "2026-11-13T00:00:03.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006203",
+        "output": {
+          "batches": 1,
+          "summary_chars": 121
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_00000000000000000000000000062009",
+      "seq": 9,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:03.167Z",
+      "received_at": "2026-11-13T00:00:03.394Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006205",
+        "parent_step_id": null,
+        "name": "send_digest",
+        "step_type": "tool_call",
+        "input": {
+          "channel": "#support-leads",
+          "summary_chars": 121
+        },
+        "tool_name": "send_digest",
+        "model": null,
+        "attempt": 1,
+        "metadata": {
+          "side_effects": true
+        }
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006200a",
+      "seq": 10,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:03.388Z",
+      "received_at": "2026-11-13T00:00:03.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006205",
+        "output": {
+          "message_id": "MSG-28000.384999990463",
+          "status": "sent"
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006200b",
+      "seq": 11,
+      "type": "step.started",
+      "timestamp": "2026-11-13T00:00:03.389Z",
+      "received_at": "2026-11-13T00:00:03.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006206",
+        "parent_step_id": null,
+        "name": "report",
+        "step_type": "output",
+        "input": null,
+        "tool_name": null,
+        "model": null,
+        "attempt": 1,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006200c",
+      "seq": 12,
+      "type": "step.completed",
+      "timestamp": "2026-11-13T00:00:03.390Z",
+      "received_at": "2026-11-13T00:00:03.894Z",
+      "payload": {
+        "step_id": "stp_00000000000000000000000000006206",
+        "output": {
+          "tickets": 12,
+          "batches": 1,
+          "delivered": true
+        },
+        "tokens_input": null,
+        "tokens_output": null,
+        "metadata": {}
+      }
+    },
+    {
+      "id": "evt_0000000000000000000000000006200d",
+      "seq": 13,
+      "type": "execution.completed",
+      "timestamp": "2026-11-13T00:00:03.391Z",
+      "received_at": "2026-11-13T00:00:03.894Z",
+      "payload": {
+        "output": {
+          "tickets": 12,
+          "batches": 1,
+          "delivered": true
+        }
+      }
+    }
+  ],
+  "total": 13,
+  "limit": 200,
+  "offset": 0
+}

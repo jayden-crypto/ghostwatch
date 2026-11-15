@@ -1,0 +1,154 @@
+{
+  "execution": {
+    "id": "exe_00000000000000000000000000000045",
+    "agent_id": "agt_00000000000000000000000000000003",
+    "agent_name": "Support Triage",
+    "status": "completed",
+    "started_at": "2026-11-13T12:40:31.652Z",
+    "ended_at": "2026-11-13T12:40:32.781Z",
+    "duration_ms": 1129,
+    "step_count": 3,
+    "tokens_total": 107,
+    "cost_usd": null,
+    "anomaly_count": 0,
+    "has_investigation": false,
+    "replay_of": null,
+    "error": null,
+    "input": {
+      "ticket": "I was charged twice for my subscription and need a refund."
+    },
+    "output": {
+      "category": "billing",
+      "reply": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+      "articles": [
+        "KB-101"
+      ]
+    },
+    "config": {
+      "model": "demo-llm-1",
+      "params": {
+        "max_attempts": 3
+      },
+      "expected_steps": [
+        "classify",
+        "retrieve_kb",
+        "draft_reply"
+      ],
+      "timeout_ms": null
+    },
+    "tokens_input": 89,
+    "tokens_output": 18,
+    "tags": [
+      "demo"
+    ],
+    "replay_ids": []
+  },
+  "steps": [
+    {
+      "id": "stp_00000000000000000000000000004501",
+      "execution_id": "exe_00000000000000000000000000000045",
+      "parent_step_id": null,
+      "ordinal": 1,
+      "depth": 0,
+      "name": "classify",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:40:31.653Z",
+      "ended_at": "2026-11-13T12:40:32.085Z",
+      "duration_ms": 432,
+      "offset_ms": 1,
+      "input": {
+        "ticket": "I was charged twice for my subscription and need a refund."
+      },
+      "output": {
+        "text": "billing",
+        "usage": {
+          "input_tokens": 31,
+          "output_tokens": 2
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 31,
+      "tokens_output": 2,
+      "attempt": 1,
+      "metadata": {}
+    },
+    {
+      "id": "stp_00000000000000000000000000004502",
+      "execution_id": "exe_00000000000000000000000000000045",
+      "parent_step_id": null,
+      "ordinal": 2,
+      "depth": 0,
+      "name": "retrieve_kb",
+      "type": "tool_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:40:32.086Z",
+      "ended_at": "2026-11-13T12:40:32.340Z",
+      "duration_ms": 254,
+      "offset_ms": 434,
+      "input": {
+        "category": "billing"
+      },
+      "output": {
+        "articles": [
+          {
+            "id": "KB-101",
+            "title": "How refunds are processed",
+            "body": "Refunds reach the card in 5-7 days."
+          }
+        ]
+      },
+      "error": null,
+      "tool_name": "retrieve_kb",
+      "model": null,
+      "tokens_input": null,
+      "tokens_output": null,
+      "attempt": 1,
+      "metadata": {
+        "side_effects": false
+      }
+    },
+    {
+      "id": "stp_00000000000000000000000000004503",
+      "execution_id": "exe_00000000000000000000000000000045",
+      "parent_step_id": null,
+      "ordinal": 3,
+      "depth": 0,
+      "name": "draft_reply",
+      "type": "llm_call",
+      "status": "completed",
+      "started_at": "2026-11-13T12:40:32.341Z",
+      "ended_at": "2026-11-13T12:40:32.780Z",
+      "duration_ms": 439,
+      "offset_ms": 689,
+      "input": {
+        "ticket": "I was charged twice for my subscription and need a refund.",
+        "articles": [
+          {
+            "id": "KB-101",
+            "title": "How refunds are processed",
+            "body": "Refunds reach the card in 5-7 days."
+          }
+        ]
+      },
+      "output": {
+        "text": "Thanks for getting in touch. Refunds reach the card in 5-7 days.",
+        "usage": {
+          "input_tokens": 58,
+          "output_tokens": 16
+        }
+      },
+      "error": null,
+      "tool_name": null,
+      "model": "demo-llm-1",
+      "tokens_input": 58,
+      "tokens_output": 16,
+      "attempt": 1,
+      "metadata": {}
+    }
+  ],
+  "anomalies": [],
+  "event_count": 7
+}
