@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { errorMessage, isApiError } from "@/lib/api/errors";
+import { TONE_TEXT, type Tone } from "@/lib/enums";
 import { cn } from "@/lib/utils";
 
 /**
@@ -93,11 +94,24 @@ export function Panel({
 }
 
 /** One number with its label. `value` is already formatted; unknown is a dash, never 0. */
-export function StatTile({ label, value, detail, className }: { label: string; value: ReactNode; detail?: ReactNode; className?: string }) {
+export function StatTile({
+  label,
+  value,
+  detail,
+  tone,
+  className,
+}: {
+  label: string;
+  value: ReactNode;
+  detail?: ReactNode;
+  /** Colours the number when it means something (failures, open anomalies). Omit for neutral. */
+  tone?: Tone;
+  className?: string;
+}) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-1 rounded-lg border border-line-subtle bg-surface px-4 py-3", className)}>
       <span className="truncate text-xs text-fg-muted">{label}</span>
-      <span className="num truncate font-mono text-xl font-medium tracking-tight">{value}</span>
+      <span className={cn("num truncate font-mono text-xl font-medium tracking-tight", tone && TONE_TEXT[tone])}>{value}</span>
       {detail && <span className="truncate text-xs text-fg-subtle">{detail}</span>}
     </div>
   );

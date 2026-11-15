@@ -1,10 +1,12 @@
-import { NotImplemented } from "@/components/data/empty-state";
-import { Page } from "@/components/shell/page";
+import { Suspense } from "react";
+
+import { OverviewView } from "@/components/overview/overview-view";
 
 export default function OverviewPage() {
+  // The time window lives in the query string, which is only known per request.
   return (
-    <Page title="Overview" description="Agents, executions and anomalies at a glance.">
-      <NotImplemented what="The overview" issue="F4, #23" />
-    </Page>
+    <Suspense>
+      <OverviewView />
+    </Suspense>
   );
 }

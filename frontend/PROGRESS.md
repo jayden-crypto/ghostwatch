@@ -1,75 +1,89 @@
-# Frontend progress — updated 2026-11-14T20:30Z
+# Frontend progress — updated 2026-11-15T10:00Z
 
-## Status: X1 fixtures are written, validated and committed locally but NOT pushed (no GitHub credentials on this machine). F1 scaffold and shell build clean but have not been looked at in a browser yet. F2 not started.
+## Status: X1 PR is open and waiting for Jayden's review. F1, F2, F3, F6, F5 and F4 are built and verified in mock mode. Nothing has been run against the live backend yet (no Docker on this machine).
 
 ## Pages (mock ✓ / live ✓)
-All eight top-level routes render the app shell with a labelled "Not implemented" placeholder.
-- Overview `/`: mock ✗ live ✗
-- Agents `/agents`, `/agents/[id]`: mock ✗ live ✗
-- Executions `/executions`: mock ✗ live ✗
-- Trace explorer `/executions/[id]`: mock ✗ live ✗ (route not created yet)
-- Traces `/traces`: mock ✗ live ✗
-- Anomalies `/anomalies`: mock ✗ live ✗
-- Investigations `/investigations`, `/investigations/[executionId]`: mock ✗ live ✗
-- Replays `/replays`, `/replays/[id]` (P1): mock ✗ live ✗
-- Settings `/settings` (P1): mock ✗ live ✗
+- Overview `/`: mock ✓ live ✗ (untested)
+- Executions `/executions`: mock ✓ live ✗ (untested)
+- Trace explorer `/executions/[id]`: mock ✓ live ✗ (untested)
+- Traces `/traces`: mock ✓ live ✗ (untested)
+- Agents `/agents`, `/agents/[id]`: placeholder ("Not implemented"); `/agents/[id]` has no route yet, so agent links 404
+- Anomalies `/anomalies`: placeholder
+- Investigations `/investigations`, `/investigations/[executionId]`: placeholder
+- Replays `/replays`, `/replays/[id]` (P1): placeholder; `/replays/[id]` has no route yet
+- Settings `/settings` (P1): placeholder
+- `/dev/components`: every enum badge and shared state on one page (not in the nav)
 
 ## Done
-- F1a (#19): `create-next-app` scaffold: Next 16.4, React 19, TS strict, Tailwind 4, ESLint.
-- `lib/api/types.ts`: mirror of contract v1.1, enum value lists exported as constants.
-- X1 (#2): 144 fixtures in `contract/fixtures/` + `README.md` index. Commit `b391bae` on local branch `contract/fixtures` (cut from `main`, touches only `contract/fixtures/`), also merged into `adit/frontend`.
-  - `npm run validate-fixtures`: 144 fixtures match types, 571 ids / 1048 references resolve, 19 enums fully covered.
-  - Jayden's `tests/test_conformance.py -k fixture` at e9f4c53 with these fixtures: 145 passed.
-- F1b (#19): design tokens in `app/globals.css`, Geist fonts (local `geist` package), shadcn/ui (radix, nova preset), sidebar, breadcrumbs, MOCK DATA badge, Ctrl/⌘K palette (pages only), `Page`, `EmptyState`, `NotImplemented`. `tsc`, `eslint` and `next build` pass.
+- **X1 (#2)**: PR https://github.com/jayden-crypto/ghostwatch/pull/35 (`contract/fixtures` → `main`), review requested from Jayden. 144 fixtures; passes `npm run validate-fixtures` and Jayden's `tests/test_conformance.py -k fixture` (145 passed at e9f4c53).
+- **F1 (#19)**: scaffold, tokens, Geist, shadcn/ui, shell, Ctrl/⌘K palette (pages only).
+- **F2 (#20)**: `lib/api/{client,live,mock,hooks,errors}.ts`, `npm run sync-fixtures`.
+- **F3 (#21)**: `lib/enums.ts`, `lib/format.ts`, `components/data/*`.
+- **F6 (#22)**: trace explorer (waterfall, inspector, raw events, input/output, anomaly strip) and `/traces`.
+- **F5 (#24)**: executions table with URL-synced filters.
+- **F4 (#23)**: overview.
+- Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run build` clean; `npm test` 134 passing.
 
 ## In progress
-- F1b verification: load every route in the browser at 1440 and 1024 px. `.claude/launch.json` (local, git-excluded) starts the dev server.
+- nothing mid-edit.
 
 ## Next up
-1. **Push `contract/fixtures` and open the X1 PR** to `main` once `gh auth login` is done. PR body is drafted (not in the repo); title `[X1] Contract fixtures for every endpoint`.
-2. Finish F1b verification; fill the frontend CI job when `ci.yml` reaches `main`.
-3. F2 (#20): `client.ts`, `mock.ts`, `live.ts`, `hooks.ts`, `npm run sync-fixtures`.
-4. F3 (#21) → F6 (#22) → F4 (#23) → F5 (#24) → live pass (#28) → F7 → F8 → F9 → F13 → F10 → F11.
+1. F7 (#25) agents list + detail → F8 (#26) anomalies → F9 (#27) investigations (report view, trigger + poll; the trace header's Investigate button already links to `/investigations/[executionId]`).
+2. F12 (#28) live pass as soon as a backend is reachable: start with `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/*`, `/anomalies`.
+3. F13 (#29): Playwright smoke of the demo path (needs `npx playwright install chromium`, a download). Vitest side is already at 134 tests.
+4. F10 (#30) replay dialog + comparison (the trace header's Replay button is disabled and says so), F11 (#31) settings.
+5. Frontend CI job, once `.github/workflows/ci.yml` is on `main`: `npm ci && npm run typecheck && npm run lint && npm test && npm run build && npm run validate-fixtures`.
+6. After X1 merges: merge `main` into `adit/frontend` (the fixtures are already here via a merge of `contract/fixtures`, so it should be a no-op).
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (e9f4c53) everything except the below is implemented.
 - POST /executions/{id}/replay, /replays* (B12, B13) → replay UI stays on mocks
-- PATCH /anomalies/{id} (P1) → acknowledge/resolve stay "Not implemented"
-- cost_usd (B14) → null until then
-- `jayden/backend` → `main` → needed before the frontend CI job can be filled (`ci.yml` exists only on his branch)
+- PATCH /anomalies/{id} (P1) → the hook exists; no UI calls it yet
+- cost_usd (B14) → null until then; shown as "—"
+- `jayden/backend` → `main` → needed before the frontend CI job can be filled
 
 ## Environment (this machine: Windows 11)
-- node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12: OK
-- gh 2.104 installed at `C:\Program Files\GitHub CLI` but **not logged in**; git has no GitHub credentials → cannot push
-- docker: MISSING → cannot run the backend + Postgres locally for the live switch
-- Playwright browsers not installed (needed for F13)
-- A read-only checkout of `jayden/backend` with a uv venv was made in a temp folder to run conformance; it may be gone after a reboot (`git worktree prune` cleans the reference).
+- node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12, gh 2.104 (logged in as adituppal7): OK
+- docker: MISSING → cannot run the backend + Postgres here; the live pass needs Docker Desktop or a URL to Jayden's backend
+- Playwright browsers not installed
+- `.claude/launch.json` (local, git-excluded) starts the dev server for the in-app browser
 
 ## Decisions
-- **Fixtures are generated**, not hand-written: `scripts/build-fixtures.ts` builds one world from `scripts/fixtures/story.ts` and derives events → steps → executions → anomalies → investigations → stats, so files cannot disagree. Anomaly and investigation text ports the backend's templates (`rules.py`, `facts.py`, `signatures.py`). After X1 merges, run it only on a `contract/<topic>` branch.
-- **Fixture world**: 5 agents (3 demo agents, `ticket-digest` scheduled job, idle `pr-reviewer`), 41 executions, fixture clock `2026-11-14T18:00:00.000Z`. Every execution has a trace and an events file named by execution id. Scenario index: `contract/fixtures/README.md`.
-- **Not produced by the backend today but present in fixtures** (listed in the fixtures README): evidence kinds `event` and `metric`; `cost_usd` values from a fixture-only price; anomaly statuses `acknowledged`/`resolved`; replay comparisons computed from the contract's outcome rule.
-- **Health fixture says `rule_based`**; the one `fable` report (`probable`) records its own provider and model.
-- **Manual investigation fixtures** (`investigations.create`, `.get.queued`, `.get.running`, `.get.manual_result`) belong to the `rate_limit` run and are not in `investigations.list.json`; the mock adapter will step through them after a POST.
-- **Mode is global, never mixed.** Anything other than `NEXT_PUBLIC_API_MODE=live` is mock, so a missing variable cannot show fixtures unlabelled.
-- **Tertiary text is `#8A8A93`**, not the brief's `#71717A`, which is 4.1:1 on the background.
-- **Dark only**: `class="dark"` on `<html>`; shadcn variables are mapped onto the Ghostwatch tokens.
-- **Next 16 has `cacheComponents` on**: anything reading the URL (`usePathname`, `useSearchParams`, `params`) sits inside `<Suspense>`; no `Date.now()` during prerender.
-- **Queries do not retry silently** (`retry: false`): errors show with a Retry button.
-- GET /investigations/{execution_id} 404 = "no investigation yet". Raw-event item type is `StoredEvent`. Settings shows the mode read-only.
+- **Fixtures are generated** by `scripts/build-fixtures.ts` from `scripts/fixtures/story.ts` (events → steps → executions → anomalies → investigations → stats), porting the backend's anomaly and report templates. After X1 merges, run it only on a `contract/<topic>` branch. Scenario index: `contract/fixtures/README.md`.
+- **Mode is global, never mixed**; anything but `NEXT_PUBLIC_API_MODE=live` is mock. `client.ts` loads the adapter lazily, so a live build does not ship fixtures.
+- **`mocks/fixtures/` is generated and git-ignored**; `sync-fixtures` runs before dev, build, typecheck and test.
+- **The mock adapter is an in-memory backend**, not a file server: it filters/sorts/paginates, computes stats from the executions (a test asserts they equal the stats fixtures), steps a started investigation through queued → running → completed, and keeps a `pending` replay pending (no worker exists in mock mode). POST investigation on a run with no recorded report answers `bad_request` rather than inventing one.
+- **Mock keeps a running execution "now"**: its timestamps are shifted so its latest event is 2 s old. Nothing else in the fixtures moves.
+- **Debug states** (mock only): `?__state=empty | error | large` (large = 250 generated steps on any trace).
+- **Polling**: trace 3 s while running; investigation 2 s while queued/running; replay 2 s until terminal; lists and overview panels 5 s (`LIST_POLL_MS`) so a demo run appears without a reload.
+- **Queries do not retry silently**; errors show the API's message, code and a Retry button.
+- **URL state** uses `history.replaceState/pushState` (`lib/use-url-state.ts`), which Next's router observes. Trace: `?step`, `?tab`, `?detail`, `?anomaly`, `?event`. Executions: the contract's own param names plus `range` (rolling 1h/24h/7d/30d, resolved at request time). Overview: `?window`.
+- **Attempt badge is `n/N`** ("attempt 2 of 3") on each attempt's row, instead of one `×3` badge, because each attempt is its own step.
+- **Tree depth is derived from `parent_step_id`**, as the backend derives `depth`; a step with an unknown or looping parent is a root.
+- **The waterfall axis spans the execution's duration**, stretched to cover every recorded step; for a running execution it spans up to the browser's clock.
+- **Completed bars are neutral grey**; only failed (red) and running (blue, striped) carry colour.
+- **Evidence links**: step → `/executions/{id}?step=`, event → `?tab=events&event=`, execution → `/executions/{ref}`, anomaly → `/anomalies?anomaly=`.
+- **Table columns** Error, Steps and Cost drop below 1400/1280 px so the table never scrolls sideways at 1024.
+- **Overview "Open anomalies" and "Agents" tiles are current totals**, not windowed (backend decision); the tile says so.
+- **Tertiary text is `#8A8A93`** (the brief's `#71717A` is 4.1:1). Dark only. JSON syntax colours are desaturated.
+- **Next 16 `cacheComponents`**: anything reading the URL sits in `<Suspense>`; dynamic pages pass `params` into Suspense.
+- **`@types/node` is ^24** (vitest 5 requires ≥22); `@vitejs/plugin-react` is not used (peer conflict with shadcn's babel 7; vitest's built-in JSX transform is enough).
+- GET /investigations/{execution_id} 404 = "no investigation yet" (`useInvestigation` returns `null`). Raw-event item type is `StoredEvent`.
 - Git identity for this clone: `adituppal7` with the GitHub noreply address (repo-local).
 
 ## Contract change requests (open)
 - none
 
 ## Known issues
-- X1 is not on GitHub yet; Jayden is still blocked on it.
+- Not measured: scrolling frame rate with 250 steps (the in-app browser pane was hidden, which throttles rendering). Virtualisation is confirmed: 33 of 250 rows are in the DOM.
+- Visual checks at 1440 px were done by layout metrics and partial screenshots only; the pane shows about 800–1024 px.
+- Agent names link to `/agents/[id]`, which 404s until F7.
+- The palette searches pages only; execution/agent lookup is not built.
 - Kickoff said anomalies and investigations are not built; Jayden's branch says they are. Confirm at the first live pass.
-- The palette searches pages only; execution and agent lookup comes with F2.
 - `token_spike` fixture shows "387× above baseline": correct for a >64 KB payload, but dramatic.
 - Issues #2 and #19–#31 have no assignee.
 
 ## How to run
 - `cd frontend && npm i && npm run dev` (mock mode by default; no env file needed)
 - Live: create `frontend/.env.local` with `NEXT_PUBLIC_API_MODE=live` and `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1`
-- Checks: `npm run typecheck && npm run lint && npm run build && npm run validate-fixtures`
+- Checks: `npm run typecheck && npm run lint && npm test && npm run build && npm run validate-fixtures`

@@ -57,8 +57,13 @@ export const isInvestigationActive = (investigation: Investigation | null | unde
 
 export const useHealth = () => useQuery({ queryKey: keys.health, queryFn: () => api.health() });
 
-export const useAgents = (params: AgentListParams = {}) =>
-  useQuery({ queryKey: keys.agents(params), queryFn: () => api.listAgents(params), placeholderData: keepPreviousData });
+/** `refetchInterval` keeps a view current while agents run; pass LIST_POLL_MS. */
+interface Live {
+  refetchInterval?: number;
+}
+
+export const useAgents = (params: AgentListParams = {}, live: Live = {}) =>
+  useQuery({ queryKey: keys.agents(params), queryFn: () => api.listAgents(params), placeholderData: keepPreviousData, ...live });
 
 export const useAgent = (id: ID) => useQuery({ queryKey: keys.agent(id), queryFn: () => api.getAgent(id) });
 
@@ -89,18 +94,19 @@ export const useEvents = (executionId: ID, params: EventListParams = {}, options
     enabled: options.enabled,
   });
 
-export const useStatsOverview = (window: StatsWindow) =>
-  useQuery({ queryKey: keys.statsOverview(window), queryFn: () => api.statsOverview(window), placeholderData: keepPreviousData });
+export const useStatsOverview = (window: StatsWindow, live: Live = {}) =>
+  useQuery({ queryKey: keys.statsOverview(window), queryFn: () => api.statsOverview(window), placeholderData: keepPreviousData, ...live });
 
-export const useStatsTimeseries = (params: TimeseriesParams = {}) =>
+export const useStatsTimeseries = (params: TimeseriesParams = {}, live: Live = {}) =>
   useQuery({
     queryKey: keys.statsTimeseries(params),
     queryFn: () => api.statsTimeseries(params),
     placeholderData: keepPreviousData,
+    ...live,
   });
 
-export const useAnomalies = (params: AnomalyListParams = {}) =>
-  useQuery({ queryKey: keys.anomalies(params), queryFn: () => api.listAnomalies(params), placeholderData: keepPreviousData });
+export const useAnomalies = (params: AnomalyListParams = {}, live: Live = {}) =>
+  useQuery({ queryKey: keys.anomalies(params), queryFn: () => api.listAnomalies(params), placeholderData: keepPreviousData, ...live });
 
 export const useInvestigations = (params: InvestigationListParams = {}) =>
   useQuery({
