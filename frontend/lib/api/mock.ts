@@ -181,9 +181,6 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
     }
     inFlight.delete(executionId);
     db.investigations = [run.result, ...db.investigations.filter((investigation) => investigation.id !== run.result.id)];
-    for (const execution of [db.executions.find((e) => e.id === executionId), db.traces.get(executionId)?.execution]) {
-      if (execution) execution.has_investigation = true;
-    }
     return run.result;
   }
 
@@ -340,7 +337,20 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
           (manual.execution_id === executionId
             ? manual
             : fail("bad_request", `Mock mode has no investigation report for execution ${executionId}, so it cannot start one.`));
-        inFlight.set(executionId, { startedAt: clock(), result: { ...result, trigger: "manual" } });
+        // It starts now and, in this mock, takes COMPLETED_MS; the report itself is the recorded one.
+        const created = now();
+        inFlight.set(executionId, {
+          startedAt: clock(),
+          result: {
+            ...result,
+            trigger: "manual",
+            created_at: new Date(created).toISOString(),
+            completed_at: new Date(created + COMPLETED_MS).toISOString(),
+          },
+        });
+        for (const row of [db.executions.find((e) => e.id === executionId), db.traces.get(executionId)?.execution]) {
+          if (row) row.has_investigation = true;
+        }
         return progress(executionId)!;
       }),
 

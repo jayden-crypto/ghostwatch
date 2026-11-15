@@ -66,7 +66,7 @@ export function TraceHeader({ execution, live }: { execution: ExecutionDetail; l
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <Button asChild variant="outline" size="sm">
-            <Link href={`/investigations/${execution.id}`}>
+            <Link href={`/executions/${execution.id}?tab=investigation`}>
               <FileSearch aria-hidden="true" />
               {execution.has_investigation ? "Investigation" : "Investigate"}
             </Link>

@@ -163,6 +163,6 @@ describe("TraceView", () => {
     // tokens_total and cost_usd are null on this run.
     const tokens = screen.getByText("Tokens").parentElement!;
     expect(within(tokens).getByText("—")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Investigation/ })).toHaveAttribute("href", `/investigations/${schemaChange.execution.id}`);
+    expect(screen.getByRole("link", { name: /Investigation/ })).toHaveAttribute("href", `/executions/${schemaChange.execution.id}?tab=investigation`);
   });
 });

@@ -206,6 +206,8 @@ describe("investigations", () => {
     const { api, time } = setup();
     const created = await api.createInvestigation(rateLimit);
     expect(created).toMatchObject({ status: "queued", trigger: "manual", report: null, completed_at: null });
+    // The execution shows it has an investigation from the moment one is queued.
+    expect((await api.getExecution(rateLimit)).has_investigation).toBe(true);
     expect((await api.createInvestigation(rateLimit)).id).toBe(created.id);
 
     time.now = 2_000;
@@ -216,6 +218,9 @@ describe("investigations", () => {
     expect(done.report).not.toBeNull();
 
     expect((await api.getTrace(rateLimit)).execution.has_investigation).toBe(true);
+    // It was started now, not at the fixture's timestamp.
+    expect(Date.parse(done.completed_at!) - Date.parse(done.created_at)).toBe(4_000);
+    expect(Date.now() - Date.parse(done.created_at)).toBeLessThan(60_000);
     expect((await api.listInvestigations({ limit: 200 })).items.map((i) => i.id)).toContain(done.id);
   });
 

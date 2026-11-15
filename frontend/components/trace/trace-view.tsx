@@ -4,7 +4,7 @@
  * The trace explorer for one execution: header, anomalies, then the waterfall with its step
  * inspector, the raw event log, or the execution's own input and output.
  *
- * All view state is in the URL: `?step=` (selected step), `?tab=` (waterfall | events | io),
+ * All view state is in the URL: `?step=` (selected step), `?tab=` (waterfall | events | io | investigation),
  * `?detail=` (inspector tab), `?anomaly=` (open anomaly) and `?event=` (focused raw event).
  */
 import { Ghost, SearchX } from "lucide-react";
@@ -25,13 +25,15 @@ import { buildTree, reveal, visibleRows } from "@/lib/trace/tree";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
 
+import { InvestigationPanel } from "@/components/investigation/investigation-panel";
+
 import { AnomalyStrip, evidenceStepIds } from "./anomaly-strip";
 import { RawEvents } from "./raw-events";
 import { INSPECTOR_TABS, StepInspector, type InspectorTab } from "./step-inspector";
 import { TraceHeader } from "./trace-header";
 import { Waterfall } from "./waterfall";
 
-const TABS = ["waterfall", "events", "io"] as const;
+const TABS = ["waterfall", "events", "io", "investigation"] as const;
 type Tab = (typeof TABS)[number];
 
 const oneOf = <T extends string>(values: readonly T[], value: string | null, fallback: T): T =>
@@ -192,6 +194,7 @@ function TraceBody({ trace, executionId }: { trace: Trace; executionId: ID }) {
     ["waterfall", "Waterfall", execution.step_count],
     ["events", "Raw events", trace.event_count],
     ["io", "Input & output", null],
+    ["investigation", "Investigation", null],
   ];
 
   return (
@@ -257,6 +260,11 @@ function TraceBody({ trace, executionId }: { trace: Trace; executionId: ID }) {
             ))}
           {tab === "events" && (
             <RawEvents executionId={executionId} focusedEventId={params.get("event")} onOpenStep={(stepId) => setParams({ tab: null, event: null, step: stepId }, "push")} />
+          )}
+          {tab === "investigation" && (
+            <div className="h-full overflow-auto p-6">
+              <InvestigationPanel executionId={executionId} steps={steps} />
+            </div>
           )}
           {tab === "io" && (
             <div className="grid h-full content-start gap-4 overflow-auto p-6 xl:grid-cols-2">

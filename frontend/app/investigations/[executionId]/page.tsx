@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { NotImplemented } from "@/components/data/empty-state";
-import { Page } from "@/components/shell/page";
+import { InvestigationView } from "@/components/investigation/investigation-view";
 
 export const metadata: Metadata = { title: "Investigation" };
 
-export default function InvestigationPage() {
-  return (
-    <Page title="Investigation" description="Facts, hypotheses and recommendations for one execution.">
-      <NotImplemented what="The investigation report" issue="F9, #27" />
-    </Page>
-  );
+export default function InvestigationPage({ params }: PageProps<"/investigations/[executionId]">) {
+  return <Suspense>{params.then(({ executionId }) => <InvestigationView executionId={executionId} />)}</Suspense>;
 }

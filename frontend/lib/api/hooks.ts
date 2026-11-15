@@ -112,11 +112,12 @@ export const useAnomalies = (params: AnomalyListParams = {}, live: Live = {}) =>
 export const useAnomaly = (id: ID | null) =>
   useQuery({ queryKey: keys.anomaly(id ?? ""), queryFn: () => api.getAnomaly(id!), enabled: id !== null });
 
-export const useInvestigations = (params: InvestigationListParams = {}) =>
+export const useInvestigations = (params: InvestigationListParams = {}, live: Live = {}) =>
   useQuery({
     queryKey: keys.investigations(params),
     queryFn: () => api.listInvestigations(params),
     placeholderData: keepPreviousData,
+    ...live,
   });
 
 /**
@@ -146,6 +147,8 @@ export function useCreateInvestigation(executionId: ID) {
       // Showing the queued investigation at once starts the polling above.
       client.setQueryData(keys.investigation(executionId), investigation);
       void client.invalidateQueries({ queryKey: ["investigations", "list"] });
+      void client.invalidateQueries({ queryKey: keys.trace(executionId) });
+      void client.invalidateQueries({ queryKey: ["executions", "list"] });
     },
   });
 }
