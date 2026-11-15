@@ -108,6 +108,10 @@ export const useStatsTimeseries = (params: TimeseriesParams = {}, live: Live = {
 export const useAnomalies = (params: AnomalyListParams = {}, live: Live = {}) =>
   useQuery({ queryKey: keys.anomalies(params), queryFn: () => api.listAnomalies(params), placeholderData: keepPreviousData, ...live });
 
+/** One anomaly by id. Disabled while `id` is null. */
+export const useAnomaly = (id: ID | null) =>
+  useQuery({ queryKey: keys.anomaly(id ?? ""), queryFn: () => api.getAnomaly(id!), enabled: id !== null });
+
 export const useInvestigations = (params: InvestigationListParams = {}) =>
   useQuery({
     queryKey: keys.investigations(params),

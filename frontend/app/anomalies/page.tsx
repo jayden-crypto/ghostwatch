@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { NotImplemented } from "@/components/data/empty-state";
-import { Page } from "@/components/shell/page";
+import { AnomaliesView } from "@/components/anomalies/anomalies-view";
 
 export const metadata: Metadata = { title: "Anomalies" };
 
 export default function AnomaliesPage() {
+  // The filters live in the query string, which is only known per request.
   return (
-    <Page title="Anomalies" description="Runs that broke a deterministic rule, with the evidence.">
-      <NotImplemented what="The anomaly feed" issue="F8, #26" />
-    </Page>
+    <Suspense>
+      <AnomaliesView />
+    </Suspense>
   );
 }

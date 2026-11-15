@@ -11,6 +11,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { HealthBadge, SeverityBadge } from "@/components/data/badges";
+import { WINDOW_LABEL, WindowSwitch, windowFrom } from "@/components/data/controls";
 import { EmptyState } from "@/components/data/empty-state";
 import { ErrorState, Panel, StatTile, StatTileSkeleton } from "@/components/data/states";
 import { Timestamp } from "@/components/data/values";
@@ -18,40 +19,18 @@ import { COMPACT_COLUMNS, ExecutionsTable } from "@/components/executions/execut
 import { Page } from "@/components/shell/page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LIST_POLL_MS, useAgents, useAnomalies, useExecutions, useStatsOverview, useStatsTimeseries } from "@/lib/api/hooks";
-import { STATS_WINDOWS, type Agent, type AgentHealth, type StatsOverview, type StatsWindow } from "@/lib/api/types";
+import type { Agent, AgentHealth, StatsOverview, StatsWindow } from "@/lib/api/types";
 import { formatCount, formatDuration, formatRate, pluralize } from "@/lib/format";
 import { useUrlState } from "@/lib/use-url-state";
 import { cn } from "@/lib/utils";
 
 import { TrendChart } from "./trend-chart";
 
-const WINDOW_LABEL: Record<StatsWindow, string> = { "24h": "24 hours", "7d": "7 days", "30d": "30 days" };
 const LIVE = { refetchInterval: LIST_POLL_MS };
 /** Agents that need attention come first. */
 const HEALTH_ORDER: Record<AgentHealth, number> = { failing: 0, degraded: 1, healthy: 2, idle: 3 };
 
 const SEED_COMMAND = "cd demo && uv run python seed.py";
-
-function WindowSwitch({ value, onChange }: { value: StatsWindow; onChange: (window: StatsWindow) => void }) {
-  return (
-    <div role="group" aria-label="Time window" className="flex rounded-md border border-line p-0.5">
-      {STATS_WINDOWS.map((window) => (
-        <button
-          key={window}
-          type="button"
-          aria-pressed={window === value}
-          onClick={() => onChange(window)}
-          className={cn(
-            "h-6 rounded-[5px] px-2.5 font-mono text-xs text-fg-muted transition-colors duration-150 hover:text-fg",
-            window === value && "bg-raised text-fg",
-          )}
-        >
-          {window}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function Tiles({ stats, window }: { stats: StatsOverview; window: StatsWindow }) {
   const finished = stats.completed + stats.failed + stats.timed_out;
@@ -134,8 +113,7 @@ const PanelLink = ({ href, children }: { href: string; children: ReactNode }) =>
 
 export function OverviewView() {
   const [params, setParams] = useUrlState();
-  const requested = params.get("window");
-  const window: StatsWindow = (STATS_WINDOWS as readonly string[]).includes(requested ?? "") ? (requested as StatsWindow) : "7d";
+  const window = windowFrom(params);
 
   const stats = useStatsOverview(window, LIVE);
   const series = useStatsTimeseries({ window }, LIVE);

@@ -4,9 +4,10 @@
  * /executions: every run of every agent, filtered, sorted and paged by the API.
  * Every control writes to the URL (lib/executions/filters.ts), so the view is always a link.
  */
-import { Inbox, Search, SearchX, X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { Inbox, SearchX, X } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
+import { ChipFilter, CONTROL, DebouncedInput, SearchInput } from "@/components/data/controls";
 import { Pagination } from "@/components/data/data-table";
 import { EmptyState } from "@/components/data/empty-state";
 import { ErrorState, Refreshing } from "@/components/data/states";
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LIST_POLL_MS, useAgents, useExecutions } from "@/lib/api/hooks";
 import { EXECUTION_STATUSES } from "@/lib/api/types";
-import { EXECUTION_STATUS, TONE_BG } from "@/lib/enums";
+import { EXECUTION_STATUS } from "@/lib/enums";
 import { activeFilterCount, CLEARED, parseFilters, RANGE_LABEL, RANGES, toListParams, type ExecutionFilters, type Range } from "@/lib/executions/filters";
 import { pluralize } from "@/lib/format";
 import { useNow } from "@/lib/use-now";
@@ -25,7 +26,6 @@ import { cn } from "@/lib/utils";
 import { ExecutionsTable } from "./executions-table";
 
 const ANY = "any";
-const CONTROL = "h-7 rounded-md border border-line bg-surface px-2 text-13 outline-none transition-colors duration-150 placeholder:text-fg-subtle hover:border-fg-subtle/50 focus-visible:border-ring";
 
 function Labelled({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -34,28 +34,6 @@ function Labelled({ label, children }: { label: string; children: ReactNode }) {
       {children}
     </label>
   );
-}
-
-/** A text or number field that writes to the URL a moment after typing stops. */
-function DebouncedInput({
-  value,
-  onCommit,
-  className,
-  ...props
-}: Omit<React.ComponentProps<"input">, "value" | "onChange"> & { value: string; onCommit: (value: string) => void }) {
-  const [draft, setDraft] = useState(value);
-  // The URL can change underneath (back button, Clear): the field follows it.
-  const [seen, setSeen] = useState(value);
-  if (value !== seen) {
-    setSeen(value);
-    setDraft(value);
-  }
-  useEffect(() => {
-    if (draft === value) return;
-    const timer = setTimeout(() => onCommit(draft), 250);
-    return () => clearTimeout(timer);
-  }, [draft, value, onCommit]);
-  return <input {...props} value={draft} onChange={(event) => setDraft(event.target.value)} className={cn(CONTROL, className)} />;
 }
 
 function TriState({ label, value, yes, no, onChange }: { label: string; value: boolean | null; yes: string; no: string; onChange: (value: string | null) => void }) {
@@ -99,17 +77,7 @@ function Filters({ filters, set }: { filters: ExecutionFilters; set: (patch: Url
   return (
     <div className="flex flex-col gap-2 border-b border-line-subtle px-4 py-3" role="search" aria-label="Filter executions">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-fg-subtle" aria-hidden="true" />
-          <DebouncedInput
-            type="search"
-            aria-label="Search by execution id or agent name"
-            placeholder="Execution id or agent name"
-            value={filters.q}
-            onCommit={(q) => update({ q })}
-            className="w-64 pl-7"
-          />
-        </div>
+        <SearchInput label="Search by execution id or agent name" placeholder="Execution id or agent name" value={filters.q} onCommit={(q) => update({ q })} />
 
         <Select value={filters.agent_id ?? ANY} onValueChange={(next) => update({ agent_id: next === ANY ? null : next })}>
           <SelectTrigger size="sm" aria-label="Agent" className="h-7 min-w-40">
@@ -129,27 +97,12 @@ function Filters({ filters, set }: { filters: ExecutionFilters; set: (patch: Url
           </SelectContent>
         </Select>
 
-        <div role="group" aria-label="Status" className="flex items-center gap-1">
-          {EXECUTION_STATUSES.map((status) => {
-            const meta = EXECUTION_STATUS[status];
-            const on = filters.status.includes(status);
-            return (
-              <button
-                key={status}
-                type="button"
-                aria-pressed={on}
-                onClick={() => {
-                  const next = on ? filters.status.filter((value) => value !== status) : [...filters.status, status];
-                  update({ status: next.join(",") });
-                }}
-                className={cn(CONTROL, "flex items-center gap-1.5 text-fg-muted", on && "border-fg-muted bg-raised text-fg")}
-              >
-                <span aria-hidden="true" className={cn("size-1.5 rounded-full", TONE_BG[meta.tone])} />
-                {meta.label}
-              </button>
-            );
-          })}
-        </div>
+        <ChipFilter
+          label="Status"
+          options={EXECUTION_STATUSES.map((status) => ({ value: status, label: EXECUTION_STATUS[status].label, tone: EXECUTION_STATUS[status].tone }))}
+          selected={filters.status}
+          onChange={(status) => update({ status: status.join(",") })}
+        />
 
         {active > 0 && (
           <Button variant="ghost" size="sm" onClick={() => set(CLEARED)} className="ml-auto text-fg-muted">
