@@ -21,3 +21,6 @@ test-results/
 # OS / misc
 .DS_Store
 *.log
+
+# Claude Code: session state (handoff.md and the auto-generated snapshot.md) is local to each machine
+.claude/state/

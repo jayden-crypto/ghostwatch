@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ghostwatch
+      POSTGRES_PASSWORD: ghostwatch
+      POSTGRES_DB: ghostwatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - ghostwatch_pgdata:/var/lib/postgresql/data
+      - ./backend/scripts/create_test_db.sql:/docker-entrypoint-initdb.d/10-create-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ghostwatch -d ghostwatch"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+volumes:
+  ghostwatch_pgdata:
