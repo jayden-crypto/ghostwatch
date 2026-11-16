@@ -1,6 +1,7 @@
 /**
  * Where data comes from. Read once from the environment at build time.
- * Only lib/api/client.ts (and the header badge) may look at the mode: components never do.
+ * Only lib/api/client.ts, the header badge and the /settings route (which reports it) may look at
+ * the mode: components never do.
  */
 export type ApiMode = "mock" | "live";
 

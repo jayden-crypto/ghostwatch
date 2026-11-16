@@ -56,12 +56,12 @@ export const keys = {
 export const isInvestigationActive = (investigation: Investigation | null | undefined): boolean =>
   investigation?.status === "queued" || investigation?.status === "running";
 
-export const useHealth = () => useQuery({ queryKey: keys.health, queryFn: () => api.health() });
-
 /** `refetchInterval` keeps a view current while agents run; pass LIST_POLL_MS. */
 interface Live {
   refetchInterval?: number;
 }
+
+export const useHealth = (live: Live = {}) => useQuery({ queryKey: keys.health, queryFn: () => api.health(), ...live });
 
 export const useAgents = (params: AgentListParams = {}, live: Live = {}) =>
   useQuery({ queryKey: keys.agents(params), queryFn: () => api.listAgents(params), placeholderData: keepPreviousData, ...live });

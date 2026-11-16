@@ -1,6 +1,6 @@
-# Frontend progress — updated 2026-11-16T21:20Z
+# Frontend progress — updated 2026-11-16T22:10Z
 
-## Status: every P0 page and the P1 replay screens (F1–F10, F13) are built and verified in mock mode. X1 PR #35 is merged; Jayden's backend PR #36 is approved by Adit and not merged yet. Nothing has been run against the live backend (no Docker on this machine). F11 settings and the F12 live pass are not started.
+## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. Jayden's PR #37 (UTF-8 file reads) is reviewed: it fixes the Windows failures; posting the approval waits for Adit's word. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
 
 ## Pages (mock ✓ / live ✓)
 - Overview `/`: mock ✓ live ✗ (untested)
@@ -11,7 +11,7 @@
 - Anomalies `/anomalies`: mock ✓ live ✗ (untested)
 - Investigations `/investigations`, `/investigations/[executionId]`: mock ✓ live ✗ (untested)
 - Replays `/replays`, `/replays/[id]`, and the Replay dialog on the trace page (P1): mock ✓ live ✗ (untested)
-- Settings `/settings` (P1): placeholder
+- Settings `/settings` (P1): mock ✓ live ✗ (untested)
 - `/dev/components`: every enum badge and shared state on one page (not in the nav)
 
 ## Done
@@ -20,22 +20,23 @@
 - **F1–F6, F4, F5** as before; **F7 (#25)** agents list + detail; **F8 (#26)** anomalies; **F9 (#27)** investigation report, list, trigger + poll, and the trace page's Investigation tab.
 - **F13 (#29)**: Playwright smoke tests in `e2e/` (`npm run test:e2e`): the demo path (overview → failed run → confirmed investigation → evidence link → failing step selected), the replay path (failed run → its replays → comparison "Fixed" → replay step in the replay's trace), and the dialog (live needs the authorization box; sandbox request lands on the pending page). They build the app and serve it on port 3100 in mock mode; Edge on Windows, Playwright's Chromium elsewhere.
 - **F10 (#30)**: Replay dialog (`components/replay/replay-dialog.tsx`), list (`replays-view.tsx`), replay page and comparison (`replay-view.tsx`, `replay-comparison.tsx`), shared wording in `lib/replay.ts`.
+- **F11 (#31)**: settings page (`components/settings/settings-view.tsx`): data source, backend health and investigation provider from `GET /health`, access note. Read-only.
+- **Frontend CI job** in `.github/workflows/ci.yml`: `npm ci`, typecheck, lint, unit tests, fixture validation, then Playwright's Chromium and the e2e tests. Not yet seen green: check the first run on `adit/frontend`.
+- **Review of PR #37** (`jayden/backend` → `main`, 83e49cb, "read and write text files as UTF-8"): on this Windows machine with the default cp1252 encoding, backend 389 passed / 209 skipped (no Postgres) / 0 failed, also with `PYTHONWARNDEFAULTENCODING=1`; SDK 39 passed; ruff clean; `alembic upgrade head --sql` runs. No other unencoded file read or write found in `backend/`, `sdk/`, `demo/`. `tests/test_fable_provider.py` was left out only because the scratch checkout's path is too long for Windows.
 - **Contract v1.2** in `types.ts` (`ReplaySource`, `StepDiff.replay_source`); a replay step's source is shown in the waterfall and the inspector.
-- Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 182 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
+- Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 191 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
 
 ## In progress
 - nothing mid-edit.
 
 ## Next up
-1. After PR #36 merges: merge `main` into `adit/frontend` again. It brings `.claude/settings.json` and two session hooks (read-only, reviewed), a "Session handoff" section in `CLAUDE.md`, `README.md` and `.github/workflows/ci.yml`.
+1. Look at the first CI run of the new frontend job on `adit/frontend` and fix whatever differs on Linux.
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
-3. F11 (#31) settings.
-4. Frontend CI job, once `.github/workflows/ci.yml` is on `main`: `npm ci && npm run typecheck && npm run lint && npm test && npm run validate-fixtures && npx playwright install --with-deps chromium && npm run test:e2e` (the e2e run builds the app).
-5. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
+3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
-- `jayden/backend` → `main` (PR #36, approved, open) → needed before the frontend CI job can be filled (`ci.yml` is only on his branch) and before a clean clone can run the backend
+- Nothing is missing on the backend side. The live pass needs a running backend: Docker Desktop here, or a URL to Jayden's.
 - Contract v1.1 and v1.2 were committed to `main` by Jayden with "Adit to confirm" → the PR #36 review says the frontend has no objection and already follows v1.2; Adit has not given Jayden an explicit confirmation himself
 
 ## Environment (this machine: Windows 11)
@@ -52,6 +53,7 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 - **Comparison**: the outcome is the headline (`fixed` is the only filled green frame; `inconclusive` is dashed). Under it, a sentence counts the replay's steps by `replay_source` (the only thing computed in the browser), then the mode's rule. Original and replay are one table with the API's three deltas; a null delta is a dash. The step table marks rows whose `change` is not `unchanged`, links each side to its own step, and shows `replay_source` per row.
 - **Replays list**: `?status=` and `?original_execution_id=` in the URL (the trace header's "Replayed N×" links there). A replay without a comparison says "Not compared yet"; a failed one shows its error type.
 - **Mock replays**: a replay created in mock mode stays pending (there is no worker); pending and claimed fixture replays are moved to "now" like a running execution; replaying a running execution answers `conflict` as the backend does.
+- **Settings is read-only.** The mode and base URL are fixed at build time, so the page shows them and says how to change them (`frontend/.env.local`, restart). The route passes `API_MODE` and `API_BASE_URL` to the view as props; components still never read the config. In mock mode the health panels say the values are the `health.get` fixture. A failed health check shows the API's error and, in live mode, the commands that start the backend; the provider is then "not known" rather than guessed. `llm_provider: fable` with `llm_configured: false` is shown as "No: not configured". Health is re-checked every 5 s and on "Check again".
 - **Mode is global, never mixed**; anything but `NEXT_PUBLIC_API_MODE=live` is mock. `client.ts` loads the adapter lazily.
 - **The mock adapter is an in-memory backend**: filters/sorts/paginates, computes stats, applies `PATCH /anomalies`, steps a started investigation through queued → running → completed (4 s, starting "now"), keeps a `pending` replay pending. POST investigation on a run with no recorded report answers `bad_request` rather than inventing one.
 - **Mock keeps a running execution "now"**; debug states `?__state=empty | error | large`.
