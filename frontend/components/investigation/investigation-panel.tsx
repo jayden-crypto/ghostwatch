@@ -9,7 +9,6 @@
  * the status is terminal (lib/api/hooks.ts).
  */
 import { FileSearch, LoaderCircle, RotateCw } from "lucide-react";
-import { useEffect, useState } from "react";
 
 import { InvestigationStatusBadge, ProviderBadge, TriggerBadge } from "@/components/data/badges";
 import { EmptyState } from "@/components/data/empty-state";
@@ -21,23 +20,9 @@ import { errorMessage } from "@/lib/api/errors";
 import { isInvestigationActive, useCreateInvestigation, useInvestigation } from "@/lib/api/hooks";
 import type { ID, Investigation, Step } from "@/lib/api/types";
 import { formatDuration } from "@/lib/format";
+import { useElapsed } from "@/lib/use-now";
 
 import { InvestigationReportView } from "./investigation-report";
-
-/** Milliseconds since `since`, updated every second. Null until mounted, where "now" is not known. */
-function useElapsed(since: string): number | null {
-  const [now, setNow] = useState<number | null>(null);
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const first = setTimeout(tick, 0);
-    const timer = setInterval(tick, 1000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(timer);
-    };
-  }, []);
-  return now === null ? null : Math.max(0, now - Date.parse(since));
-}
 
 function InProgress({ investigation }: { investigation: Investigation }) {
   const elapsed = useElapsed(investigation.created_at);

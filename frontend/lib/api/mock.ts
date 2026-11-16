@@ -129,6 +129,13 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
     }
   }
 
+  // Likewise a replay that is waiting for a worker, or being run by one, is in progress now.
+  for (const replay of db.replays.filter((r) => r.status === "pending" || r.status === "claimed")) {
+    const shift = now() - 5_000 - Date.parse(replay.claimed_at ?? replay.requested_at);
+    replay.requested_at = new Date(Date.parse(replay.requested_at) + shift).toISOString();
+    if (replay.claimed_at) replay.claimed_at = new Date(Date.parse(replay.claimed_at) + shift).toISOString();
+  }
+
   /** Investigations started here that have not completed yet, by execution id. */
   const inFlight = new Map<ID, { startedAt: number; result: Investigation }>();
 
@@ -367,10 +374,11 @@ export function createMockApi(options: MockOptions = {}): GhostwatchApi {
 
     createReplay: (executionId, body) =>
       respond(() => {
-        executionOrFail(executionId);
+        const execution = executionOrFail(executionId);
         if (body.mode === "live" && body.authorize_side_effects !== true) {
           fail("side_effect_authorization_required", fixtures["error.side_effect_authorization_required"].error.message);
         }
+        if (execution.status === "running") fail("conflict", `Execution ${executionId} is still running; it can be replayed once it ends.`);
         // No replay worker exists in mock mode, so a replay created here stays pending.
         const replay: Replay = {
           ...fixtures["replays.create"],

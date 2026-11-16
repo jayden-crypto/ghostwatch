@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 
 /**
  * The current time, shared by every relative timestamp on the page and refreshed every 10 s.
@@ -35,4 +35,19 @@ export function useNow(): number | null {
     () => now,
     () => null,
   );
+}
+
+/** Milliseconds since `since`, updated every second. Null until mounted, where "now" is not known. */
+export function useElapsed(since: string): number | null {
+  const [current, setCurrent] = useState<number | null>(null);
+  useEffect(() => {
+    const tick = () => setCurrent(Date.now());
+    const first = setTimeout(tick, 0);
+    const every = setInterval(tick, 1000);
+    return () => {
+      clearTimeout(first);
+      clearInterval(every);
+    };
+  }, []);
+  return current === null ? null : Math.max(0, current - Date.parse(since));
 }

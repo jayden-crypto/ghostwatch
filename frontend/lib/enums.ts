@@ -256,8 +256,8 @@ export const EVIDENCE_KIND: Record<EvidenceKind, EnumMeta> = {
 };
 
 export const REPLAY_MODE: Record<ReplayMode, EnumMeta> = {
-  sandbox: { label: "Sandbox", icon: ShieldCheck, tone: "muted", hint: "Tool calls returned recorded outputs. Nothing external ran." },
-  live: { label: "Live", icon: CircleAlert, tone: "timed-out", hint: "Tools ran for real, with side effects authorized." },
+  sandbox: { label: "Sandbox", icon: ShieldCheck, tone: "muted", hint: "Recorded calls return their recorded outputs. No tool with side effects runs." },
+  live: { label: "Live", icon: CircleAlert, tone: "timed-out", hint: "Every call runs for real, with side effects authorized." },
 };
 
 export const REPLAY_STATUS: Record<ReplayStatus, EnumMeta> = {

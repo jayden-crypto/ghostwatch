@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { StatusBadge } from "@/components/data/badges";
 import { Cost, Duration, IdChip, Timestamp, Tokens } from "@/components/data/values";
+import { ReplayButton } from "@/components/replay/replay-dialog";
 import { Button } from "@/components/ui/button";
 import type { ExecutionDetail } from "@/lib/api/types";
 import { formatCount, pluralize } from "@/lib/format";
@@ -71,10 +72,7 @@ export function TraceHeader({ execution, live }: { execution: ExecutionDetail; l
               {execution.has_investigation ? "Investigation" : "Investigate"}
             </Link>
           </Button>
-          <Button variant="outline" size="sm" disabled title="Replay is not implemented yet (F10, #30)">
-            <History aria-hidden="true" />
-            Replay
-          </Button>
+          <ReplayButton execution={execution} />
         </div>
       </div>
 

@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { NotImplemented } from "@/components/data/empty-state";
-import { Page } from "@/components/shell/page";
+import { ReplaysView } from "@/components/replay/replays-view";
 
 export const metadata: Metadata = { title: "Replays" };
 
 export default function ReplaysPage() {
+  // The filters live in the query string, which is only known per request.
   return (
-    <Page title="Replays" description="Re-runs of recorded executions, compared with the original.">
-      <NotImplemented what="The replay list" issue="F10, #30" />
-    </Page>
+    <Suspense>
+      <ReplaysView />
+    </Suspense>
   );
 }

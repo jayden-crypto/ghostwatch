@@ -237,6 +237,11 @@ describe("replays", () => {
     expect(error).toMatchObject({ code: "side_effect_authorization_required", status: 422 });
   });
 
+  it("refuses to replay an execution that is still running", async () => {
+    const error = await failure(setup().api.createReplay(byKey("running"), { mode: "sandbox" }));
+    expect(error).toMatchObject({ code: "conflict", status: 409 });
+  });
+
   it("creates a pending replay that shows up in the list and on the original", async () => {
     const { api } = setup();
     const replay = await api.createReplay(byKey("schema_change"), { mode: "sandbox", note: "retry" });

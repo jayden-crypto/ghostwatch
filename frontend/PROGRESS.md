@@ -1,6 +1,6 @@
-# Frontend progress — updated 2026-11-16T15:40Z
+# Frontend progress — updated 2026-11-16T21:20Z
 
-## Status: all P0 pages are built and verified in mock mode (F1–F9). X1 PR #35 is merged to `main` and `main` is merged back into `adit/frontend` (no file changes). Jayden's backend PR #36 is reviewed and approved by Adit (not merged yet). Nothing has been run against the live backend yet (no Docker on this machine). F13's Playwright smoke test, F10 and F11 are not started.
+## Status: every P0 page and the P1 replay screens (F1–F10, F13) are built and verified in mock mode. X1 PR #35 is merged; Jayden's backend PR #36 is approved by Adit and not merged yet. Nothing has been run against the live backend (no Docker on this machine). F11 settings and the F12 live pass are not started.
 
 ## Pages (mock ✓ / live ✓)
 - Overview `/`: mock ✓ live ✗ (untested)
@@ -10,7 +10,7 @@
 - Traces `/traces`: mock ✓ live ✗ (untested)
 - Anomalies `/anomalies`: mock ✓ live ✗ (untested)
 - Investigations `/investigations`, `/investigations/[executionId]`: mock ✓ live ✗ (untested)
-- Replays `/replays` (P1): placeholder; `/replays/[id]` has no route yet, so "Replayed N×" on a trace leads to the placeholder list
+- Replays `/replays`, `/replays/[id]`, and the Replay dialog on the trace page (P1): mock ✓ live ✗ (untested)
 - Settings `/settings` (P1): placeholder
 - `/dev/components`: every enum badge and shared state on one page (not in the nav)
 
@@ -18,8 +18,10 @@
 - **X1 (#2)**: PR https://github.com/jayden-crypto/ghostwatch/pull/35, merged to `main` as 36e3390. Passes `npm run validate-fixtures` and Jayden's `tests/test_conformance.py -k fixture` at cd7261e (145 passed); all 41 trace costs equal `app.services.pricing.execution_cost`.
 - **Review of PR #36** (`jayden/backend` → `main`) at 2b3e4ec: approved with comments on 2026-11-16. One bug reported for a follow-up: `read_text()` without `encoding="utf-8"` makes three tests in `backend/tests/test_openapi.py` fail on Windows (same pattern in `backend/tests/test_demo_e2e.py:332` and `demo/settings.py:14`). Local run on Windows: ruff clean, SDK 39 passed, backend 386 passed / 209 skipped (no Postgres) / 3 failed (the encoding). Behaviours the frontend relies on, read from the code: `limit > 200` → 422, `/stats/timeseries` with an unknown `agent_id` → 404, list filters accept comma lists, `POST /investigations/{id}` answers 200 or 202.
 - **F1–F6, F4, F5** as before; **F7 (#25)** agents list + detail; **F8 (#26)** anomalies; **F9 (#27)** investigation report, list, trigger + poll, and the trace page's Investigation tab.
+- **F13 (#29)**: Playwright smoke tests in `e2e/` (`npm run test:e2e`): the demo path (overview → failed run → confirmed investigation → evidence link → failing step selected), the replay path (failed run → its replays → comparison "Fixed" → replay step in the replay's trace), and the dialog (live needs the authorization box; sandbox request lands on the pending page). They build the app and serve it on port 3100 in mock mode; Edge on Windows, Playwright's Chromium elsewhere.
+- **F10 (#30)**: Replay dialog (`components/replay/replay-dialog.tsx`), list (`replays-view.tsx`), replay page and comparison (`replay-view.tsx`, `replay-comparison.tsx`), shared wording in `lib/replay.ts`.
 - **Contract v1.2** in `types.ts` (`ReplaySource`, `StepDiff.replay_source`); a replay step's source is shown in the waterfall and the inspector.
-- Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run build` clean; `npm test` 161 passing.
+- Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 182 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
 
 ## In progress
 - nothing mid-edit.
@@ -27,10 +29,9 @@
 ## Next up
 1. After PR #36 merges: merge `main` into `adit/frontend` again. It brings `.claude/settings.json` and two session hooks (read-only, reviewed), a "Session handoff" section in `CLAUDE.md`, `README.md` and `.github/workflows/ci.yml`.
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
-3. F13 (#29): Playwright smoke of the demo path in mock mode (overview → failed execution → investigation → evidence link → step highlighted). Needs `@playwright/test`; can run on the installed Edge (`channel: "msedge"`) so no browser download is needed.
-4. F10 (#30) replay dialog, list and comparison (backend B12/B13 are built now). Dialog copy must be the v1.2 wording from commit 4b7568d, not the kickoff's.
-5. F11 (#31) settings.
-6. Frontend CI job, once `.github/workflows/ci.yml` is on `main`: `npm ci && npm run typecheck && npm run lint && npm test && npm run build && npm run validate-fixtures`.
+3. F11 (#31) settings.
+4. Frontend CI job, once `.github/workflows/ci.yml` is on `main`: `npm ci && npm run typecheck && npm run lint && npm test && npm run validate-fixtures && npx playwright install --with-deps chromium && npm run test:e2e` (the e2e run builds the app).
+5. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
@@ -40,12 +41,17 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 ## Environment (this machine: Windows 11)
 - node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12, gh 2.104 (logged in as adituppal7; not on Git Bash's PATH, it is in `C:\Program Files\GitHub CLI`): OK
 - docker: MISSING → cannot run the backend + Postgres here; the live pass needs Docker Desktop or a URL to Jayden's backend
-- Playwright not installed
+- `@playwright/test` 1.65 is installed; it drives the installed Edge, so no browser download was needed here
 - `.claude/launch.json` (local, git-excluded) starts the dev server for the in-app browser
 - `git config core.safecrlf false` is set locally to silence line-ending warnings on the generated fixtures
 
 ## Decisions
 - **Fixtures are generated** by `scripts/build-fixtures.ts` from `scripts/fixtures/story.ts`, porting the backend's anomaly, report, replay-source and pricing rules. The generator refuses a replay that breaks the sandbox rule. Regenerate only on a `contract/<topic>` branch; the X1 branch is checked out as a separate git worktree when needed, so `adit/frontend` never has to be switched away.
+- **Replay dialog**: Sandbox is preselected and described with the v1.2 wording (`SANDBOX_RULE` in `lib/replay.ts`). Choosing Live shows the checkbox "I authorize real external side effects for this replay"; the submit button is disabled until it is ticked, and the tick is forgotten when the mode changes. A live request sends `authorize_side_effects: true`; a sandbox request does not send the field. A refusal from the API is shown with its message, code and HTTP status. The button is disabled for a running execution (the backend answers 409). After a successful request the app goes to `/replays/{id}`.
+- **Replay page**: pending says a replay worker must pick it up and shows the worker command; claimed says a worker is running it; failed is worded as a failure to run the replay, not a result; completed shows the comparison. Polls every 2 s until terminal.
+- **Comparison**: the outcome is the headline (`fixed` is the only filled green frame; `inconclusive` is dashed). Under it, a sentence counts the replay's steps by `replay_source` (the only thing computed in the browser), then the mode's rule. Original and replay are one table with the API's three deltas; a null delta is a dash. The step table marks rows whose `change` is not `unchanged`, links each side to its own step, and shows `replay_source` per row.
+- **Replays list**: `?status=` and `?original_execution_id=` in the URL (the trace header's "Replayed N×" links there). A replay without a comparison says "Not compared yet"; a failed one shows its error type.
+- **Mock replays**: a replay created in mock mode stays pending (there is no worker); pending and claimed fixture replays are moved to "now" like a running execution; replaying a running execution answers `conflict` as the backend does.
 - **Mode is global, never mixed**; anything but `NEXT_PUBLIC_API_MODE=live` is mock. `client.ts` loads the adapter lazily.
 - **The mock adapter is an in-memory backend**: filters/sorts/paginates, computes stats, applies `PATCH /anomalies`, steps a started investigation through queued → running → completed (4 s, starting "now"), keeps a `pending` replay pending. POST investigation on a run with no recorded report answers `bad_request` rather than inventing one.
 - **Mock keeps a running execution "now"**; debug states `?__state=empty | error | large`.
@@ -67,8 +73,9 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 
 ## Known issues
 - Not measured: scrolling frame rate with 250 steps (the in-app browser pane was hidden). Virtualisation is confirmed: 33 of 250 rows are in the DOM.
-- Visual checks were done at about 1024 px, mostly through DOM and layout checks; 1440 px has not been looked at by eye.
-- The trace header's Replay button is disabled and says "not implemented" (F10).
+- The replay screens were looked at by eye at 1440 and 1024 px. The older pages were checked at about 1024 px, mostly through DOM and layout checks; they have not been looked at by eye at 1440 px.
+- A replay execution's trace says "Replay of <original>" but cannot link to its comparison: `ExecutionDetail` has no replay id. The comparison is reachable from the original's "Replayed N×" link and from `/replays`.
+- In a table whose rows are links (replays, investigations), the id chips sit on top of the row link, so a click in the middle of a row can land on an id. Intended, but the e2e test clicks rows at their left edge because of it.
 - The palette searches pages only.
 - `token_spike` fixture shows "387× above baseline": correct for a >64 KB payload, but dramatic.
 - Issues #2 and #19–#31 have no assignee.
@@ -76,4 +83,4 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 ## How to run
 - `cd frontend && npm i && npm run dev` (mock mode by default; no env file needed)
 - Live: create `frontend/.env.local` with `NEXT_PUBLIC_API_MODE=live` and `NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1`
-- Checks: `npm run typecheck && npm run lint && npm test && npm run build && npm run validate-fixtures`
+- Checks: `npm run typecheck && npm run lint && npm test && npm run validate-fixtures && npm run test:e2e`

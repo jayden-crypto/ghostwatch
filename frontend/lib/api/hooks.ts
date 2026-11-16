@@ -22,6 +22,7 @@ import type {
   Investigation,
   InvestigationCreateBody,
   InvestigationListParams,
+  Replay,
   ReplayCreateBody,
   ReplayListParams,
   StatsWindow,
@@ -153,17 +154,18 @@ export function useCreateInvestigation(executionId: ID) {
   });
 }
 
-export const useReplays = (params: ReplayListParams = {}) =>
-  useQuery({ queryKey: keys.replays(params), queryFn: () => api.listReplays(params), placeholderData: keepPreviousData });
+export const useReplays = (params: ReplayListParams = {}, live: { refetchInterval?: number } = {}) =>
+  useQuery({ queryKey: keys.replays(params), queryFn: () => api.listReplays(params), placeholderData: keepPreviousData, ...live });
+
+/** A replay that has not finished: waiting for a worker, or being run by one. */
+export const isReplayActive = (replay: Pick<Replay, "status"> | null | undefined): boolean =>
+  replay?.status === "pending" || replay?.status === "claimed";
 
 export const useReplay = (id: ID) =>
   useQuery({
     queryKey: keys.replay(id),
     queryFn: () => api.getReplay(id),
-    refetchInterval: (query) => {
-      const status = query.state.data?.status;
-      return status === "pending" || status === "claimed" ? REPLAY_POLL_MS : false;
-    },
+    refetchInterval: (query) => (isReplayActive(query.state.data) ? REPLAY_POLL_MS : false),
   });
 
 export function useCreateReplay(executionId: ID) {
