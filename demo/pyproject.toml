@@ -1,0 +1,24 @@
+[project]
+name = "ghostwatch-demo"
+version = "0.1.0"
+description = "Demo agents for Ghostwatch: three small agents on deterministic fake services."
+requires-python = ">=3.10"
+dependencies = ["ghostwatch"]
+
+[dependency-groups]
+dev = ["ruff>=0.8"]
+
+[tool.uv.sources]
+ghostwatch = { path = "../sdk/python", editable = true }
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+# The formatter wraps code at the line length; what is left over is long strings, which read better whole.
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["agents", "fake_services", "scenarios", "settings"]
