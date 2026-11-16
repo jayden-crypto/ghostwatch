@@ -18,7 +18,7 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- Reported by Adit in his review of PR #36, not fixed yet: three tests in `backend/tests/test_openapi.py` fail on Windows because files are read with `read_text()` and no encoding (cp1252 misreads the 🔑 marker in the contract). The same call is in `backend/tests/test_openapi.py` lines 13 and 121, `backend/tests/test_demo_e2e.py` line 332 and `demo/settings.py` line 14. The fix is `read_text(encoding="utf-8")`. CI runs on Linux and is green.
+- Get the Windows encoding fix reviewed and merged. Adit's review of PR #36 reported three tests in `backend/tests/test_openapi.py` failing on Windows because files were read with no encoding (cp1252 misreads the 🔑 marker in the contract). Every file read and write in `backend/`, `sdk/` and `demo/` now names UTF-8: the four reads he listed, plus `scripts/api_docs.py` (writes `docs/API.md`), `app/config.py` (`.env`) and `alembic/env.py` (`alembic.ini`). Checked on macOS with `PYTHONWARNDEFAULTENCODING=1 uv run pytest -q`, which turns any read without an encoding into an error: 617 passed. Not run on Windows from this side; Adit has to confirm there.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.

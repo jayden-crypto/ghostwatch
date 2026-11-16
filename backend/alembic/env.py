@@ -9,7 +9,7 @@ from app.models import Base
 config = context.config
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name, disable_existing_loggers=False)
+    fileConfig(config.config_file_name, disable_existing_loggers=False, encoding="utf-8")
 
 # The database URL comes from the application settings, so there is one source of truth.
 config.set_main_option("sqlalchemy.url", get_settings().database_url.replace("%", "%%"))

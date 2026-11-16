@@ -624,5 +624,5 @@ Nothing: every endpoint in the contract is implemented.
 """
 
 if __name__ == "__main__":
-    OUTPUT.write_text(build())
+    OUTPUT.write_text(build(), encoding="utf-8")
     print(f"wrote {OUTPUT.relative_to(REPO_ROOT)}")
