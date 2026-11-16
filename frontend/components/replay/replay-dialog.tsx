@@ -43,7 +43,8 @@ function ModeOption({
   return (
     <label
       className={cn(
-        "flex cursor-pointer gap-3 rounded-lg border px-3 py-2.5 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/60",
+        // `relative` keeps the visually hidden radio inside its card, so focusing it never scrolls the page.
+        "relative flex cursor-pointer gap-3 rounded-lg border px-3 py-2.5 transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring/60",
         selected ? (mode === "live" ? "border-timed-out/70 bg-timed-out/[0.06]" : "border-fg/50 bg-raised") : "border-line hover:bg-raised/60",
       )}
     >

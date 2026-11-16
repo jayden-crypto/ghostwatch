@@ -46,13 +46,16 @@ test("a live replay needs authorization; a sandbox replay is requested and waits
   const dialog = page.getByRole("dialog", { name: "Replay this execution" });
   await expect(dialog.getByRole("radio", { name: /^Sandbox/ })).toBeChecked();
 
-  await dialog.getByRole("radio", { name: /^Live/ }).check({ force: true });
+  // The radios are visually hidden inside their cards; a user clicks the card.
+  await dialog.locator("label").filter({ hasText: /^Live/ }).click();
+  await expect(dialog.getByRole("radio", { name: /^Live/ })).toBeChecked();
   const submitLive = dialog.getByRole("button", { name: "Request live replay" });
   await expect(submitLive).toBeDisabled();
   await dialog.getByRole("checkbox", { name: /^I authorize real external side effects for this replay/ }).click();
   await expect(submitLive).toBeEnabled();
 
-  await dialog.getByRole("radio", { name: /^Sandbox/ }).check({ force: true });
+  await dialog.locator("label").filter({ hasText: /^Sandbox/ }).click();
+  await expect(dialog.getByRole("radio", { name: /^Sandbox/ })).toBeChecked();
   await dialog.getByRole("button", { name: "Request sandbox replay" }).click();
   await expect(page).toHaveURL(/\/replays\/rpl_[0-9a-f]{32}$/);
   const waiting = page.getByRole("status").filter({ hasText: "Waiting for a replay worker" });
