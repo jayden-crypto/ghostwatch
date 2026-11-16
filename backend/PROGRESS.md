@@ -18,7 +18,8 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- Nothing queued on the backend side. The Windows encoding fix (PR #37) was approved by Adit at 83e49cb and squash-merged as 8377e7f on 2026-11-16: every file read and write in `backend/` and `demo/` names UTF-8. Adit reran it on Windows 11 with cp1252 as the default: the three tests that failed now pass (389 passed, 209 skipped for lack of Postgres there). To keep it that way, `PYTHONWARNDEFAULTENCODING=1 uv run pytest -q` turns any read without an encoding into an error.
+- `docs/DEMO_SCRIPT.md` (shared, X4 #34) is drafted on `jayden/backend` at Jayden's request and is not on `main` yet. Its terminal half was rehearsed twice from an empty database on 2026-11-16 and quotes real output. Its dashboard steps are marked "[dashboard: not verified live]": they describe the frontend from `frontend/PROGRESS.md` on `adit/frontend` and need Adit's live pass (F12) before the marks come off. Found while rehearsing: a single failed run raises no anomaly (only the automatic investigation), so the plan's "anomaly + auto investigation appear" for the schema-change step is not what happens; the script says so.
+- Nothing else queued on the backend side. The Windows encoding fix (PR #37) was approved by Adit at 83e49cb and squash-merged as 8377e7f on 2026-11-16: every file read and write in `backend/` and `demo/` names UTF-8. Adit reran it on Windows 11 with cp1252 as the default: the three tests that failed now pass (389 passed, 209 skipped for lack of Postgres there). To keep it that way, `PYTHONWARNDEFAULTENCODING=1 uv run pytest -q` turns any read without an encoding into an error.
 - Optional, raised by Adit and not done: a `.env` saved by Windows Notepad or PowerShell 5.1 can start with a UTF-8 byte-order mark, which `utf-8` keeps as part of the first key; `utf-8-sig` in `demo/settings.py` and `env_file_encoding` would tolerate it. Nobody has hit it.
 
 ## Not verified
