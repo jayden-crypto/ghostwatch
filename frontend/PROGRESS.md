@@ -1,6 +1,6 @@
-# Frontend progress — updated 2026-11-16T22:10Z
+# Frontend progress — updated 2026-11-16T22:25Z
 
-## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. Jayden's PR #37 (UTF-8 file reads) is reviewed: it fixes the Windows failures; posting the approval waits for Adit's word. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
+## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. Jayden's PR #37 (UTF-8 file reads) is approved by Adit and not merged yet. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
 
 ## Pages (mock ✓ / live ✓)
 - Overview `/`: mock ✓ live ✗ (untested)
@@ -21,8 +21,8 @@
 - **F13 (#29)**: Playwright smoke tests in `e2e/` (`npm run test:e2e`): the demo path (overview → failed run → confirmed investigation → evidence link → failing step selected), the replay path (failed run → its replays → comparison "Fixed" → replay step in the replay's trace), and the dialog (live needs the authorization box; sandbox request lands on the pending page). They build the app and serve it on port 3100 in mock mode; Edge on Windows, Playwright's Chromium elsewhere.
 - **F10 (#30)**: Replay dialog (`components/replay/replay-dialog.tsx`), list (`replays-view.tsx`), replay page and comparison (`replay-view.tsx`, `replay-comparison.tsx`), shared wording in `lib/replay.ts`.
 - **F11 (#31)**: settings page (`components/settings/settings-view.tsx`): data source, backend health and investigation provider from `GET /health`, access note. Read-only.
-- **Frontend CI job** in `.github/workflows/ci.yml`: `npm ci`, typecheck, lint, unit tests, fixture validation, then Playwright's Chromium and the e2e tests. Not yet seen green: check the first run on `adit/frontend`.
-- **Review of PR #37** (`jayden/backend` → `main`, 83e49cb, "read and write text files as UTF-8"): on this Windows machine with the default cp1252 encoding, backend 389 passed / 209 skipped (no Postgres) / 0 failed, also with `PYTHONWARNDEFAULTENCODING=1`; SDK 39 passed; ruff clean; `alembic upgrade head --sql` runs. No other unencoded file read or write found in `backend/`, `sdk/`, `demo/`. `tests/test_fable_provider.py` was left out only because the scratch checkout's path is too long for Windows.
+- **Frontend CI job** in `.github/workflows/ci.yml`: `npm ci`, typecheck, lint, unit tests, fixture validation, then Playwright's Chromium and the e2e tests. Green on Linux at 5328cf4 (run 43909550469: 191 unit tests, 3 e2e). The first run failed one e2e test: Linux Chromium refuses a forced click on a visually hidden radio, so the test now clicks the card.
+- **Review of PR #37** (`jayden/backend` → `main`, 83e49cb, "read and write text files as UTF-8"), approved on 2026-11-16: on this Windows machine with the default cp1252 encoding, backend 389 passed / 209 skipped (no Postgres) / 0 failed, also with `PYTHONWARNDEFAULTENCODING=1`; SDK 39 passed; ruff clean; `alembic upgrade head --sql` runs. No other unencoded file read or write found in `backend/`, `sdk/`, `demo/`. `tests/test_fable_provider.py` was left out only because the scratch checkout's path is too long for Windows.
 - **Contract v1.2** in `types.ts` (`ReplaySource`, `StepDiff.replay_source`); a replay step's source is shown in the waterfall and the inspector.
 - Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 191 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
 
@@ -30,7 +30,7 @@
 - nothing mid-edit.
 
 ## Next up
-1. Look at the first CI run of the new frontend job on `adit/frontend` and fix whatever differs on Linux.
+1. After PR #37 merges: merge `main` into `adit/frontend` (backend files only; no frontend impact expected).
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
 3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
