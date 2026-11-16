@@ -45,3 +45,7 @@ next-env.d.ts
 
 # synced copy of contract/fixtures (npm run sync-fixtures)
 /mocks/fixtures/
+
+# playwright
+/test-results/
+/playwright-report/
