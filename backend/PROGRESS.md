@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T17:52Z
+# Backend progress — updated 2026-11-16T15:35Z
 
-## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
+## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. PR #36 (`jayden/backend` → `main`) was approved by Adit at 2b3e4ec and squash-merged as 80151dc on 2026-11-16, so the whole backend, the SDK and the demo are on `main`. Adit's review raised no objection to contract v1.1 and v1.2.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -18,7 +18,7 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- Get PR #36 (`jayden/backend` → `main`) reviewed by Adit and merged
+- Reported by Adit in his review of PR #36, not fixed yet: three tests in `backend/tests/test_openapi.py` fail on Windows because files are read with `read_text()` and no encoding (cp1252 misreads the 🔑 marker in the contract). The same call is in `backend/tests/test_openapi.py` lines 13 and 121, `backend/tests/test_demo_e2e.py` line 332 and `demo/settings.py` line 14. The fix is `read_text(encoding="utf-8")`. CI runs on Linux and is green.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
