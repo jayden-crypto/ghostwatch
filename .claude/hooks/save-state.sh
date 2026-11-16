@@ -35,7 +35,11 @@ age() {
 }
 
 if [ -f "$handoff" ]; then
-  mtime=$(stat -f %m "$handoff" 2>/dev/null || stat -c %Y "$handoff" 2>/dev/null)
+  # GNU stat (Linux, Git Bash on Windows) first: there `stat -f` means "file system", prints several
+  # lines and fails. BSD stat (macOS) rejects -c with no output, and then -f %m gives the mtime.
+  mtime=$(stat -c %Y "$handoff" 2>/dev/null)
+  case "$mtime" in '' | *[!0-9]*) mtime=$(stat -f %m "$handoff" 2>/dev/null) ;; esac
+  case "$mtime" in '' | *[!0-9]*) mtime="" ;; esac
   if [ -n "$mtime" ]; then
     handoff_age=$(age $(( $(date +%s) - mtime )))
   else
