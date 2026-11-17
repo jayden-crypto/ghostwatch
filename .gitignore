@@ -22,5 +22,5 @@ test-results/
 .DS_Store
 *.log
 
-# Claude Code: the hook-generated snapshot is machine-local; handoff.md is committed
-.claude/state/snapshot.md
+# Claude Code: session state (handoff.md and the auto-generated snapshot.md) is local to each machine
+.claude/state/
