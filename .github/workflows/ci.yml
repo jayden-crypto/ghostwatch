@@ -50,9 +50,26 @@ jobs:
           uv run ruff check .
           uv run ruff format --check .
 
-  # Owned by Adit: replace this stub with install, typecheck, lint and tests in F1.
+  # Owned by Adit. Everything runs in mock mode on the contract fixtures, so it needs no backend.
   frontend:
     name: frontend
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
-      - run: echo "Frontend CI is not implemented yet (see issue F1)."
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run validate-fixtures
+      - name: Install the browser for the end-to-end tests
+        run: npx playwright install --with-deps chromium
+      # Builds the app, serves it on port 3100 and drives the demo path through it.
+      - run: npm run test:e2e
