@@ -2,7 +2,7 @@
 
 > Your agents say they're working. Ghostwatch makes sure they actually are.
 
-**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16, and the whole script, dashboard included, once on 2026-11-17 with the frontend in live mode. Every output and screen described below is from those runs. The definition of done asks for three full runs; see the rehearsal log at the end.
+**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16, and the whole script, dashboard included, once on 2026-11-17 with the frontend in live mode. The terminal outputs quoted below are from those runs; what was and was not checked on the dashboard is in the rehearsal log at the end. The definition of done asks for three full runs.
 
 The demo needs no network and no API key. The three agents call small fake services, and investigations run on `LLM_PROVIDER=rule_based`, which is deterministic code. No model is called at any point.
 
@@ -80,7 +80,7 @@ Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting 
 
 Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
 
-**5. Warm up every page.** The dev server compiles each page the first time it is opened, which can take several seconds and shows a loading skeleton meanwhile. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and any execution's trace page once.
+**5. Open every page once, and time it.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for several seconds, and a trace page reloaded for the second time took about 20 seconds to render although its API request had already answered. The cause is not known: it was the dev server, and the browser used was the Claude desktop app's pane while it was hidden, which may throttle the page. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and an execution's trace page in the browser you will present from. If they are slow there too, tell Adit, and keep the terminal steps as the fallback.
 
 ## The demo
 
@@ -267,6 +267,8 @@ The definition of done asks for three end-to-end runs without intervention. Add 
 |---|---|---|---|
 | 2026-11-16 | Jayden's Claude session | Terminal half, from an empty database, on macOS: seed, steps 2, 3, 5, 6 (with and without `--fixed`), 7 | Every output matched this script |
 | 2026-11-16 | Jayden's Claude session | Terminal half again from an empty database, in script order, with agent health and overview checked after every step | Every output matched this script |
-| 2026-11-17 | Jayden's Claude session | Full run with the dashboard in live mode, on macOS, Node 26: setup check on `/settings`, then steps 1–7 in order, step 6 from the dashboard's Replay button | Every step matched this script. No console errors; every API request was 200 except the expected 404 (no investigation for the healthy run) and the deliberate 422 in step 7 |
+| 2026-11-17 | Jayden's Claude session | Full run with the dashboard in live mode (dev server, macOS, Node 26), against a scratch backend on port 8001 with its own empty database: setup check on `/settings`, then steps 1–7 in order, step 6 from the dashboard's Replay button | Every step's terminal output and the screens checked matched, after two corrections made to this script in the same run: demo runs do report tokens (only cost is unknown), and step 5 prints two description lines. No console errors and no unexpected API errors (the only 4xx were a 404 for the healthy run's missing investigation and the deliberate 422 in step 7). Slow loading seen; see setup step 5 |
 
-Not done in those rehearsals: `docker compose down -v` (they used a separate empty database on port 8001 instead, so that existing data was kept, with the dashboard pointed at it), and a run by a person presenting. The 2026-11-17 run counts as one of the three full runs the definition of done asks for.
+Not checked in the 2026-11-17 run: F3's "Open step" link (F5's was clicked), any step's input and output in the inspector, `frontend/.env.local` (the two variables were passed on the command line instead), and a production build. Whether this run counts towards the three the definition of done asks for is for Jayden and Adit to decide: it was a Claude session, not a person presenting.
+
+`docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
