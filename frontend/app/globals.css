@@ -1,0 +1,198 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-geist-sans);
+  --color-surface: var(--surface);
+  --color-raised: var(--raised);
+  --color-hover: var(--hover);
+  --color-line: var(--line);
+  --color-line-subtle: var(--line-subtle);
+  --color-fg: var(--foreground);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-subtle: var(--fg-subtle);
+  --color-completed: var(--completed);
+  --color-failed: var(--failed);
+  --color-timed-out: var(--timed-out);
+  --color-running: var(--running);
+  --color-sev-low: var(--sev-low);
+  --color-sev-medium: var(--sev-medium);
+  --color-sev-high: var(--sev-high);
+  --color-sev-critical: var(--sev-critical);
+  --color-json-string: var(--json-string);
+  --color-json-number: var(--json-number);
+  --color-json-keyword: var(--json-keyword);
+  /* Type scale 12 / 13 / 14 / 16 / 20 / 24: text-xs, text-13, text-sm, text-base, text-xl, text-2xl. */
+  --text-13: 0.8125rem;
+  --text-13--line-height: 1.25rem;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Ghostwatch is dark-only. Surfaces step up in lightness; the chrome is monochrome. */
+  --background: #0a0a0b;
+  --surface: #111113;
+  --raised: #18181b;
+  --hover: #1e1e22;
+  --line: #232326;
+  --line-subtle: #1c1c1f;
+
+  --foreground: #ededef;
+  --fg-muted: #a1a1aa;
+  /* #71717A in the brief is 4.1:1 on the background; this is 5.8:1. */
+  --fg-subtle: #8a8a93;
+
+  /* Colour carries meaning only: execution and step status, then severity. */
+  --completed: #3fb950;
+  --failed: #f85149;
+  --timed-out: #d29922;
+  --running: #58a6ff;
+  --sev-low: #8a8a93;
+  --sev-medium: #d29922;
+  --sev-high: #f0883e;
+  --sev-critical: #f85149;
+
+  /* JSON syntax. Desaturated on purpose so payloads never compete with status colour. */
+  --json-string: #a8c7a0;
+  --json-number: #d9b88a;
+  --json-keyword: #93b4d9;
+
+  /* shadcn/ui variables, mapped onto the tokens above. */
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--raised);
+  --popover-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --secondary: var(--raised);
+  --secondary-foreground: var(--foreground);
+  --muted: var(--raised);
+  --muted-foreground: var(--fg-muted);
+  --accent: var(--hover);
+  --accent-foreground: var(--foreground);
+  --destructive: var(--failed);
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--running);
+  --chart-1: var(--completed);
+  --chart-2: var(--failed);
+  --chart-3: var(--timed-out);
+  --chart-4: var(--running);
+  --chart-5: var(--fg-subtle);
+  --radius: 0.375rem;
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--foreground);
+  --sidebar-primary-foreground: var(--background);
+  --sidebar-accent: var(--raised);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--line-subtle);
+  --sidebar-ring: var(--running);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    color-scheme: dark;
+  }
+  body {
+    @apply bg-background text-13 text-foreground;
+  }
+  /* One focus treatment everywhere: a 2 px ring in the running blue. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--running) 35%, transparent);
+  }
+}
+
+@layer utilities {
+  /* Numbers in tables and stats line up. */
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* A step that has not ended: its bar is striped and the stripes drift, so "still running" reads at a glance. */
+.bar-live {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 4px,
+    color-mix(in oklab, var(--background) 45%, transparent) 4px 8px
+  );
+  background-size: 22.63px 22.63px;
+  animation: bar-live 1.2s linear infinite;
+}
+@keyframes bar-live {
+  to {
+    background-position: 22.63px 0;
+  }
+}
+
+/* A row a deep link landed on: a tint that fades, so the eye finds the step. */
+.row-flash {
+  background: color-mix(in oklab, var(--running) 28%, transparent);
+  animation: row-flash 1.6s ease-out forwards;
+}
+@keyframes row-flash {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
