@@ -1,6 +1,6 @@
-# Frontend progress — updated 2026-11-17T17:50Z
+# Frontend progress — updated 2026-11-18T00:55Z
 
-## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
+## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. PR #38 (`adit/frontend` → `main`, F1–F11 and F13) is open and waiting for Jayden's review; it carries the change request below. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
 
 ## Pages (mock ✓ / live ✓)
 - Overview `/`: mock ✓ live ✗ (untested)
@@ -30,7 +30,7 @@
 - nothing mid-edit.
 
 ## Next up
-1. Get Jayden's answer to the open change request below before opening a PR from `adit/frontend` to `main`.
+1. PR #38: Jayden reviews it and answers the change request below there. If he declines, revert 03ed770 on `adit/frontend` before it merges. Never merge it without Adit's OK.
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
 3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
