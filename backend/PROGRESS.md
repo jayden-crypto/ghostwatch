@@ -1,4 +1,4 @@
-# Backend progress — updated 2026-11-16T16:45Z
+# Backend progress — updated 2026-11-17T20:10Z
 
 ## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. PR #36 (`jayden/backend` → `main`) was approved by Adit at 2b3e4ec and squash-merged as 80151dc on 2026-11-16, so the whole backend, the SDK and the demo are on `main`. Adit's review raised no objection to contract v1.1 and v1.2.
 
@@ -26,7 +26,7 @@ Not implemented: nothing.
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
 - One fixture investigation (`contract/fixtures/`, from Adit's PR #35, merged to `main` as 36e3390) has provider `fable` to exercise that UI state; it is example data, not a real model run.
 - A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
-- Nothing has been exercised from a browser: there is no frontend in the repo.
+- Nothing has been exercised from a browser. The frontend reached `main` with PR #38 (squash b36be58, 2026-11-17) and has run only in mock mode; the live pass against this backend (F12, #28) has not been done.
 
 ## How to run
 - `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app`
