@@ -2,7 +2,7 @@
 
 > Your agents say they're working. Ghostwatch makes sure they actually are.
 
-**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16 and every output quoted below is from those runs. The dashboard half has not been run against the live backend yet (issue #28, F12): each dashboard step is marked **[dashboard: not verified live]** and describes what the frontend does in mock mode, taken from `frontend/PROGRESS.md` on `adit/frontend`. Remove a mark only after doing that step for real.
+**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16, and the whole script, dashboard included, once on 2026-11-17 with the frontend in live mode. Every output and screen described below is from those runs. The definition of done asks for three full runs; see the rehearsal log at the end.
 
 The demo needs no network and no API key. The three agents call small fake services, and investigations run on `LLM_PROVIDER=rule_based`, which is deterministic code. No model is called at any point.
 
@@ -65,7 +65,7 @@ The duration-spike figure varies slightly between runs (6.1× and 6.2× were bot
 
 Use plain `seed.py`, not `seed.py --all`. `--all` also seeds the two failures, which this script produces live.
 
-**4. Start the dashboard in live mode.** **[dashboard: not verified live]** Until `adit/frontend` is merged, `frontend/` exists only on that branch. Create `frontend/.env.local` with:
+**4. Start the dashboard in live mode.** Create `frontend/.env.local` with:
 
 ```
 NEXT_PUBLIC_API_MODE=live
@@ -73,10 +73,14 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 ```
 
 ```bash
-cd frontend && npm i && npm run dev
+cd frontend && npm ci && npm run dev
 ```
 
-Open `/settings` and check that the data source says live and the investigation provider says `rule_based`. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
+Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting allows only that origin.
+
+Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
+
+**5. Warm up every page.** The dev server compiles each page the first time it is opened, which can take several seconds and shows a loading skeleton meanwhile. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and any execution's trace page once.
 
 ## The demo
 
@@ -84,7 +88,7 @@ Each step has what to do, what to say, and what must be on screen before moving 
 
 ### 1. Overview: three agents, real history, one degraded
 
-**Do.** Open the dashboard's Overview (`/`). **[dashboard: not verified live]**
+**Do.** Open the dashboard's Overview (`/`).
 
 **Say.** "Three agents have been running for a week. Every number here was computed by the backend from events the agents sent through our SDK. Nothing was inserted into the database. Two agents are healthy; Support Triage is degraded."
 
@@ -111,11 +115,11 @@ Ghostwatch   : execution exe_…
 Open in the dashboard: http://localhost:3000/executions/exe_…
 ```
 
-Open the printed link. **[dashboard: not verified live]** Walk the waterfall: four steps in order, each with its duration, input and output.
+Open the printed link. Walk the waterfall: four steps in order, each with its duration, input and output.
 
 **Say.** "The agent planned, searched, parsed the results and summarised. This is the same data the terminal just printed, read back from the API."
 
-**Expect.** Four completed steps. Durations vary by a few milliseconds between runs.
+**Expect.** Four completed steps. Durations vary by a few milliseconds between runs. The header shows about 199 tokens and a cost of "—": the fake model reports token usage, but `demo-llm-1` has no price, so the cost is unknown.
 
 ### 3. The search API changes its response, and the agent fails
 
@@ -147,7 +151,7 @@ Ghostwatch   : execution exe_…
 
 ### 4. The investigation: a confirmed root cause, with evidence
 
-**Do.** Open the printed link and the Investigation tab of the trace page. **[dashboard: not verified live]** Point at the confirmed banner and its signature, then at the facts, then click the evidence of F5 and of F3 to jump to the steps.
+**Do.** Open the printed link and the Investigation tab of the trace page. Point at the confirmed root cause and its signature, then at the facts, then click "Open step" under the evidence of F5 and of F3: each selects that step in the waterfall.
 
 **Say.** "Confirmed is a strong word, and only deterministic code is allowed to use it. The signature matched two recorded facts: step 3 read the key `results`, and the output of step 2 has the keys `data` and `meta` and no `results`. Every fact links to the record it came from. A language model can add hypotheses in another configuration, but it can never mark one confirmed."
 
@@ -177,10 +181,12 @@ Ghostwatch   : execution exe_…
    1. extract_fields: completed, 0 ms
    2. validate: completed, 226 ms
   anomaly    : [critical] ghost_completion: Reported completed, but submit_invoice never completed
+               The execution reported status completed, but expected 1 step never completed: submit_invoice. Rule fires when a completed execution has a step still running, an expected step (config.expected_steps) with no completed step, or no steps at all.
   investigation: confirmed (signature ghost_completion), provider rule_based
+               The agent reported the run as completed, but the recorded steps contradict it: Reported completed, but submit_invoice never completed.
 ```
 
-Open the Anomalies page (`/anomalies`). **[dashboard: not verified live]**
+Open the Anomalies page (`/anomalies`). The critical anomaly is at the top; its evidence shows the observed steps `extract_fields, validate` against the expected `extract_fields, validate, submit_invoice`.
 
 **Say.** "Look at what the agent returned: status processed. No exception, no error log. A monitor that trusts the agent's own status shows green. But the invoice was never submitted. Ghostwatch knows the run was supposed to complete a `submit_invoice` step, and no such step exists in the record. That is what the tagline means."
 
@@ -196,7 +202,7 @@ Start the worker in terminal 3:
 cd demo && uv run python replay.py worker --fixed
 ```
 
-Then request a sandbox replay of the failed run from step 3. On the dashboard: the Replay button on that run's trace page, with Sandbox selected. **[dashboard: not verified live]** From the terminal, which does the same thing:
+Then request a sandbox replay of the failed run from step 3. On the dashboard: the Replay button on that run's trace page, Sandbox (selected by default), then "Request sandbox replay". The dashboard opens the replay and shows the comparison once the worker has run it, within a few seconds: outcome Fixed, "1 served from the recording, 3 really ran, 0 blocked", and the same step table as below. From the terminal, which does the same thing:
 
 ```bash
 uv run python replay.py request <execution_id>
@@ -222,7 +228,7 @@ Optional, if there is time: run the worker without `--fixed` first. The same req
 
 ### 7. A live replay needs explicit authorization
 
-**Do.** Open the Replay dialog again and choose Live. **[dashboard: not verified live]** The submit button stays disabled until the box "I authorize real external side effects for this replay" is ticked. Do not tick it. To show the server enforces the same rule:
+**Do.** Open the Replay dialog again and choose Live. The "Request live replay" button stays disabled until the box "I authorize real external side effects for this replay" is ticked. Do not tick it; close the dialog with Cancel. To show the server enforces the same rule:
 
 ```bash
 curl -s -X POST localhost:8000/api/v1/executions/<execution_id>/replay -H 'content-type: application/json' -d '{"mode":"live"}'
@@ -250,7 +256,7 @@ curl -s -X POST localhost:8000/api/v1/executions/<execution_id>/replay -H 'conte
 
 - No language model is called. Investigations use the rule-based provider. The optional Fable provider has never been run against the real API.
 - The agents' services are fakes inside `demo/`, so the failures are controlled and repeatable.
-- Tokens and cost are empty for these runs: the demo's fake model reports no token usage, and Ghostwatch shows unknown as unknown.
+- Cost is unknown for these runs: the fake model reports token usage, but `demo-llm-1` is not a priced model, and Ghostwatch shows an unknown cost as "—", never as $0.
 - A live replay is never performed.
 
 ## Rehearsal log
@@ -261,6 +267,6 @@ The definition of done asks for three end-to-end runs without intervention. Add 
 |---|---|---|---|
 | 2026-11-16 | Jayden's Claude session | Terminal half, from an empty database, on macOS: seed, steps 2, 3, 5, 6 (with and without `--fixed`), 7 | Every output matched this script |
 | 2026-11-16 | Jayden's Claude session | Terminal half again from an empty database, in script order, with agent health and overview checked after every step | Every output matched this script |
-| | | Full run with the dashboard in live mode | Not done yet |
+| 2026-11-17 | Jayden's Claude session | Full run with the dashboard in live mode, on macOS, Node 26: setup check on `/settings`, then steps 1–7 in order, step 6 from the dashboard's Replay button | Every step matched this script. No console errors; every API request was 200 except the expected 404 (no investigation for the healthy run) and the deliberate 422 in step 7 |
 
-Not done in those rehearsals: `docker compose down -v` (they used a separate empty database instead, so that existing data was kept), and anything in a browser.
+Not done in those rehearsals: `docker compose down -v` (they used a separate empty database on port 8001 instead, so that existing data was kept, with the dashboard pointed at it), and a run by a person presenting. The 2026-11-17 run counts as one of the three full runs the definition of done asks for.

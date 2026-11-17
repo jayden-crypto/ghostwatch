@@ -1,4 +1,4 @@
-# Backend progress — updated 2026-11-17T20:10Z
+# Backend progress — updated 2026-11-17T20:40Z
 
 ## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. PR #36 (`jayden/backend` → `main`) was approved by Adit at 2b3e4ec and squash-merged as 80151dc on 2026-11-16, so the whole backend, the SDK and the demo are on `main`. Adit's review raised no objection to contract v1.1 and v1.2.
 
@@ -18,7 +18,7 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- `docs/DEMO_SCRIPT.md` (shared, X4 #34) is drafted on `jayden/backend` at Jayden's request and is not on `main` yet. Its terminal half was rehearsed twice from an empty database on 2026-11-16 and quotes real output. Its dashboard steps are marked "[dashboard: not verified live]": they describe the frontend from `frontend/PROGRESS.md` on `adit/frontend` and need Adit's live pass (F12) before the marks come off. Found while rehearsing: a single failed run raises no anomaly (only the automatic investigation), so the plan's "anomaly + auto investigation appear" for the schema-change step is not what happens; the script says so.
+- `docs/DEMO_SCRIPT.md` (shared, X4 #34) is drafted on `jayden/backend` at Jayden's request and is not on `main` yet. Its terminal half was rehearsed twice from an empty database on 2026-11-16 and quotes real output. On 2026-11-17 the whole script ran once with the frontend from `main` in live mode against a scratch backend (macOS, Node 26): every step matched, so the "not verified live" marks are gone; that is one of the three full runs the definition of done asks for. The same run found that demo runs do report tokens (about 199 for a healthy research-assistant run); only cost is null. Found while rehearsing: a single failed run raises no anomaly (only the automatic investigation), so the plan's "anomaly + auto investigation appear" for the schema-change step is not what happens; the script says so.
 - Nothing else queued on the backend side. The Windows encoding fix (PR #37) was approved by Adit at 83e49cb and squash-merged as 8377e7f on 2026-11-16: every file read and write in `backend/` and `demo/` names UTF-8. Adit reran it on Windows 11 with cp1252 as the default: the three tests that failed now pass (389 passed, 209 skipped for lack of Postgres there). To keep it that way, `PYTHONWARNDEFAULTENCODING=1 uv run pytest -q` turns any read without an encoding into an error.
 - Optional, raised by Adit and not done: a `.env` saved by Windows Notepad or PowerShell 5.1 can start with a UTF-8 byte-order mark, which `utf-8` keeps as part of the first key; `utf-8-sig` in `demo/settings.py` and `env_file_encoding` would tolerate it. Nobody has hit it.
 
@@ -26,7 +26,7 @@ Not implemented: nothing.
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
 - One fixture investigation (`contract/fixtures/`, from Adit's PR #35, merged to `main` as 36e3390) has provider `fable` to exercise that UI state; it is example data, not a real model run.
 - A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
-- Nothing has been exercised from a browser. The frontend reached `main` with PR #38 (squash b36be58, 2026-11-17) and has run only in mock mode; the live pass against this backend (F12, #28) has not been done.
+- The frontend reached `main` with PR #38 (squash b36be58). Against this backend it has been run only along the demo path (`docs/DEMO_SCRIPT.md`, 2026-11-17, Chromium in the Claude desktop app's browser pane, dev server): Overview, Agents, Anomalies, the trace page with its Investigation tab, the Replay dialog in both modes and the replay comparison. No console errors and no unexpected API errors. Not checked live: the Executions and Investigations list pages, filters, the Replays list, and a production build (`npm run build`). The rest of F12 (#28) is Adit's.
 
 ## How to run
 - `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app`
