@@ -1,6 +1,6 @@
-# Backend progress — updated 2026-11-15T17:52Z
+# Backend progress — updated 2026-11-16T15:35Z
 
-## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. `jayden/backend` is pushed and PR #36 to `main` is open, waiting for Adit's review.
+## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. PR #36 (`jayden/backend` → `main`) was approved by Adit at 2b3e4ec and squash-merged as 80151dc on 2026-11-16, so the whole backend, the SDK and the demo are on `main`. Adit's review raised no objection to contract v1.1 and v1.2.
 
 ## Live endpoints (implemented, tested against the contract, documented in docs/API.md)
 - GET /health
@@ -18,7 +18,7 @@ Not implemented: nothing.
 - nothing
 
 ## Next up
-- Get PR #36 (`jayden/backend` → `main`) reviewed by Adit and merged
+- Get the Windows encoding fix reviewed and merged. Adit's review of PR #36 reported three tests in `backend/tests/test_openapi.py` failing on Windows because files were read with no encoding (cp1252 misreads the 🔑 marker in the contract). Every file read and write in `backend/`, `sdk/` and `demo/` now names UTF-8: the four reads he listed, plus `scripts/api_docs.py` (writes `docs/API.md`), `app/config.py` (`.env`) and `alembic/env.py` (`alembic.ini`). Checked on macOS with `PYTHONWARNDEFAULTENCODING=1 uv run pytest -q`, which turns any read without an encoding into an error: 617 passed. Not run on Windows from this side; Adit has to confirm there.
 
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.

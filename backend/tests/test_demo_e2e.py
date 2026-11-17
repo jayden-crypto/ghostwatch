@@ -329,6 +329,6 @@ def test_the_demo_never_touches_the_database() -> None:
     sources = [path for path in DEMO_DIR.rglob("*.py") if ".venv" not in path.parts]
     assert len(sources) >= 10
     for path in sources:
-        assert not forbidden.search(path.read_text()), (
+        assert not forbidden.search(path.read_text(encoding="utf-8")), (
             f"{path.relative_to(REPO_ROOT)} reaches for the database"
         )
