@@ -49,8 +49,8 @@ else
   handoff_age="never (no .claude/state/handoff.md)"
 fi
 
-tmp="$snapshot.tmp.$$"
-{
+# Collect everything before any file is created, so git status never sees the temporary file.
+content=$({
   if git -C "$project" rev-parse --git-dir >/dev/null 2>&1; then
     branch=$(git -C "$project" rev-parse --abbrev-ref HEAD 2>/dev/null)
     status=$(git -C "$project" status --porcelain 2>/dev/null)
@@ -76,7 +76,10 @@ tmp="$snapshot.tmp.$$"
     echo "Handoff last updated: $handoff_age"
     echo "Not a git repository: $project"
   fi
-} > "$tmp" 2>/dev/null && mv -f "$tmp" "$snapshot" 2>/dev/null
+} 2>/dev/null)
+[ -n "$content" ] || exit 0
+tmp="$snapshot.tmp.$$"
+printf '%s\n' "$content" > "$tmp" 2>/dev/null && mv -f "$tmp" "$snapshot" 2>/dev/null
 rm -f "$tmp" 2>/dev/null
 
 exit 0
