@@ -1,9 +1,15 @@
 "use client";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { notifyManager, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
+
+// TanStack Query hands finished requests to components with setTimeout(0) by default. Browsers throttle
+// timers in a hidden tab or pane (to once a second, or once a minute after a while), so a response that
+// had already arrived could leave the page on its skeleton for seconds. A microtask is never throttled
+// and still batches every update made in the same task.
+notifyManager.setScheduler(queueMicrotask);
 
 let browserQueryClient: QueryClient | undefined;
 

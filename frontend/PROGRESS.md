@@ -1,6 +1,6 @@
-# Frontend progress — updated 2026-11-18T01:10Z
+# Frontend progress — updated 2026-11-18T17:30Z
 
-## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. PR #38 (`adit/frontend` → `main`, F1–F11 and F13) is open. Jayden requested one change, the revert of 03ed770 (the shared committed handoff); it is reverted in 629b0d1 and waiting for his re-review. Nothing has been run against the live backend (no Docker on this machine): F12 is the only frontend issue left.
+## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. PR #38 (F1–F11 and F13) was approved by Jayden and squash-merged to `main` as b36be58, and `main` is merged back into `adit/frontend`. Jayden reports running the demo script with `main`'s frontend in live mode against a scratch backend (macOS, Chromium, dev server): every step worked, with no console errors and no unexpected API errors. Not run in this session. Not covered by that run: list pages, filters, ack/resolve, a production build. Nothing has been run against a live backend on this machine (no Docker). F12 stays open for those.
 
 ## Pages (mock ✓ / live ✓)
 - Overview `/`: mock ✓ live ✗ (untested)
@@ -30,10 +30,9 @@
 - nothing mid-edit.
 
 ## Next up
-1. PR #38: Jayden re-reviews after the revert (629b0d1). Never merge it without Adit's OK.
-2. After PR #38 merges: a separate small PR for one committed handoff per side (below).
-3. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
-4. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
+1. A separate small PR for one committed handoff per side (below).
+2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
+3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
@@ -58,6 +57,10 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 - **Mode is global, never mixed**; anything but `NEXT_PUBLIC_API_MODE=live` is mock. `client.ts` loads the adapter lazily.
 - **The mock adapter is an in-memory backend**: filters/sorts/paginates, computes stats, applies `PATCH /anomalies`, steps a started investigation through queued → running → completed (4 s, starting "now"), keeps a `pending` replay pending. POST investigation on a run with no recorded report answers `bad_request` rather than inventing one.
 - **Mock keeps a running execution "now"**; debug states `?__state=empty | error | large`.
+- **Query results reach components through a microtask** (`notifyManager.setScheduler(queueMicrotask)` in `components/shell/providers.tsx`), not TanStack's default `setTimeout(0)`, so a finished request no longer waits for a timer. Browsers throttle timers in a hidden page.
+  - Measured here on the trace page (live-mode dev server, API stubbed from fixtures) with every timer forced to the next 5 s boundary: trace response → first step row went from ~4.6 s to ~45 ms. A really hidden page could not be reproduced under Playwright (it always reports `visible`).
+  - Raised by Jayden: pages sometimes sat on the skeleton 5–20 s after a 200 while his browser pane was hidden. Whether this was the cause is **not confirmed**. One throttled timer is usually ~1 s, and a dev server compiles routes on first visit. He needs to re-run with the pane hidden, ideally on a production build.
+  - Guarded by `tests/components/providers.test.tsx`. Still on timers in a hidden page, which is fine: polling intervals, and the "N s elapsed" text of a pending investigation or replay (shows "…" until its first tick).
 - **Polling**: trace 3 s while running; investigation 2 s while queued/running; replay 2 s until terminal; lists and overview panels 5 s.
 - **URL state** via `history.replaceState/pushState` (`lib/use-url-state.ts`). Trace: `?step`, `?tab`, `?detail`, `?anomaly`, `?event`. Executions: the contract's param names plus `range`. Anomalies: `status`, `severity`, `agent_id`, `type`, plus `?anomaly=<id>` to pin one. Agents: `q`, `health`. Overview and agent detail: `?window`.
 - **Anomalies page shows open anomalies by default**; acknowledged and resolved are behind the Status filter. Critical anomalies start with their evidence open.
@@ -72,7 +75,7 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 - GET /investigations/{execution_id} 404 = "no investigation yet". Raw-event item type is `StoredEvent`.
 
 ## Contract change requests (open)
-- **Committed session handoff, one file per side**, agreed by Jayden in his PR #38 review (2026-11-17). The shared-file version (03ed770) was reverted in 629b0d1, so `.claude/state/` is git-ignored again and `CLAUDE.md` is back to its old wording. Still to do, in its own PR after #38:
+- **Committed session handoff, one file per side**, agreed by Jayden in his PR #38 review (2026-11-17). The shared-file version (03ed770) was reverted in 629b0d1, so `.claude/state/` is git-ignored again and `CLAUDE.md` is back to its old wording. Still to do, in its own PR (#38 is merged):
   - commit `.claude/state/handoff-frontend.md` and `handoff-backend.md`;
   - make `rehydrate.sh` pick the file from the branch prefix (`adit/` or `jayden/`);
   - change `.gitignore` (keep `snapshot.md` ignored) and the Session handoff section of `CLAUDE.md`. Those files need both developers' agreement.
