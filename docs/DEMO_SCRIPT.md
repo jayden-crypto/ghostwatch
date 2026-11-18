@@ -63,7 +63,7 @@ support-triage        degraded      27     100%               2
 
 The duration-spike figure varies slightly between runs (6.1× and 6.2× were both seen).
 
-Use plain `seed.py`, not `seed.py --all`. `--all` also seeds the two failures, which this script produces live.
+Seed on the day of the demo (UTC): the history goes back 6 days, and step 1's numbers count only the 7-day window, so older seeds show fewer runs. Use plain `seed.py`, not `seed.py --all`. `--all` also seeds the two failures, which this script produces live.
 
 **4. Start the dashboard in live mode.** Create `frontend/.env.local` with:
 
@@ -80,10 +80,11 @@ Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting 
 
 Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
 
-**5. Open every page once, in the window you will present from.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for 5–20 seconds. On 2026-11-19 the cause was found, and it only happens in a browser that is not drawing the page:
-- The trace, agent, investigation and replay detail pages stream their content in. React shows streamed content on the next animation frame.
-- A hidden page draws no frames, so the content waited, hidden, and the page's API request did not even start until the browser pane was shown again. It reproduced on both the dev server and a production build, with the page reporting itself `visible` throughout.
-- With the pane shown, every page had its content 0.2–0.8 s after load on a production build, 20–70 ms after its API response.
+**5. Open every page once, in the window you will present from.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for 5–20 seconds; once, the trace page's API request had already answered. On 2026-11-18 one cause of a stall was found and reproduced, in a browser pane that was not on screen:
+- The trace page streams its content in, and React shows streamed content on the next animation frame. A pane that is not drawn produces no frames.
+- So the content stayed hidden and the page's API request did not even start until the pane was shown: at least 20 s on a production build, about 104 s on the dev server. The page reported itself `visible` throughout. This was seen on trace pages only, and still happens after PR #39.
+- The 2026-11-17 case where the request had already answered is a different symptom, and remains unexplained.
+- With the pane shown, Overview, a trace page, a replay and an investigation had their content 0.2–0.8 s after load on a production build, 20–70 ms after their API response.
 
 So present from a window that is on screen, with the tab in front. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and an execution's trace page there. If they are slow even so, tell Adit, and keep the terminal steps as the fallback.
 
@@ -276,13 +277,19 @@ The definition of done asks for three end-to-end runs without intervention. Add 
 
 Not checked in the 2026-11-17 run: F3's "Open step" link (F5's was clicked), any step's input and output in the inspector, `frontend/.env.local` (the two variables were passed on the command line instead), and a production build. Whether this run counts towards the three the definition of done asks for is for Jayden and Adit to decide: it was a Claude session, not a person presenting.
 
-Not a rehearsal, but checked on 2026-11-19 by Jayden's Claude session:
+Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
-- **List pages:** Executions, Agents, Anomalies, Investigations and Replays match the API (81 / 3 / 3 / 3 / 1).
-- **Filters:** set from the UI, they go into the URL and come back after a reload: executions by status, agent and minimum duration; agents by health; anomalies by severity and status.
-- **Anomaly actions:** Acknowledge, Resolve and Reopen each changed the anomaly's status in the API, and the open count followed (3 → 2 → 3).
+- **List pages:** the first page of Executions, Agents, Anomalies, Investigations and Replays match the API (81 / 3 / 3 / 3 / 1).
+- **Filters clicked or typed in the UI:** executions by status and minimum duration, agents by health, anomalies by severity. Each went into the URL and came back after a reload.
+- **Filters loaded from the URL only:** executions by agent, anomalies by status. The page applied them.
+- **Anomaly actions:** Acknowledge, then Resolve, then Reopen, each changed the anomaly's status in the API, and the API's open count followed (3 → 2 → 3). The anomaly left the default Open view after Acknowledge. Overview showed 3 open after Reopen.
 - **Other pages:** Overview, agent detail, and the trace page's Raw events and Input & output tabs all showed data.
 - **Errors:** the only API error was the expected 404 for a run with no investigation.
-- **Not checked:** the Investigations and Replays status filters, and steps 1–7 in order on the production build.
+- **Not checked:**
+  - Executions page 2 (81 runs, 50 per page), sort, search, the Started range, and the Anomalies and Replays toggles.
+  - The anomalies Agent and Rule filters, and the Investigations and Replays status filters.
+  - The 24h / 7d / 30d switches, and `/traces`.
+  - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked).
+  - Steps 1–7 in order on the production build.
 
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
