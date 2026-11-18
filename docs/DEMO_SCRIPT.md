@@ -80,7 +80,12 @@ Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting 
 
 Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
 
-**5. Open every page once, and time it.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for several seconds, and a trace page reloaded for the second time took about 20 seconds to render although its API request had already answered. The cause is not known: it was the dev server, and the browser used was the Claude desktop app's pane while it was hidden, which may throttle the page. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and an execution's trace page in the browser you will present from. If they are slow there too, tell Adit, and keep the terminal steps as the fallback.
+**5. Open every page once, in the window you will present from.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for 5–20 seconds. On 2026-11-19 the cause was found, and it only happens in a browser that is not drawing the page:
+- The trace, agent, investigation and replay detail pages stream their content in. React shows streamed content on the next animation frame.
+- A hidden page draws no frames, so the content waited, hidden, and the page's API request did not even start until the browser pane was shown again. It reproduced on both the dev server and a production build, with the page reporting itself `visible` throughout.
+- With the pane shown, every page had its content 0.2–0.8 s after load on a production build, 20–70 ms after its API response.
+
+So present from a window that is on screen, with the tab in front. Before anyone is watching, open Overview, Agents, Anomalies, Investigations, Replays and an execution's trace page there. If they are slow even so, tell Adit, and keep the terminal steps as the fallback.
 
 ## The demo
 
@@ -270,5 +275,14 @@ The definition of done asks for three end-to-end runs without intervention. Add 
 | 2026-11-17 | Jayden's Claude session | Full run with the dashboard in live mode (dev server, macOS, Node 26), against a scratch backend on port 8001 with its own empty database: setup check on `/settings`, then steps 1–7 in order, step 6 from the dashboard's Replay button | Every step's terminal output and the screens checked matched, after two corrections made to this script in the same run: demo runs do report tokens (only cost is unknown), and step 5 prints two description lines. No console errors and no unexpected API errors (the only 4xx were a 404 for the healthy run's missing investigation and the deliberate 422 in step 7). Slow loading seen; see setup step 5 |
 
 Not checked in the 2026-11-17 run: F3's "Open step" link (F5's was clicked), any step's input and output in the inspector, `frontend/.env.local` (the two variables were passed on the command line instead), and a production build. Whether this run counts towards the three the definition of done asks for is for Jayden and Adit to decide: it was a Claude session, not a person presenting.
+
+Not a rehearsal, but checked on 2026-11-19 by Jayden's Claude session:
+- **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
+- **List pages:** Executions, Agents, Anomalies, Investigations and Replays match the API (81 / 3 / 3 / 3 / 1).
+- **Filters:** set from the UI, they go into the URL and come back after a reload: executions by status, agent and minimum duration; agents by health; anomalies by severity and status.
+- **Anomaly actions:** Acknowledge, Resolve and Reopen each changed the anomaly's status in the API, and the open count followed (3 → 2 → 3).
+- **Other pages:** Overview, agent detail, and the trace page's Raw events and Input & output tabs all showed data.
+- **Errors:** the only API error was the expected 404 for a run with no investigation.
+- **Not checked:** the Investigations and Replays status filters, and steps 1–7 in order on the production build.
 
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
