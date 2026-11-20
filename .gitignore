@@ -22,5 +22,7 @@ test-results/
 .DS_Store
 *.log
 
-# Claude Code: session state (handoff.md and the auto-generated snapshot.md) is local to each machine
-.claude/state/
+# Claude Code: handoff-frontend.md and handoff-backend.md are committed. The auto-generated snapshot
+# is local to each machine, and so is the old single handoff.md, until each side moves it to its file.
+.claude/state/snapshot.md
+.claude/state/handoff.md

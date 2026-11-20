@@ -1,6 +1,6 @@
 #!/bin/bash
 # PreCompact hook. Writes .claude/state/snapshot.md (git-ignored, machine-local) and nothing else:
-# it never touches .claude/state/handoff.md. Reads the hook JSON on stdin. Always exits 0, so a
+# it never touches the hand-written handoff files. Reads the hook JSON on stdin. Always exits 0, so a
 # failure here can never block a compaction.
 
 exec 2>/dev/null  # a hook must never fail loudly; errors here only mean a missing snapshot
@@ -11,8 +11,10 @@ if [ -z "$project" ]; then
   project=$(cd "$(dirname "$0")/../.." 2>/dev/null && pwd)
 fi
 state="$project/.claude/state"
-handoff="$state/handoff.md"
 snapshot="$state/snapshot.md"
+. "$(dirname "$0")/handoff-file.sh" || exit 0
+handoff_relative=$(handoff_file "$project")
+handoff="$project/$handoff_relative"
 mkdir -p "$state" 2>/dev/null || exit 0
 
 trigger=""
@@ -34,7 +36,9 @@ age() {
   [ "$count" -eq 1 ] && echo "1 $unit ago" || echo "$count ${unit}s ago"
 }
 
-if [ -f "$handoff" ]; then
+if [ -z "$handoff_relative" ]; then
+  handoff_age="not checked (this branch is neither adit/ nor jayden/)"
+elif [ -f "$handoff" ]; then
   # GNU stat (Linux, Git Bash on Windows) first: there `stat -f` means "file system", prints several
   # lines and fails. BSD stat (macOS) rejects -c with no output, and then -f %m gives the mtime.
   mtime=$(stat -c %Y "$handoff" 2>/dev/null)
@@ -46,7 +50,7 @@ if [ -f "$handoff" ]; then
     handoff_age="unknown"
   fi
 else
-  handoff_age="never (no .claude/state/handoff.md)"
+  handoff_age="never (no $handoff_relative)"
 fi
 
 # Collect everything before any file is created, so git status never sees the temporary file.
