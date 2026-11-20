@@ -60,7 +60,7 @@ Not implemented: nothing.
 
 ## Decisions (backend-internal)
 - No paid API calls: `LLM_PROVIDER=rule_based` everywhere (config default, `.env.example`, the demo, tests, docs examples). Fable is an optional provider that needs `ANTHROPIC_API_KEY`; nothing may claim the demo used it.
-- `.claude/state/` (the session handoff and snapshot) is git-ignored and local to each machine, so the two sessions never conflict on it. Durable state lives in the PROGRESS files.
+- Session handoffs are committed, one file per side (#41): this side writes only `.claude/state/handoff-backend.md`, so the two sessions never conflict. The hook-written `snapshot.md` stays git-ignored. Durable status still lives in the PROGRESS files.
 - 405 responses use the envelope with code `bad_request` (the contract lists no code for 405).
 - `POST /agents` keeps stored values for fields left out of an update; explicit `null` clears.
 - Ingestion: duplicates are dropped before every other rule; a step id can be started once; a terminal event leaves running steps running; payloads are stored with defaults filled in; durations come from client timestamps, clamped at 0. The execution row is locked for the batch.
