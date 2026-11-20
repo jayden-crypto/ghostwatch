@@ -1,4 +1,4 @@
-# Frontend progress — updated 2026-11-18T14:30Z
+# Frontend progress — updated 2026-11-19T10:00Z
 
 ## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. PR #38 (F1–F11 and F13) was approved by Jayden and squash-merged to `main` as b36be58, and `main` is merged back into `adit/frontend`. PR #39 (query results delivered by microtask, below) was approved by Jayden and squash-merged as fe86776; `main` is merged back again. Jayden reports running the demo script with `main`'s frontend in live mode against a scratch backend (macOS, Chromium, dev server): every step worked, with no console errors and no unexpected API errors. Not run in this session. Not covered by that run: list pages, filters, ack/resolve, a production build. Nothing has been run against a live backend on this machine (no Docker). F12 stays open for those.
 
@@ -30,14 +30,14 @@
 - nothing mid-edit.
 
 ## Next up
-1. A separate small PR for one committed handoff per side (below).
+1. Jayden reviews the handoff-per-side PR from `feature/adit-handoff-per-side` (below). Never merge it without Adit's OK.
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
 3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
 - Nothing is missing on the backend side. The live pass needs a running backend: Docker Desktop here, or a URL to Jayden's.
-- Contract v1.1 and v1.2 were committed to `main` by Jayden with "Adit to confirm" → the PR #36 review says the frontend has no objection and already follows v1.2; Adit has not given Jayden an explicit confirmation himself
+- Contract v1.1 and v1.2: Adit confirmed both to Jayden in writing on 2026-11-19.
 
 ## Environment (this machine: Windows 11)
 - node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12, gh 2.104 (logged in as adituppal7; not on Git Bash's PATH, it is in `C:\Program Files\GitHub CLI`): OK
@@ -75,12 +75,12 @@ Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract en
 - GET /investigations/{execution_id} 404 = "no investigation yet". Raw-event item type is `StoredEvent`.
 
 ## Contract change requests (open)
-- **Committed session handoff, one file per side**, agreed by Jayden in his PR #38 review (2026-11-17). The shared-file version (03ed770) was reverted in 629b0d1, so `.claude/state/` is git-ignored again and `CLAUDE.md` is back to its old wording. Still to do, in its own PR (#38 is merged):
-  - commit `.claude/state/handoff-frontend.md` and `handoff-backend.md`;
-  - make `rehydrate.sh` pick the file from the branch prefix (`adit/` or `jayden/`);
-  - change `.gitignore` (keep `snapshot.md` ignored) and the Session handoff section of `CLAUDE.md`. Those files need both developers' agreement.
-  - `.claude/hooks/save-state.sh` fixes d55941d and c619052 stay; Jayden ran them on macOS and they work.
-- Open item from the backend side: contract v1.1 and v1.2 await Adit's explicit confirmation.
+- **Committed session handoff, one file per side**, agreed by Jayden in his PR #38 review, built on `feature/adit-handoff-per-side` and waiting for his review:
+  - `.claude/state/handoff-frontend.md` is committed; `handoff-backend.md` is Jayden's side's to create.
+  - `.claude/hooks/handoff-file.sh` picks the file from the branch (`adit/`, `feature/adit-` → frontend; `jayden/`, `feature/jayden-` → backend); `rehydrate.sh` shows both on any other branch, and `save-state.sh` reports the age of this side's file.
+  - `.gitignore` ignores only `snapshot.md` and the old single `handoff.md`, so nobody's local notes get committed or overwritten by a merge.
+  - `CLAUDE.md`'s Session handoff section is rewritten to match.
+  - Impact on Jayden: move his local `.claude/state/handoff.md` to `handoff-backend.md` and commit it. `backend/PROGRESS.md` line 61 (`.claude/state/` is git-ignored) goes stale.
 
 ## Known issues
 - Not measured: scrolling frame rate with 250 steps (the in-app browser pane was hidden). Virtualisation is confirmed: 33 of 250 rows are in the DOM.
