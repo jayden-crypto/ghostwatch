@@ -3,6 +3,7 @@
 /** /investigations/[executionId]: the investigation of one execution, with the run it is about. */
 import { ListTree } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { StatusBadge } from "@/components/data/badges";
 import { Duration, IdChip } from "@/components/data/values";
@@ -14,6 +15,16 @@ import { useTrace } from "@/lib/api/hooks";
 import type { ID } from "@/lib/api/types";
 
 import { InvestigationPanel } from "./investigation-panel";
+
+/**
+ * The page's body. The id comes from the URL on the client, so the server never streams this page's body. React reveals streamed
+ * content on an animation frame, and a window that is not on screen draws none: the page would stay empty and
+ * never fetch until shown.
+ */
+export function InvestigationRoute() {
+  const { executionId } = useParams<{ executionId: string }>();
+  return <InvestigationView executionId={executionId} />;
+}
 
 export function InvestigationView({ executionId }: { executionId: ID }) {
   // The trace names the run and its steps; the report only carries ids.

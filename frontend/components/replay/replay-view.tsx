@@ -9,6 +9,7 @@
  */
 import { ListTree, LoaderCircle, Clock } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { ReplayModeBadge, ReplayStatusBadge } from "@/components/data/badges";
 import { ErrorState } from "@/components/data/states";
@@ -102,6 +103,16 @@ export function ReplayBody({ replay }: { replay: Replay }) {
     return <ErrorState error={new Error("The replay is completed but the API returned no comparison.")} title="The comparison is missing" />;
   }
   return <ReplayComparisonView replay={replay} comparison={replay.comparison} />;
+}
+
+/**
+ * The page's body. The id comes from the URL on the client, so the server never streams this page's body. React reveals streamed
+ * content on an animation frame, and a window that is not on screen draws none: the page would stay empty and
+ * never fetch until shown.
+ */
+export function ReplayRoute() {
+  const { id } = useParams<{ id: string }>();
+  return <ReplayView replayId={id} />;
 }
 
 export function ReplayView({ replayId }: { replayId: ID }) {
