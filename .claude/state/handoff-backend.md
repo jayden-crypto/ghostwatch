@@ -13,4 +13,4 @@
 - BOM tolerance in `.env`: not done. PROJECT_PLAN §11 step 3 not edited; the script follows what happens.
 - Did not comment on or close #28; no tunnel or public URL for the backend offered to Adit.
 ## Next step
-- #34 stays open until three human rehearsals and the backup recording. Adit's #40 note: setup step 4 could use a production build (`npm run build && npm run start`); open, not decided (steps 1–7 never rehearsed on a prod build). Adit is looking into the step 5 stall on his side.
+- #34 stays open until three human rehearsals and the backup recording. Adit's #40 note: setup step 4 could use a production build; steps 1–7 ran on a prod build of 4ac9ad6 (2026-11-21, logged in DEMO_SCRIPT.md: outputs and screens matched; detail pages often slow, cause not established); switching is Jayden's and Adit's call, not done. Adit is looking into the step 5 stall on his side.
