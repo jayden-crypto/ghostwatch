@@ -110,7 +110,8 @@ describe("Agents", () => {
     for (const agent of agents) {
       const row = (await screen.findByRole("link", { name: `Open agent ${agent.name}` })).closest("tr")!;
       expect(within(row).getByText(agent.slug)).toBeInTheDocument();
-      expect(row).toHaveTextContent(agent.stats.health === "idle" ? "Never run" : /ago|just now|UTC/);
+      // The fixtures are dated, so how old a run looks depends on today: "3d ago" within a week, the UTC date after.
+      expect(row).toHaveTextContent(agent.stats.health === "idle" ? "Never run" : /ago|just now|UTC|\d{4}-\d{2}-\d{2}/);
     }
     const idle = screen.getByRole("link", { name: "Open agent PR Reviewer" }).closest("tr")!;
     expect(within(idle).getByText("Idle")).toBeInTheDocument();
