@@ -9,6 +9,7 @@
  */
 import { Ghost, SearchX } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { EmptyState } from "@/components/data/empty-state";
@@ -293,6 +294,16 @@ function TraceBody({ trace, executionId }: { trace: Trace; executionId: ID }) {
       </div>
     </div>
   );
+}
+
+/**
+ * The page's body. The id comes from the URL on the client, so the server never streams this page's body. React reveals streamed
+ * content on an animation frame, and a window that is not on screen draws none: the page would stay empty and
+ * never fetch until shown.
+ */
+export function TraceRoute() {
+  const { id } = useParams<{ id: string }>();
+  return <TraceView executionId={id} />;
 }
 
 export function TraceView({ executionId }: { executionId: ID }) {

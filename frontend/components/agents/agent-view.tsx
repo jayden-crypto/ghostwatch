@@ -6,6 +6,7 @@
  */
 import { Inbox, SearchX, ShieldCheck } from "lucide-react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 import { AnomalyCard } from "@/components/anomalies/anomaly-card";
 import { HealthBadge } from "@/components/data/badges";
@@ -54,6 +55,16 @@ function Tiles({ agent }: { agent: Agent }) {
       />
     </>
   );
+}
+
+/**
+ * The page's body. The id comes from the URL on the client, so the server never streams this page's body. React reveals streamed
+ * content on an animation frame, and a window that is not on screen draws none: the page would stay empty and
+ * never fetch until shown.
+ */
+export function AgentRoute() {
+  const { id } = useParams<{ id: string }>();
+  return <AgentView agentId={id} />;
 }
 
 export function AgentView({ agentId }: { agentId: ID }) {
