@@ -1,8 +1,9 @@
 # Handoff — Adit's frontend session (committed, frontend side only; durable status is in frontend/PROGRESS.md)
 
-- `main` has the whole frontend: PR 38 (F1–F11, F13, b36be58) and PR 39 (query results by microtask, fe86776). `adit/frontend` is `main` merged back (7e19a1f). Read `frontend/PROGRESS.md` first.
+- `main` has the whole frontend: PR 38 (F1–F11, F13, b36be58), PR 39 (query results by microtask, fe86776) and PR 43 (id pages read their id in the browser, 847ad44). `adit/frontend` is `main` merged back (c23a7ad). Read `frontend/PROGRESS.md` first.
 - Left in F12 (#28): Jayden's session checked lists, filters across reloads and ack/resolve/reopen on a production build (`docs/DEMO_SCRIPT.md`, PR 40 merged as 4ac9ad6); its "Not checked" list is what remains. No Docker here.
-- Fixed (2026-11-22, on `adit/frontend`, not on `main` yet): [id] pages stayed empty in a pane that draws no frames, because React reveals server-streamed content on requestAnimationFrame. They now read the id with `useParams()` (`TraceRoute` etc.); `e2e/no-frames.spec.ts` guards it. Jayden's 2026-11-17 "request already 200" case is still unexplained.
+- Fixed in PR 43: [id] pages stayed empty in a pane that draws no frames (React reveals server-streamed content on requestAnimationFrame); they now read the id with `useParams()`, guarded by `e2e/no-frames.spec.ts`. Jayden confirmed it hidden on macOS. His 3 non-blocking notes are PROGRESS "Next up" 1. The 2026-11-17 "request already 200" case is still unexplained.
+- Open question for Adit: Jayden's side dates the contract confirmation 2026-11-18 UTC; the frontend files say 2026-11-19. Not changed until Adit says which.
 - 2026-11-19: Adit confirmed contract v1.1 and v1.2 to Jayden in writing.
 - Never merge to `main`, force-push, open PRs or post reviews without Adit's OK.
 - Decisions: settings is read-only (config is build-time); components never read `API_MODE` (the /settings route passes it as props); replay wording lives in `frontend/lib/replay.ts` (contract v1.2 text).
