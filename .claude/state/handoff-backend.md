@@ -13,5 +13,5 @@
 - BOM tolerance in `.env`: not done. PROJECT_PLAN §11 step 3 not edited; the script follows what happens.
 - #28 and #34 left open on purpose; no tunnel or public URL for the backend offered to Adit.
 ## Next step
-- 2026-11-23 Jayden's decisions: setup step 4 is a production build (done in DEMO_SCRIPT.md; Adit's side changes /settings wording); Adit's side writes the README dashboard section and the CLAUDE.md "no secrets/personal details in handoffs" line, in PRs Jayden reviews; issues #19–#27, #29–#33 closed with evidence comments; #28 waits for Adit to pick which F12 live checks remain, then this session runs them on a scratch backend.
+- 2026-11-22 (UTC) Jayden's decisions: setup step 4 is a production build (done in DEMO_SCRIPT.md; Adit's side changes /settings wording); Adit's side writes the README dashboard section and the CLAUDE.md "no secrets/personal details in handoffs" line, in PRs Jayden reviews; issues #19–#27, #29–#33 closed with evidence comments; #28 waits for Adit to pick which F12 live checks remain, then this session runs them on a scratch backend.
 - #34 stays open until three human rehearsals and the backup recording. The detail-page stall is fixed by #43; the 11-17 "request already 200" case stays unexplained.
