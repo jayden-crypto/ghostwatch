@@ -3,15 +3,16 @@
 ## Status: every frontend page is built and verified in mock mode (F1–F11, F13), and the frontend CI job is filled in. The backend, SDK and demo are on `main` (PR #36, merged) and merged into `adit/frontend`. PR #37 (UTF-8 file reads) is merged, and `main` at 8377e7f is merged into `adit/frontend`. PR #38 (F1–F11 and F13) was approved by Jayden and squash-merged to `main` as b36be58, and `main` is merged back into `adit/frontend`. PR #39 (query results delivered by microtask, below) was approved by Jayden and squash-merged as fe86776; `main` is merged back again. Jayden reports running the demo script with `main`'s frontend in live mode against a scratch backend (macOS, Chromium, dev server): every step worked, with no console errors and no unexpected API errors. Not run in this session. PR #41 (one committed handoff per side) is merged as 8d71898. Jayden's session also reports a production-build check of `main` at fe86776 in live mode: list pages match the API, the filters it tried survive a reload, and Acknowledge, Resolve and Reopen change the anomaly in the API. The details, and what it did not check, are in `docs/DEMO_SCRIPT.md` (PR #40, approved by Adit and squash-merged as 4ac9ad6; `main` merged back). PR #42 (Jayden's production-build rehearsal, docs only) was approved from this side and merged as c14d853. PR #43 (pages with an id in their path read it in the browser, below) was approved by Jayden after his own test on macOS (production build, live mode, real backend, pane hidden: all four pages fetched 61–136 ms after load) and squash-merged as 847ad44; `main` is merged back. Nothing has been run against a live backend on this machine (no Docker).
 
 ## Pages (mock ✓ / live ✓)
-- Overview `/`: mock ✓ live ✗ (untested)
-- Agents `/agents`, `/agents/[id]`: mock ✓ live ✗ (untested)
-- Executions `/executions`: mock ✓ live ✗ (untested)
-- Trace explorer `/executions/[id]` (tabs: Waterfall, Raw events, Input & output, Investigation): mock ✓ live ✗ (untested)
-- Traces `/traces`: mock ✓ live ✗ (untested)
-- Anomalies `/anomalies`: mock ✓ live ✗ (untested)
-- Investigations `/investigations`, `/investigations/[executionId]`: mock ✓ live ✗ (untested)
-- Replays `/replays`, `/replays/[id]`, and the Replay dialog on the trace page (P1): mock ✓ live ✗ (untested)
-- Settings `/settings` (P1): mock ✓ live ✗ (untested)
+Every live check below was run by Jayden's Claude session on macOS against a scratch backend: 2026-11-17 dev server, 2026-11-18 and 2026-11-21 production builds (`docs/DEMO_SCRIPT.md`, rehearsal log), 2026-11-22 the four id pages with the pane hidden (#43's review). None was run on this machine (no Docker).
+- Overview `/`: mock ✓ live ✓ (11-17, 11-18). Not checked live: the 24h / 7d / 30d switches.
+- Agents `/agents`, `/agents/[id]`: mock ✓ live ✓ (11-18: list matches the API, health filter across a reload, agent detail; 11-22 agent page hidden).
+- Executions `/executions`: mock ✓ live partly (11-18: first page matches the API, status and minimum-duration filters across a reload, agent filter from the URL). Not checked live: page 2, sort, search, the Started range, the Anomalies and Replays toggles.
+- Trace explorer `/executions/[id]` (tabs: Waterfall, Raw events, Input & output, Investigation): mock ✓ live ✓ (every tab; both "Open step" links and a step's input and output on 11-21; hidden on 11-22).
+- Traces `/traces`: mock ✓ live ✗ (never checked).
+- Anomalies `/anomalies`: mock ✓ live partly (11-18: list matches the API, severity filter across a reload, status filter from the URL; Acknowledge, Resolve and Reopen checked on the API side only). Not checked live: the Agent and Rule filters, Resolve straight from Open, what the page shows after each action.
+- Investigations `/investigations`, `/investigations/[executionId]`: mock ✓ live partly (11-18: list matches the API; the report through the trace's Investigation tab on 11-17 and 11-21, the page itself hidden on 11-22). Not checked live: the status filter.
+- Replays `/replays`, `/replays/[id]`, and the Replay dialog on the trace page (P1): mock ✓ live partly (dialog in both modes and the comparison on 11-17, replay page on 11-21, list matches the API on 11-18). Not checked live: the status filter.
+- Settings `/settings` (P1): mock ✓ live ✓ (setup check on 11-17 and 11-21).
 - `/dev/components`: every enum badge and shared state on one page (not in the nav)
 
 ## Done
@@ -24,20 +25,20 @@
 - **Frontend CI job** in `.github/workflows/ci.yml`: `npm ci`, typecheck, lint, unit tests, fixture validation, then Playwright's Chromium and the e2e tests. Green on Linux at 5328cf4 (run 43909550469: 191 unit tests, 3 e2e). The first run failed one e2e test: Linux Chromium refuses a forced click on a visually hidden radio, so the test now clicks the card.
 - **Review of PR #37** (`jayden/backend` → `main`, 83e49cb, "read and write text files as UTF-8"), approved on 2026-11-16: on this Windows machine with the default cp1252 encoding, backend 389 passed / 209 skipped (no Postgres) / 0 failed, also with `PYTHONWARNDEFAULTENCODING=1`; SDK 39 passed; ruff clean; `alembic upgrade head --sql` runs. No other unencoded file read or write found in `backend/`, `sdk/`, `demo/`. `tests/test_fable_provider.py` was left out only because the scratch checkout's path is too long for Windows.
 - **Contract v1.2** in `types.ts` (`ReplaySource`, `StepDiff.replay_source`); a replay step's source is shown in the waterfall and the inspector.
+- **Jayden's three notes on #43** (on `adit/frontend`, not on `main` yet): the route wrappers' docblocks say what was measured and that `next build` still lists the routes as partial prerender; every `[id]` page's comment names the id as the reason; the agents-list test pins the clock three days after the latest run and expects exactly `formatRelative`'s text, using the mock's own rows (it moves a running execution to "now").
 - Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 191 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
 
 ## In progress
 - nothing mid-edit.
 
 ## Next up
-1. Jayden's three non-blocking notes on #43: (a) `next build` still marks the four `[id]` routes ◐ (partial prerender), so the route wrappers' docblocks ("the server never streams this page's body") need rewording to what was measured; (b) the comments in `app/agents/[id]/page.tsx` and `app/executions/[id]/page.tsx` name the query string, the reason is the id; (c) the agents-list test's date pattern would match a date in any cell; pin the clock with `vi.setSystemTime` instead. Jayden's 2026-11-17 "request already 200" case is still unexplained.
-2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
-3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
+1. F12 (#28): Adit decides which of the "Not checked live" items under Pages matter before #28 closes. Jayden's session offered to check them on a scratch backend. Also in no live log: a replay page while its worker is still running, and the 409 for replaying a running execution.
+2. Jayden's 2026-11-17 case, where the trace request had already returned 200 and the page stayed on its skeleton, is still unexplained.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
 - Nothing is missing on the backend side. The live pass needs a running backend: Docker Desktop here, or a URL to Jayden's.
-- Contract v1.1 and v1.2: Adit confirmed both to Jayden in writing on 2026-11-19.
+- Contract v1.1 and v1.2: Adit confirmed both to Jayden in writing on 2026-11-18 (UTC).
 
 ## Environment (this machine: Windows 11)
 - node 24.19, npm 11.17, git 2.55, uv 0.12, python 3.12, gh 2.104 (logged in as adituppal7; not on Git Bash's PATH, it is in `C:\Program Files\GitHub CLI`): OK
