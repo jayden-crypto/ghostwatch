@@ -6,7 +6,7 @@ import { TraceRoute, TraceSkeleton } from "@/components/trace/trace-view";
 export const metadata: Metadata = { title: "Trace" };
 
 export default function ExecutionPage() {
-  // The query string is only known in the browser, so the view renders there (see TraceRoute).
+  // The id is read in the browser (see TraceRoute).
   return (
     <Suspense fallback={<TraceSkeleton />}>
       <TraceRoute />
