@@ -2,7 +2,7 @@
 
 > Your agents say they're working. Ghostwatch makes sure they actually are.
 
-**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16, and the whole script, dashboard included, once on 2026-11-17 with the frontend in live mode. The terminal outputs quoted below are from those runs; what was and was not checked on the dashboard is in the rehearsal log at the end. The definition of done asks for three full runs.
+**Status: draft.** The terminal half was rehearsed twice from an empty database on 2026-11-16, and the whole script, dashboard included, on 2026-11-17 (dev server) and 2026-11-21 (production build), with the frontend in live mode. The terminal outputs quoted below are from those runs; what was and was not checked on the dashboard is in the rehearsal log at the end. The definition of done asks for three full runs.
 
 The demo needs no network and no API key. The three agents call small fake services, and investigations run on `LLM_PROVIDER=rule_based`, which is deterministic code. No model is called at any point.
 
@@ -274,8 +274,17 @@ The definition of done asks for three end-to-end runs without intervention. Add 
 | 2026-11-16 | Jayden's Claude session | Terminal half, from an empty database, on macOS: seed, steps 2, 3, 5, 6 (with and without `--fixed`), 7 | Every output matched this script |
 | 2026-11-16 | Jayden's Claude session | Terminal half again from an empty database, in script order, with agent health and overview checked after every step | Every output matched this script |
 | 2026-11-17 | Jayden's Claude session | Full run with the dashboard in live mode (dev server, macOS, Node 26), against a scratch backend on port 8001 with its own empty database: setup check on `/settings`, then steps 1–7 in order, step 6 from the dashboard's Replay button | Every step's terminal output and the screens checked matched, after two corrections made to this script in the same run: demo runs do report tokens (only cost is unknown), and step 5 prints two description lines. No console errors and no unexpected API errors (the only 4xx were a 404 for the healthy run's missing investigation and the deliberate 422 in step 7). Slow loading seen; see setup step 5 |
+| 2026-11-21 | Jayden's Claude session | Full run on a production build of `main` at 4ac9ad6 (`npm run build && npm run start`, live mode, macOS), against a scratch backend on port 8001 with its own empty database: seed, setup check on `/settings`, the pages setup step 5 names opened once, then steps 1–7 in order, step 6 from the dashboard's Replay button | The terminal output of the seed and of steps 2, 3, 5 and 7 matched this script (step 2's block leaves out the Scenario and Agent result lines the command prints first), and every screen checked matched. Also checked this time: F3's and F5's "Open step" links, and `web_search`'s input and output in the inspector. No console errors when the console was read at the end. Jayden clicked in the pane a few times during the run. Some detail pages were slow; see below |
 
 Not checked in the 2026-11-17 run: F3's "Open step" link (F5's was clicked), any step's input and output in the inspector, `frontend/.env.local` (the two variables were passed on the command line instead), and a production build. Whether this run counts towards the three the definition of done asks for is for Jayden and Adit to decide: it was a Claude session, not a person presenting.
+
+About the 2026-11-21 run:
+- **Timing, list pages:** Overview, Agents, Anomalies, Investigations and Replays had their content 148–300 ms after load, every time they were timed (twice for Overview and Anomalies, once for the others). On the very first Overview load a text read, not timed, found no content although every API request had answered by 176 ms; the reload showed content at 300 ms.
+- **Timing, detail pages:** the trace page, its Investigation tab and the replay page were often slow, with the pane reported as displayed. From the browser's own records, their API request started 1.0, 1.1, 1.2, 3.0, 3.0, 3.9 and 7.0 s after load, and the 7.0 s load had its first paint at 7.06 s. Once the request started at 0.34 s, but the content was only found at 4.7 s. Twice the trace page was fast (184 and 406 ms). When content appeared after the request is not known for the slow loads: the page's timers were running about twice a second, and the check ran on them.
+- **Frame rate:** sampled six times, it was 59, 2, 2, 1, 62 and 1 frames a second. The fast loads' rate was not measured. The cause is not established: the page had focus during one 2-frame sample and not during the 59-frame one.
+- **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). Adit is looking into it.
+- **Not checked:** step 6 from the terminal (`replay.py request`; the dashboard's Replay button was used), the optional replay without `--fixed`, and `frontend/.env.local` (the two variables were passed on the command line). The browser kept only the last 35 or so API requests, all 2xx; the earlier ones were not read.
+- **If setup step 4 moves to a production build:** `NEXT_PUBLIC_*` values are fixed when the app is built, so changing `.env.local` needs `npm run build` again, not just a restart. `/settings` and the "If something goes wrong" table both say to restart the dev server.
 
 Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
@@ -290,6 +299,6 @@ Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
   - The anomalies Agent and Rule filters, and the Investigations and Replays status filters.
   - The 24h / 7d / 30d switches, and `/traces`.
   - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked).
-  - Steps 1–7 in order on the production build.
+  - Steps 1–7 in order on the production build (done on 2026-11-21; see the log above).
 
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
