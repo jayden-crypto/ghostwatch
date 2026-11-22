@@ -30,7 +30,7 @@
 - nothing mid-edit.
 
 ## Next up
-1. Jayden reviews the handoff-per-side PR from `feature/adit-handoff-per-side` (below). Never merge it without Adit's OK.
+1. The PR for the id-page fix (`adit/frontend` → `main`) needs Jayden's review and Adit's OK to merge. After it merges, ask Jayden to rerun his hidden-pane check; his 2026-11-17 "request already 200" case is still unexplained.
 2. F12 (#28) live pass as soon as a backend is reachable. First calls: `/health`, `/agents`, `/executions`, `/executions/{id}/trace`, `/executions/{id}/events`, `/stats/overview`, `/stats/timeseries`, `/anomalies`, `/investigations`. Then `PATCH /anomalies/{id}` and `POST /investigations/{id}`.
 3. Live checks for replays in F12: `POST /executions/{id}/replay` (sandbox; live without the box must be impossible from the UI), `GET /replays`, `GET /replays/{id}` while a worker runs (`cd demo && uv run python replay.py worker --fixed`), and the 409 for a running execution.
 
