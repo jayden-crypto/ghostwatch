@@ -11,6 +11,7 @@
 - Prod build of main (fe86776) checked live on scratch 8001, partially; the not-checked list is in DEMO_SCRIPT.md's rehearsal log.
 ## Declined / not done
 - BOM tolerance in `.env`: not done. PROJECT_PLAN §11 step 3 not edited; the script follows what happens.
-- Did not comment on or close #28; no tunnel or public URL for the backend offered to Adit.
+- #28 and #34 left open on purpose; no tunnel or public URL for the backend offered to Adit.
 ## Next step
-- #34 stays open until three human rehearsals and the backup recording. Adit's #40 note: setup step 4 could use a production build; steps 1–7 ran on a prod build of 4ac9ad6 (2026-11-21, logged in DEMO_SCRIPT.md: outputs and screens matched; detail pages often slow); switching is Jayden's and Adit's call, not done. The detail-page stall is fixed by #43 (checked with a hidden pane on the Mac, 2026-11-22); the 11-17 "request already 200" case stays unexplained.
+- 2026-11-23 Jayden's decisions: setup step 4 is a production build (done in DEMO_SCRIPT.md; Adit's side changes /settings wording); Adit's side writes the README dashboard section and the CLAUDE.md "no secrets/personal details in handoffs" line, in PRs Jayden reviews; issues #19–#27, #29–#33 closed with evidence comments; #28 waits for Adit to pick which F12 live checks remain, then this session runs them on a scratch backend.
+- #34 stays open until three human rehearsals and the backup recording. The detail-page stall is fixed by #43; the 11-17 "request already 200" case stays unexplained.
