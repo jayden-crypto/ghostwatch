@@ -6,7 +6,7 @@ import { AgentRoute } from "@/components/agents/agent-view";
 export const metadata: Metadata = { title: "Agent" };
 
 export default function AgentPage() {
-  // The query string is only known in the browser, so the view renders there (see AgentRoute).
+  // The id is read in the browser (see AgentRoute).
   return (
     <Suspense>
       <AgentRoute />

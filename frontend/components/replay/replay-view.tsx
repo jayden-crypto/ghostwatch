@@ -106,9 +106,10 @@ export function ReplayBody({ replay }: { replay: Replay }) {
 }
 
 /**
- * The page's body. The id comes from the URL on the client, so the server never streams this page's body. React reveals streamed
- * content on an animation frame, and a window that is not on screen draws none: the page would stay empty and
- * never fetch until shown.
+ * The page's body, with the id read in the browser by `useParams()`. When the page read `params` on the server, its body
+ * came in the server's stream, which React reveals only on an animation frame; a window that is not on screen draws
+ * none, so the page stayed empty and fetched nothing until shown. Read this way, the body appears and fetches without
+ * a frame (`e2e/no-frames.spec.ts`), although `next build` still lists the route as partial prerender.
  */
 export function ReplayRoute() {
   const { id } = useParams<{ id: string }>();

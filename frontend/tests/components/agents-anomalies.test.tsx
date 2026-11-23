@@ -5,6 +5,7 @@ import type { ReactElement } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ApiError } from "@/lib/api/errors";
+import { formatRelative } from "@/lib/format";
 import { createMockApi, type MockState } from "@/lib/api/mock";
 import { fixtures } from "@/mocks/fixtures";
 
@@ -106,12 +107,27 @@ describe("Anomalies page", () => {
 
 describe("Agents", () => {
   it("lists every agent with the health and success rate the API reports", async () => {
-    wrap(<AgentsView />);
-    for (const agent of agents) {
-      const row = (await screen.findByRole("link", { name: `Open agent ${agent.name}` })).closest("tr")!;
-      expect(within(row).getByText(agent.slug)).toBeInTheDocument();
-      // The fixtures are dated, so how old a run looks depends on today: "3d ago" within a week, the UTC date after.
-      expect(row).toHaveTextContent(agent.stats.health === "idle" ? "Never run" : /ago|just now|UTC|\d{4}-\d{2}-\d{2}/);
+    // The fixtures are dated, so the clock is pinned to three days after the latest run: the test checks the relative form
+    // whatever today's date is.
+    const starts = agents.flatMap((agent) => (agent.stats.last_execution ? [Date.parse(agent.stats.last_execution.started_at)] : []));
+    const now = Math.max(...starts) + 3 * 86_400_000;
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(now);
+    try {
+      // The mock moves a running execution to "now", so it is built on the pinned clock and its rows are the expected ones.
+      mock = createMockApi({ latency: () => 0, state: () => state });
+      const shown = (await mock.listAgents({ limit: 200 })).items;
+      expect(shown.map((agent) => agent.id).sort()).toEqual(agents.map((agent) => agent.id).sort());
+      wrap(<AgentsView />);
+      for (const agent of shown) {
+        const row = (await screen.findByRole("link", { name: `Open agent ${agent.name}` })).closest("tr")!;
+        expect(within(row).getByText(agent.slug)).toBeInTheDocument();
+        const last = agent.stats.last_execution;
+        if (last) expect(row.querySelector(`time[datetime="${last.started_at}"]`)).toHaveTextContent(formatRelative(last.started_at, now));
+        else expect(within(row).getByText("Never run")).toBeInTheDocument();
+      }
+    } finally {
+      vi.useRealTimers();
     }
     const idle = screen.getByRole("link", { name: "Open agent PR Reviewer" }).closest("tr")!;
     expect(within(idle).getByText("Idle")).toBeInTheDocument();
