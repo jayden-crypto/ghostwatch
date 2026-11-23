@@ -13,5 +13,5 @@
 - BOM tolerance in `.env`: not done. PROJECT_PLAN §11 step 3 not edited; the script follows what happens.
 - #28 and #34 left open on purpose; no tunnel or public URL for the backend offered to Adit.
 ## Next step
-- 2026-11-22 (UTC) Jayden and Adit's decisions: setup step 4 is a production build (DEMO_SCRIPT.md here; /settings wording, README Dashboard section and the CLAUDE.md handoff line in Adit's #46, merged a0ba982); issues #19–#27, #29–#33 closed with evidence comments; #28 waits for Adit to pick which F12 live checks remain, then this session runs them on a scratch backend.
+- 2026-11-22 (UTC) Jayden and Adit's decisions: setup step 4 is a production build (DEMO_SCRIPT.md here; /settings wording, README Dashboard section and the CLAUDE.md handoff line in Adit's #46, merged a0ba982); issues #19–#27, #29–#33 closed with evidence comments; F12 (#28): every item Adit listed checked live on 2026-11-23 (prod build of 3a170d2, scratch 8001) plus one authorized live replay (invoice run, submit_invoice executed against the fake service); results in DEMO_SCRIPT.md after the 2026-11-18 list. Closing #28 is Adit's call; a #28 comment needs Jayden's yes.
 - #34 stays open until three human rehearsals and the backup recording. The detail-page stall is fixed by #43; the 11-17 "request already 200" case stays unexplained.

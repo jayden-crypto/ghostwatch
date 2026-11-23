@@ -1,4 +1,4 @@
-# Backend progress — updated 2026-11-23T17:05Z
+# Backend progress — updated 2026-11-23T17:46Z
 
 ## Status: every backend issue is done: P0 (B1–B11, B15, B16) and P1 (B12 replay API, B13 SDK sandbox replay and worker, B14 cost, PATCH /anomalies/{anomaly_id}). Every contract endpoint is implemented. 617 backend tests (none skipped: the 145 contract fixtures now validate too) and 39 SDK tests pass locally on docker compose Postgres. PR #36 (`jayden/backend` → `main`) was approved by Adit at 2b3e4ec and squash-merged as 80151dc on 2026-11-16, so the whole backend, the SDK and the demo are on `main`. Adit confirmed contract v1.1 and v1.2 as they are on `main` (2026-11-18).
 
@@ -25,8 +25,7 @@ Not implemented: nothing.
 ## Not verified
 - The Fable provider has never called the real API: it is tested with a fake client only. Needs `ANTHROPIC_API_KEY` and `LLM_PROVIDER=fable` in `.env`.
 - One fixture investigation (`contract/fixtures/`, from Adit's PR #35, merged to `main` as 36e3390) has provider `fable` to exercise that UI state; it is example data, not a real model run.
-- A live replay (`mode: "live"`) has been tested in the SDK against a stub only, never against the real API.
-- The frontend reached `main` with PR #38 (squash b36be58). Against this backend it has been run only along the demo path (`docs/DEMO_SCRIPT.md`, 2026-11-17, Chromium in the Claude desktop app's browser pane, dev server): Overview, Agents, Anomalies, the trace page with its Investigation tab, the Replay dialog in both modes and the replay comparison. No console errors and no unexpected API errors. On 2026-11-18 a production build of `main` (fe86776) was checked against a scratch backend on port 8001: the five list pages, some filters across a reload, Acknowledge, Resolve and Reopen (API side), Overview, agent detail and the other trace tabs. On 2026-11-21 demo steps 1–7 ran in order on a production build of 4ac9ad6. What was and was not covered is listed under the script's rehearsal log. Closing F12 (#28) is Adit's call.
+- The frontend reached `main` with PR #38 (squash b36be58). Against this backend it has been run only along the demo path (`docs/DEMO_SCRIPT.md`, 2026-11-17, Chromium in the Claude desktop app's browser pane, dev server): Overview, Agents, Anomalies, the trace page with its Investigation tab, the Replay dialog in both modes and the replay comparison. No console errors and no unexpected API errors. On 2026-11-18 a production build of `main` (fe86776) was checked against a scratch backend on port 8001: the five list pages, some filters across a reload, Acknowledge, Resolve and Reopen (API side), Overview, agent detail and the other trace tabs. On 2026-11-21 demo steps 1–7 ran in order on a production build of 4ac9ad6. On 2026-11-23 every F12 (#28) item Adit listed was checked live on a production build of `main` (3a170d2) against a scratch backend, and one authorized live replay ran through the real API and worker. Its `submit_invoice` ran for real against the demo's fake invoice service. What was and was not covered is in the script's log, after the 2026-11-18 list. Closing F12 (#28) is Adit's call.
 
 ## How to run
 - `docker compose up -d`, then `cd backend && uv run alembic upgrade head && uv run uvicorn app.main:app`
@@ -84,5 +83,4 @@ Not implemented: nothing.
 
 ## Known issues / tech debt
 - The contract has no way for a worker to report that it could not start a replay. The worker instead opens the replay's execution and fails it with `ReplayNotPossible`, so the reason is visible. A replay that no worker ever claims stays `pending`.
-- Issues #3–#15 stay open until `jayden/backend` merges to `main`.
 - `GHOSTWATCH_API_KEY` in `.env` is still the placeholder from `.env.example`.
