@@ -34,7 +34,10 @@ Every live check below was run by Jayden's Claude session on macOS against a scr
 
 ## Next up
 1. Optional, from Jayden's review of #46 (not done, needs Adit's OK): `npm run test:e2e` builds in mock mode into `frontend/.next`, so a later `npm run start` serves mock data even with `.env.local` set to live. One README sentence under Tests would say to run `npm run build` again before `npm run start` in live mode. `/settings` shows Mock in that case, so the demo's setup check catches it.
-2. F12 (#28): Adit picks which of the "Not checked live" items under Pages still matter ("all of them" is fine); Jayden's session checks them on a scratch backend and reports back, then #28 can close. Also in no live log: a replay page while its worker is still running, and the 409 for replaying a running execution.
+2. F12 (#28): the remaining live checks, picked on 2026-11-23, for Jayden's session to run on a scratch backend in this order. #28 closes when they are reported.
+   - **Seen in the demo:** the Overview 24h / 7d / 30d switches; Resolve straight from Open, and what the anomalies page shows after Acknowledge, Resolve and Reopen; a replay page while its worker is still running, through to its final outcome.
+   - **Behaviour only the mock has shown:** the frontend's query parameter names, sort fields and timestamp format match `backend/app/api/v1/` (read on 2026-11-23). Still to check live: executions page 2, sort, search (id prefix and agent name), the Started range, the Anomalies and Replays toggles; the anomalies Agent and Rule filters; the Investigations and Replays status filters.
+   - **Cheap, low risk:** `/traces`; the 409 when replaying a running execution.
 3. Jayden's 2026-11-17 case, where the trace request had already returned 200 and the page stayed on its skeleton, is still unexplained.
 
 ## Waiting on backend (endpoint → why)
