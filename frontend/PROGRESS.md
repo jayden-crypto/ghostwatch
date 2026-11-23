@@ -26,14 +26,16 @@ Every live check below was run by Jayden's Claude session on macOS against a scr
 - **Review of PR #37** (`jayden/backend` → `main`, 83e49cb, "read and write text files as UTF-8"), approved on 2026-11-16: on this Windows machine with the default cp1252 encoding, backend 389 passed / 209 skipped (no Postgres) / 0 failed, also with `PYTHONWARNDEFAULTENCODING=1`; SDK 39 passed; ruff clean; `alembic upgrade head --sql` runs. No other unencoded file read or write found in `backend/`, `sdk/`, `demo/`. `tests/test_fable_provider.py` was left out only because the scratch checkout's path is too long for Windows.
 - **Contract v1.2** in `types.ts` (`ReplaySource`, `StepDiff.replay_source`); a replay step's source is shown in the waterfall and the inspector.
 - **Jayden's three notes on #43** (PR #44, on `main` as 986eee6): the route wrappers' docblocks say what was measured and that `next build` still lists the routes as partial prerender; every `[id]` page's comment names the id as the reason; the agents-list test pins the clock three days after the latest run and expects exactly `formatRelative`'s text, using the mock's own rows (it moves a running execution to "now").
+- **Decisions of 2026-11-22 (UTC) with Jayden, frontend side** (on `adit/frontend`, not on `main` yet): `/settings` now says to run `npm run build` and `npm run start` again after changing `.env.local` (demo setup step 4 is a production build); the root README has a Dashboard section (pages, mock vs live, `.env.local`, build and start, tests); CLAUDE.md's Session handoff section says handoff files contain no secrets and no personal details. Jayden closed #19–#27, #29–#31, #32 and #33; #28 and #34 stay open.
 - Checks at last commit: `npm run typecheck`, `npm run lint`, `npm run validate-fixtures` clean; `npm test` 191 passing; `npm run test:e2e` 3 passing (it runs `npm run build` first).
 
 ## In progress
 - nothing mid-edit.
 
 ## Next up
-1. F12 (#28): Adit decides which of the "Not checked live" items under Pages matter before #28 closes. Jayden's session offered to check them on a scratch backend. Also in no live log: a replay page while its worker is still running, and the 409 for replaying a running execution.
-2. Jayden's 2026-11-17 case, where the trace request had already returned 200 and the page stayed on its skeleton, is still unexplained.
+1. The PR from `adit/frontend` with the README's dashboard section, the CLAUDE.md handoff line and the `/settings` rebuild wording needs Jayden's review and Adit's OK to merge.
+2. F12 (#28): Adit picks which of the "Not checked live" items under Pages still matter ("all of them" is fine); Jayden's session checks them on a scratch backend and reports back, then #28 can close. Also in no live log: a replay page while its worker is still running, and the 409 for replaying a running execution.
+3. Jayden's 2026-11-17 case, where the trace request had already returned 200 and the page stayed on its skeleton, is still unexplained.
 
 ## Waiting on backend (endpoint → why)
 Per `backend/PROGRESS.md` on `origin/jayden/backend` (cd7261e) every contract endpoint is implemented, including replays (B12, B13), cost (B14) and `PATCH /anomalies/{id}`.
