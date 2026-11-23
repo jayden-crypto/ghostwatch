@@ -73,16 +73,19 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 ```
 
 ```bash
-cd frontend && npm ci && npm run dev
+cd frontend && npm ci && npm run build && npm run start
 ```
+
+This is a production build, the setup rehearsed on 2026-11-21. Both values are built into the app: after changing `.env.local`, run `npm run build` again before `npm run start`; restarting alone keeps the old values. (`npm run dev` also works and reads `.env.local` on start, but was last rehearsed on 2026-11-17.)
 
 Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting allows only that origin.
 
-Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
+Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop, fix `.env.local` and rebuild before presenting.
 
 **5. Open every page once, in the window you will present from.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for 5–20 seconds; once, the trace page's API request had already answered. On 2026-11-18 one cause of a stall was found and reproduced, in a browser pane that was not on screen:
 - The trace page streams its content in, and React shows streamed content on the next animation frame. A pane that is not drawn produces no frames.
-- So the content stayed hidden and the page's API request did not even start until the pane was shown: at least 20 s on a production build, about 104 s on the dev server. The page reported itself `visible` throughout. This was seen on trace pages only, and still happens after PR #39.
+- So the content stayed hidden and the page's API request did not even start until the pane was shown: at least 20 s on a production build, about 104 s on the dev server. The page reported itself `visible` throughout. This was seen on trace pages only, and still happened after PR #39.
+- **Fixed by PR #43** (847ad44): the trace, replay, agent and investigation pages now read their id in the browser, so nothing waits for a frame. Checked on 2026-11-22 on a production build against a real backend: with the pane hidden and no frame drawn, all four requested their data within 61–136 ms of load and showed their content.
 - The 2026-11-17 case where the request had already answered is a different symptom, and remains unexplained.
 - With the pane shown, Overview, a trace page, a replay and an investigation had their content 0.2–0.8 s after load on a production build, 20–70 ms after their API response.
 
@@ -254,7 +257,7 @@ curl -s -X POST localhost:8000/api/v1/executions/<execution_id>/replay -H 'conte
 |---|---|---|
 | A demo command prints `Cannot reach Ghostwatch at …` | The backend is not running | Restart it in terminal 1 |
 | `status : still pending. Is a worker running?` | No replay worker | Start it in terminal 3. A pending replay is picked up as soon as a worker starts; no need to request again |
-| The dashboard shows numbers that do not match the terminal | It is in mock mode | Check `/settings`; fix `frontend/.env.local` and restart `npm run dev` |
+| The dashboard shows numbers that do not match the terminal | It is in mock mode | Check `/settings`; fix `frontend/.env.local`, then `npm run build` and `npm run start` again |
 | The dashboard is unusable | | Carry on from the terminal. Every step above prints the same facts the dashboard shows, read from the same API |
 | A step was run twice or out of order | | The story still holds, but the counts in "Expect" will be off. For a clean run, repeat the setup |
 
@@ -282,9 +285,9 @@ About the 2026-11-21 run:
 - **Timing, list pages:** Overview, Agents, Anomalies, Investigations and Replays had their content 148–300 ms after load, every time they were timed (twice for Overview and Anomalies, once for the others). On the very first Overview load a text read, not timed, found no content although every API request had answered by 176 ms; the reload showed content at 300 ms.
 - **Timing, detail pages:** the trace page, its Investigation tab and the replay page were often slow, with the pane reported as displayed. From the browser's own records, their API request started 1.0, 1.1, 1.2, 3.0, 3.0, 3.9 and 7.0 s after load, and the 7.0 s load had its first paint at 7.06 s. Once the request started at 0.34 s, but the content was only found at 4.7 s. Twice the trace page was fast (184 and 406 ms). When content appeared after the request is not known for the slow loads: the page's timers were running about twice a second, and the check ran on them.
 - **Frame rate:** sampled six times, it was 59, 2, 2, 1, 62 and 1 frames a second. The fast loads' rate was not measured. The cause is not established: the page had focus during one 2-frame sample and not during the 59-frame one.
-- **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). Adit is looking into it.
+- **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). PR #43 fixed that cause; see setup step 5.
 - **Not checked:** step 6 from the terminal (`replay.py request`; the dashboard's Replay button was used), the optional replay without `--fixed`, and `frontend/.env.local` (the two variables were passed on the command line). The browser kept only the last 35 or so API requests, all 2xx; the earlier ones were not read.
-- **If setup step 4 moves to a production build:** `NEXT_PUBLIC_*` values are fixed when the app is built, so changing `.env.local` needs `npm run build` again, not just a restart. `/settings` and the "If something goes wrong" table both say to restart the dev server.
+- **Setup step 4 moved to a production build on 2026-11-22 (UTC)** (Jayden's decision, after Adit's suggestion in #40). Step 4 and the "If something goes wrong" table now say to rebuild after changing `.env.local`; `/settings` says the same since PR #46 (a0ba982).
 
 Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
