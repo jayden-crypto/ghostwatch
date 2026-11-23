@@ -298,10 +298,10 @@ Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Other pages:** Overview, agent detail, and the trace page's Raw events and Input & output tabs all showed data.
 - **Errors:** the only API error was the expected 404 for a run with no investigation.
 - **Not checked:**
-  - Executions page 2 (81 runs, 50 per page), sort, search, the Started range, and the Anomalies and Replays toggles.
-  - The anomalies Agent and Rule filters, and the Investigations and Replays status filters.
-  - The 24h / 7d / 30d switches, and `/traces`.
-  - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked).
+  - Executions page 2 (81 runs, 50 per page), sort, search, the Started range, and the Anomalies and Replays toggles. (done on 2026-11-23; see below)
+  - The anomalies Agent and Rule filters, and the Investigations and Replays status filters. (done on 2026-11-23; see below)
+  - The 24h / 7d / 30d switches, and `/traces`. (done on 2026-11-23; see below)
+  - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked). (done on 2026-11-23; see below)
   - Steps 1–7 in order on the production build (done on 2026-11-21; see the log above).
 
 F12 (#28) live checks, 2026-11-23 (UTC), by Jayden's Claude session. Adit's side asked, through Jayden, for every item not checked on 2026-11-18 and for one authorized live replay; Jayden approved both. Jayden clicked in the pane a few times during the run.
@@ -332,5 +332,13 @@ F12 (#28) live checks, 2026-11-23 (UTC), by Jayden's Claude session. Adit's side
   - All three steps were `executed`, none recorded or blocked, including `submit_invoice`, the tool declared with side effects. In the replay's trace it returned `accepted` from the demo's fake invoice service, which only keeps a list in the worker's memory and uses no network.
 - **Unexplained stall (setup step 5):** no page was found on its skeleton after its API request had answered. Content was read 0.5–6 s after each load, so a shorter stall would not have been seen. On the first Overview load after the server started, every API request had answered by 175 ms and the content was there at the first read (3.5 s). The pane was shown, but the page recorded no paint entries and drew about 3 frames a second, so when content appeared was not measured.
 - **Not seen:** an investigation in any status but completed, and a failed replay, because the scratch data had none; and how the Replay dialog shows a 409, since the button is disabled before one can happen. The scratch database was dropped afterwards.
+
+F12 (#28), the rest of its acceptance criteria, 2026-11-23 (UTC), by Jayden's Claude session, after Adit's review of #48 listed them. Same setup as above (production build of `main`, now at 64bef25, live mode, scratch backend on port 8001), but starting from an **empty** database that had only been migrated.
+- **Empty database:** Overview, Agents, Executions, `/traces`, Anomalies, Investigations and Replays each showed their empty state ("No agents registered", "No executions yet", "No traces yet", "No open anomalies", "No investigations yet", "No replays yet"; Overview showed zeros, "—" for success rate and duration, and "No executions finished in this window." under the chart). Every API request answered 200, and the console had no errors.
+- **422 on a bad filter:** `/executions?started_after=+020000-01-01T00:00:00Z` (a date the page accepts and the API does not) showed "Executions could not be loaded", "Request validation failed.", `validation_error · HTTP 422` and Retry, after the API's 422. Retry sent the request again (three requests after one click, all 422). "Clear 1 filter" brought back the empty list. The page's own filter controls cannot produce this; it needs a hand-made URL. An unknown `agent_id` in the URL is not an error: the API answers 200 with no rows and the page shows "No executions match these filters".
+- **Backend down** (the scratch backend stopped): Executions showed "Executions could not be loaded", "Could not reach the Ghostwatch API at http://localhost:8001/api/v1. Is the backend running?", `network_error` and Retry. Overview showed the same error with a Retry in each of its five panels, and `/settings` said the backend did not answer the health check. No "MOCK DATA" badge and no fixture data appeared. After the backend was started again, Executions and Agents recovered on their own, through their list polling, before Retry was clicked (tried twice), so recovery by Retry itself was not seen.
+- **A running execution from `run_scenario.py`:** `run_scenario.py slow` was started and its trace page opened while it ran. The page showed Running, 2 steps and "Live · refreshing every 3 s"; on the next 3-second poll it showed Completed and 3 steps, the live label went away, and no trace request followed in the next 9 s.
+- **An investigation while queued:** Investigate on that run's Investigation tab sent `POST /investigations/{execution_id}` (202). The tab showed Queued from that answer; the next poll, 2 s later, returned the completed report (rule-based, insufficient evidence, "took 24 ms"), and polling stopped. The backend runs an investigation right after queuing it, so Investigating was never shown.
+- **Not seen:** Retry itself bringing a page back after the backend returned; an investigation in the `running` state on screen.
 
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
