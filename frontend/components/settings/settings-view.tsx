@@ -74,8 +74,9 @@ function DataSource({ mode, baseUrl }: { mode: ApiMode; baseUrl: string }) {
         </Field>
       </dl>
       <p className="mt-3 text-xs text-fg-muted">
-        Both are read when the app is built, so they cannot be changed from this page. Set them in <Code>frontend/.env.local</Code> and restart the dev server. Any
-        mode other than <Code>live</Code> means mock.
+        Both are fixed when the app is built, so they cannot be changed from this page. Set them in <Code>frontend/.env.local</Code>, then run{" "}
+        <Code>npm run build</Code> and <Code>npm run start</Code> again: restarting alone keeps the old values. The dev server (<Code>npm run dev</Code>) reads
+        them when it starts. Any mode other than <Code>live</Code> means mock.
       </p>
       <Snippet label="Environment variables for the data source">{`NEXT_PUBLIC_API_MODE=${mode}\nNEXT_PUBLIC_API_BASE_URL=${baseUrl}`}</Snippet>
     </Panel>
