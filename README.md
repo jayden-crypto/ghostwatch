@@ -108,7 +108,7 @@ cd frontend && npm run typecheck && npm run lint && npm test
 cd frontend && npm run test:e2e
 ```
 
-The end-to-end tests build the app in mock mode, serve it on port 3100 and drive it with Playwright: Edge on Windows, Playwright's Chromium elsewhere (install it once with `npx playwright install chromium`).
+The end-to-end tests build the app in mock mode, serve it on port 3100 and drive it with Playwright: Edge on Windows, Playwright's Chromium elsewhere (install it once with `npx playwright install chromium`). They leave that mock build in `frontend/.next`, so run `npm run build` again before `npm run start` in live mode; `/settings` shows Mock until you do.
 
 ## Investigation providers
 
