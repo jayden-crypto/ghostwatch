@@ -304,4 +304,33 @@ Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
   - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked).
   - Steps 1–7 in order on the production build (done on 2026-11-21; see the log above).
 
+F12 (#28) live checks, 2026-11-23 (UTC), by Jayden's Claude session. Adit's side asked, through Jayden, for every item not checked on 2026-11-18 and for one authorized live replay; Jayden approved both. Jayden clicked in the pane a few times during the run.
+- **Setup:** a production build of `main` at 3a170d2, live mode, against a scratch backend on port 8001 with its own database. Data: `seed.py --all`, then `seed.py --append --runs 4 --days 20`, so that the 7-day and 30-day windows differ (84 and 93 runs). `/settings` showed Live and port 8001 before any check. Each check below compared the request the page sent with the API's answer for the same query. For Overview, Executions, `/traces` and Replays the rows on screen were compared with that answer, id by id; for Anomalies and Investigations, the counts and the ids of the cards.
+- **Overview:** 7d is the default; it loaded with `window=7d` and the API's numbers (84 runs, 98.8%). Clicking 24h and then 30d sent their `window` and showed the API's numbers (15 runs, 93.3%; 93 runs, 98.9%).
+- **Executions:**
+  - **Paging:** page 2 (`offset=50`) showed the API's 43 rows in order.
+  - **Sort:** by duration, descending then ascending, matched the API and went back to page 1.
+  - **Search:** "invoice" found the 30 Invoice Processor runs; a partial execution id found its one run (loaded from the URL).
+  - **Started range:** "Last 24 hours" sent `started_after` and showed the 15 runs. A custom range, with both ends set in local time, was sent in UTC and showed the API's 33 runs. Choosing "Custom range…" from the menu did not take three times (two clicks on the option, then End and Return) and took on the fourth, a click at the option's position; the pane had been clicked by Jayden in between, and the cause is not established.
+  - **Toggles:** with and without anomalies, 5 + 88 = 93. Replays only and originals only, 2 + 94 = 96.
+- **`/traces`:** the recent list matched the API's latest 15. A malformed id stayed on `/traces` with the message giving the id format. A real id opened its trace. A well-formed id that does not exist opened the trace page's "This execution does not exist" state, after the API's 404.
+- **Anomalies:**
+  - **Filters:** the Agent filter (Support Triage, 4) and the Rule filter (Excessive retries, 2, with the Agent filter still set) matched the API.
+  - **Resolve straight from Open:** the API had it `resolved`, and it left the Open view (2 → 1). With Resolved added to the status filter it came back, with a Reopen button.
+  - **Acknowledge:** it left the view, because Acknowledged was not selected.
+  - **Reopen:** the API had it `open`, and its card showed Open with Acknowledge and Resolve.
+- **Investigations:** the status filter sent `status`, and Completed showed the 4. Failed showed the API's 0 and the "No investigations match these filters" state. Every investigation on scratch was completed, so the filter was not seen separating two non-empty sets.
+- **Replays:** the status filter showed the 1 pending replay under Pending and the 2 completed ones under Completed, as the API listed them.
+- **A replay page while its worker runs:**
+  - **Before a worker:** a sandbox replay requested from the trace page sat on Pending, with "Waiting for a replay worker", until one was started.
+  - **Once a worker started:** the page went Pending → Replaying → Completed, each seen once (Replaying for one 2-second poll), with "Same failure" and the comparison.
+- **Replaying a running execution:**
+  - **In the UI:** the trace page of an execution left running (created through `POST /executions`) shows Replay disabled, with "This run is still in progress. It can be replayed once it ends.", so the dashboard never sends that request.
+  - **In the API:** the same request answered `409 conflict`, "Execution … is still running; it can be replayed once it ends."
+- **The one live replay (authorized):** a healthy Invoice Processor run, requested from the dashboard with Live chosen and the authorization box ticked. The worker ran with `GHOSTWATCH_API_URL` set to port 8001.
+  - The replay was recorded with `side_effects_authorized: true` and ended `completed`, "Both succeeded".
+  - All three steps were `executed`, none recorded or blocked, including `submit_invoice`, the tool declared with side effects. In the replay's trace it returned `accepted` from the demo's fake invoice service, which only keeps a list in the worker's memory and uses no network.
+- **Unexplained stall (setup step 5):** no page was found on its skeleton after its API request had answered. Content was read 0.5–6 s after each load, so a shorter stall would not have been seen. On the first Overview load after the server started, every API request had answered by 175 ms and the content was there at the first read (3.5 s). The pane was shown, but the page recorded no paint entries and drew about 3 frames a second, so when content appeared was not measured.
+- **Not seen:** an investigation in any status but completed, and a failed replay, because the scratch data had none; and how the Replay dialog shows a 409, since the button is disabled before one can happen. The scratch database was dropped afterwards.
+
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
