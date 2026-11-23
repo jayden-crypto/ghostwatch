@@ -73,16 +73,19 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:8000/api/v1
 ```
 
 ```bash
-cd frontend && npm ci && npm run dev
+cd frontend && npm ci && npm run build && npm run start
 ```
+
+This is a production build, the setup rehearsed on 2026-11-21. Both values are built into the app: after changing `.env.local`, run `npm run build` again before `npm run start`; restarting alone keeps the old values. (`npm run dev` also works and reads `.env.local` on start, but was last rehearsed on 2026-11-17.)
 
 Open it at `http://localhost:3000`, not `127.0.0.1`: the backend's CORS setting allows only that origin.
 
-Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop and fix `.env.local` before presenting.
+Open `/settings` and check that Mode says Live, the API base URL is `http://localhost:8000/api/v1`, and Hypotheses by says Rule-based. If it says mock, the numbers on screen are fixtures, not this backend: stop, fix `.env.local` and rebuild before presenting.
 
 **5. Open every page once, in the window you will present from.** In the 2026-11-17 run, pages sometimes sat on a loading skeleton for 5–20 seconds; once, the trace page's API request had already answered. On 2026-11-18 one cause of a stall was found and reproduced, in a browser pane that was not on screen:
 - The trace page streams its content in, and React shows streamed content on the next animation frame. A pane that is not drawn produces no frames.
-- So the content stayed hidden and the page's API request did not even start until the pane was shown: at least 20 s on a production build, about 104 s on the dev server. The page reported itself `visible` throughout. This was seen on trace pages only, and still happens after PR #39.
+- So the content stayed hidden and the page's API request did not even start until the pane was shown: at least 20 s on a production build, about 104 s on the dev server. The page reported itself `visible` throughout. This was seen on trace pages only, and still happened after PR #39.
+- **Fixed by PR #43** (847ad44): the trace, replay, agent and investigation pages now read their id in the browser, so nothing waits for a frame. Checked on 2026-11-22 on a production build against a real backend: with the pane hidden and no frame drawn, all four requested their data within 61–136 ms of load and showed their content.
 - The 2026-11-17 case where the request had already answered is a different symptom, and remains unexplained.
 - With the pane shown, Overview, a trace page, a replay and an investigation had their content 0.2–0.8 s after load on a production build, 20–70 ms after their API response.
 
@@ -254,7 +257,7 @@ curl -s -X POST localhost:8000/api/v1/executions/<execution_id>/replay -H 'conte
 |---|---|---|
 | A demo command prints `Cannot reach Ghostwatch at …` | The backend is not running | Restart it in terminal 1 |
 | `status : still pending. Is a worker running?` | No replay worker | Start it in terminal 3. A pending replay is picked up as soon as a worker starts; no need to request again |
-| The dashboard shows numbers that do not match the terminal | It is in mock mode | Check `/settings`; fix `frontend/.env.local` and restart `npm run dev` |
+| The dashboard shows numbers that do not match the terminal | It is in mock mode | Check `/settings`; fix `frontend/.env.local`, then `npm run build` and `npm run start` again |
 | The dashboard is unusable | | Carry on from the terminal. Every step above prints the same facts the dashboard shows, read from the same API |
 | A step was run twice or out of order | | The story still holds, but the counts in "Expect" will be off. For a clean run, repeat the setup |
 
@@ -282,9 +285,9 @@ About the 2026-11-21 run:
 - **Timing, list pages:** Overview, Agents, Anomalies, Investigations and Replays had their content 148–300 ms after load, every time they were timed (twice for Overview and Anomalies, once for the others). On the very first Overview load a text read, not timed, found no content although every API request had answered by 176 ms; the reload showed content at 300 ms.
 - **Timing, detail pages:** the trace page, its Investigation tab and the replay page were often slow, with the pane reported as displayed. From the browser's own records, their API request started 1.0, 1.1, 1.2, 3.0, 3.0, 3.9 and 7.0 s after load, and the 7.0 s load had its first paint at 7.06 s. Once the request started at 0.34 s, but the content was only found at 4.7 s. Twice the trace page was fast (184 and 406 ms). When content appeared after the request is not known for the slow loads: the page's timers were running about twice a second, and the check ran on them.
 - **Frame rate:** sampled six times, it was 59, 2, 2, 1, 62 and 1 frames a second. The fast loads' rate was not measured. The cause is not established: the page had focus during one 2-frame sample and not during the 59-frame one.
-- **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). Adit is looking into it.
+- **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). PR #43 fixed that cause; see setup step 5.
 - **Not checked:** step 6 from the terminal (`replay.py request`; the dashboard's Replay button was used), the optional replay without `--fixed`, and `frontend/.env.local` (the two variables were passed on the command line). The browser kept only the last 35 or so API requests, all 2xx; the earlier ones were not read.
-- **If setup step 4 moves to a production build:** `NEXT_PUBLIC_*` values are fixed when the app is built, so changing `.env.local` needs `npm run build` again, not just a restart. `/settings` and the "If something goes wrong" table both say to restart the dev server.
+- **Setup step 4 moved to a production build on 2026-11-22 (UTC)** (Jayden and Adit's decision, after Adit's suggestion in #40). Step 4 and the "If something goes wrong" table now say to rebuild after changing `.env.local`; `/settings` says the same since PR #46 (a0ba982).
 
 Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
@@ -300,5 +303,34 @@ Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
   - The 24h / 7d / 30d switches, and `/traces`.
   - Resolve straight from Open, and what the page itself showed after Resolve and Reopen (only the API was checked).
   - Steps 1–7 in order on the production build (done on 2026-11-21; see the log above).
+
+F12 (#28) live checks, 2026-11-23 (UTC), by Jayden's Claude session. Adit's side asked, through Jayden, for every item not checked on 2026-11-18 and for one authorized live replay; Jayden approved both. Jayden clicked in the pane a few times during the run.
+- **Setup:** a production build of `main` at 3a170d2, live mode, against a scratch backend on port 8001 with its own database. Data: `seed.py --all`, then `seed.py --append --runs 4 --days 20`, so that the 7-day and 30-day windows differ (84 and 93 runs). `/settings` showed Live and port 8001 before any check. Each check below compared the request the page sent with the API's answer for the same query. For Overview, Executions, `/traces` and Replays the rows on screen were compared with that answer, id by id; for Anomalies and Investigations, the counts and the ids of the cards.
+- **Overview:** 7d is the default; it loaded with `window=7d` and the API's numbers (84 runs, 98.8%). Clicking 24h and then 30d sent their `window` and showed the API's numbers (15 runs, 93.3%; 93 runs, 98.9%).
+- **Executions:**
+  - **Paging:** page 2 (`offset=50`) showed the API's 43 rows in order.
+  - **Sort:** by duration, descending then ascending, matched the API and went back to page 1.
+  - **Search:** "invoice" found the 30 Invoice Processor runs; a partial execution id found its one run (loaded from the URL).
+  - **Started range:** "Last 24 hours" sent `started_after` and showed the 15 runs. A custom range, with both ends set in local time, was sent in UTC and showed the API's 33 runs. Choosing "Custom range…" from the menu did not take three times (two clicks on the option, then End and Return) and took on the fourth, a click at the option's position; the pane had been clicked by Jayden in between, and the cause is not established.
+  - **Toggles:** with and without anomalies, 5 + 88 = 93. Replays only and originals only, 2 + 94 = 96.
+- **`/traces`:** the recent list matched the API's latest 15. A malformed id stayed on `/traces` with the message giving the id format. A real id opened its trace. A well-formed id that does not exist opened the trace page's "This execution does not exist" state, after the API's 404.
+- **Anomalies:**
+  - **Filters:** the Agent filter (Support Triage, 4) and the Rule filter (Excessive retries, 2, with the Agent filter still set) matched the API.
+  - **Resolve straight from Open:** the API had it `resolved`, and it left the Open view (2 → 1). With Resolved added to the status filter it came back, with a Reopen button.
+  - **Acknowledge:** it left the view, because Acknowledged was not selected.
+  - **Reopen:** the API had it `open`, and its card showed Open with Acknowledge and Resolve.
+- **Investigations:** the status filter sent `status`, and Completed showed the 4. Failed showed the API's 0 and the "No investigations match these filters" state. Every investigation on scratch was completed, so the filter was not seen separating two non-empty sets.
+- **Replays:** the status filter showed the 1 pending replay under Pending and the 2 completed ones under Completed, as the API listed them.
+- **A replay page while its worker runs:**
+  - **Before a worker:** a sandbox replay requested from the trace page sat on Pending, with "Waiting for a replay worker", until one was started.
+  - **Once a worker started:** the page went Pending → Replaying → Completed, each seen once (Replaying for one 2-second poll), with "Same failure" and the comparison.
+- **Replaying a running execution:**
+  - **In the UI:** the trace page of an execution left running (created through `POST /executions`) shows Replay disabled, with "This run is still in progress. It can be replayed once it ends.", so the dashboard never sends that request.
+  - **In the API:** the same request answered `409 conflict`, "Execution … is still running; it can be replayed once it ends."
+- **The one live replay (authorized):** a healthy Invoice Processor run, requested from the dashboard with Live chosen and the authorization box ticked. The worker ran with `GHOSTWATCH_API_URL` set to port 8001.
+  - The replay was recorded with `side_effects_authorized: true` and ended `completed`, "Both succeeded".
+  - All three steps were `executed`, none recorded or blocked, including `submit_invoice`, the tool declared with side effects. In the replay's trace it returned `accepted` from the demo's fake invoice service, which only keeps a list in the worker's memory and uses no network.
+- **Unexplained stall (setup step 5):** no page was found on its skeleton after its API request had answered. Content was read 0.5–6 s after each load, so a shorter stall would not have been seen. On the first Overview load after the server started, every API request had answered by 175 ms and the content was there at the first read (3.5 s). The pane was shown, but the page recorded no paint entries and drew about 3 frames a second, so when content appeared was not measured.
+- **Not seen:** an investigation in any status but completed, and a failed replay, because the scratch data had none; and how the Replay dialog shows a 409, since the button is disabled before one can happen. The scratch database was dropped afterwards.
 
 `docker compose down -v` was run on 2026-11-17 on Jayden's machine and the plain `seed.py` that followed printed exactly the expected output in setup step 3.
