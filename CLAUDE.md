@@ -42,4 +42,5 @@ Ghostwatch is an observability and reliability platform for AI agents, built by 
 - Keep it under 20 lines. Replace stale lines instead of appending.
 - Write lines that stay true: "verify X completed" rather than "X is running"; name commits and files rather than "just now".
 - It is committed: commit it alongside the work it describes, so the reasoning stays in history. Status the other developer or a fresh clone needs still belongs in your `PROGRESS.md`.
+- The repo is public, so a handoff file must contain no secrets and no personal details.
 - `.claude/state/snapshot.md` is written by a hook and is git-ignored; never edit it by hand.
