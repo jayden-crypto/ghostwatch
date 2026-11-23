@@ -287,7 +287,7 @@ About the 2026-11-21 run:
 - **Frame rate:** sampled six times, it was 59, 2, 2, 1, 62 and 1 frames a second. The fast loads' rate was not measured. The cause is not established: the page had focus during one 2-frame sample and not during the 59-frame one.
 - **For setup step 5:** "the pane is on screen" was not enough here, and the slowness was on the detail pages only, which fits the 2026-11-18 finding (streamed content waits for an animation frame). PR #43 fixed that cause; see setup step 5.
 - **Not checked:** step 6 from the terminal (`replay.py request`; the dashboard's Replay button was used), the optional replay without `--fixed`, and `frontend/.env.local` (the two variables were passed on the command line). The browser kept only the last 35 or so API requests, all 2xx; the earlier ones were not read.
-- **Setup step 4 moved to a production build on 2026-11-22 (UTC)** (Jayden's decision, after Adit's suggestion in #40). Step 4 and the "If something goes wrong" table now say to rebuild after changing `.env.local`; `/settings` says the same since PR #46 (a0ba982).
+- **Setup step 4 moved to a production build on 2026-11-22 (UTC)** (Jayden and Adit's decision, after Adit's suggestion in #40). Step 4 and the "If something goes wrong" table now say to rebuild after changing `.env.local`; `/settings` says the same since PR #46 (a0ba982).
 
 Not a rehearsal, but checked on 2026-11-18 by Jayden's Claude session:
 - **Setup:** a production build of `main` at fe86776 (`npm run build && npm run start`, live mode), against a scratch backend on port 8001 with plain `seed.py`, the healthy, schema-change and ghost-invoice runs and one sandbox replay.
