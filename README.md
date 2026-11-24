@@ -19,7 +19,7 @@ Nothing but the backend touches the database. The full diagram and the reasons b
 
 - Docker (for Postgres 16)
 - [uv](https://docs.astral.sh/uv/) and Python 3.12
-- Node.js and npm, for the dashboard (the CI uses Node.js 24)
+- Node.js and npm, for the dashboard. The app needs Node.js 20.9 or later (Next.js 16), and its tests need 22.22.2 or later, or 24.15 or later (jsdom). The CI uses Node.js 24.
 
 ## Run it
 
