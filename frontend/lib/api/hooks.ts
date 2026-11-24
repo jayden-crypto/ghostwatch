@@ -11,7 +11,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { api } from "./client";
-import { isNotFound } from "./errors";
+import { ApiError, isNotFound } from "./errors";
 import type {
   AgentListParams,
   AnomalyListParams,
@@ -61,10 +61,26 @@ interface Live {
   refetchInterval?: number;
 }
 
-export const useHealth = (live: Live = {}) => useQuery({ queryKey: keys.health, queryFn: () => api.health(), ...live });
+/**
+ * A view's polling, paused while its last answer was a 4xx: the same request would fail the same way (a bad
+ * filter in the URL, an unknown id), and Retry or a new filter asks again. A network error or a 5xx keeps
+ * polling, so a page recovers by itself when the backend comes back.
+ */
+export function pollEvery(interval: number | undefined) {
+  if (interval === undefined) return undefined;
+  return (query: { state: { error: unknown } }): number | false => {
+    const { error } = query.state;
+    const status = error instanceof ApiError ? error.status : null;
+    return status !== null && status >= 400 && status < 500 ? false : interval;
+  };
+}
+
+const poll = (live: Live) => ({ refetchInterval: pollEvery(live.refetchInterval) });
+
+export const useHealth = (live: Live = {}) => useQuery({ queryKey: keys.health, queryFn: () => api.health(), ...poll(live) });
 
 export const useAgents = (params: AgentListParams = {}, live: Live = {}) =>
-  useQuery({ queryKey: keys.agents(params), queryFn: () => api.listAgents(params), placeholderData: keepPreviousData, ...live });
+  useQuery({ queryKey: keys.agents(params), queryFn: () => api.listAgents(params), placeholderData: keepPreviousData, ...poll(live) });
 
 export const useAgent = (id: ID) => useQuery({ queryKey: keys.agent(id), queryFn: () => api.getAgent(id) });
 
@@ -75,7 +91,7 @@ export const useExecutions = (params: ExecutionListParams = {}, options: { enabl
     queryFn: () => api.listExecutions(params),
     placeholderData: keepPreviousData,
     enabled: options.enabled,
-    refetchInterval: options.refetchInterval,
+    refetchInterval: pollEvery(options.refetchInterval),
   });
 
 export const useExecution = (id: ID) => useQuery({ queryKey: keys.execution(id), queryFn: () => api.getExecution(id) });
@@ -96,18 +112,18 @@ export const useEvents = (executionId: ID, params: EventListParams = {}, options
   });
 
 export const useStatsOverview = (window: StatsWindow, live: Live = {}) =>
-  useQuery({ queryKey: keys.statsOverview(window), queryFn: () => api.statsOverview(window), placeholderData: keepPreviousData, ...live });
+  useQuery({ queryKey: keys.statsOverview(window), queryFn: () => api.statsOverview(window), placeholderData: keepPreviousData, ...poll(live) });
 
 export const useStatsTimeseries = (params: TimeseriesParams = {}, live: Live = {}) =>
   useQuery({
     queryKey: keys.statsTimeseries(params),
     queryFn: () => api.statsTimeseries(params),
     placeholderData: keepPreviousData,
-    ...live,
+    ...poll(live),
   });
 
 export const useAnomalies = (params: AnomalyListParams = {}, live: Live = {}) =>
-  useQuery({ queryKey: keys.anomalies(params), queryFn: () => api.listAnomalies(params), placeholderData: keepPreviousData, ...live });
+  useQuery({ queryKey: keys.anomalies(params), queryFn: () => api.listAnomalies(params), placeholderData: keepPreviousData, ...poll(live) });
 
 /** One anomaly by id. Disabled while `id` is null. */
 export const useAnomaly = (id: ID | null) =>
@@ -118,7 +134,7 @@ export const useInvestigations = (params: InvestigationListParams = {}, live: Li
     queryKey: keys.investigations(params),
     queryFn: () => api.listInvestigations(params),
     placeholderData: keepPreviousData,
-    ...live,
+    ...poll(live),
   });
 
 /**
@@ -155,7 +171,7 @@ export function useCreateInvestigation(executionId: ID) {
 }
 
 export const useReplays = (params: ReplayListParams = {}, live: { refetchInterval?: number } = {}) =>
-  useQuery({ queryKey: keys.replays(params), queryFn: () => api.listReplays(params), placeholderData: keepPreviousData, ...live });
+  useQuery({ queryKey: keys.replays(params), queryFn: () => api.listReplays(params), placeholderData: keepPreviousData, ...poll(live) });
 
 /** A replay that has not finished: waiting for a worker, or being run by one. */
 export const isReplayActive = (replay: Pick<Replay, "status"> | null | undefined): boolean =>
