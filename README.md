@@ -6,10 +6,20 @@ Ghostwatch is an observability and reliability platform for AI agents. An agent 
 
 This README covers the backend, the Python SDK, the demo and the dashboard (`frontend/`).
 
+## How it fits together
+
+- **The SDK** runs inside the agent's process. It sends each run's events to the backend's API in batches, and never slows down or breaks the agent if the backend is unreachable.
+- **The backend** (FastAPI) stores those events in Postgres as they arrive and derives everything else from them: steps, traces, stats and anomalies. An investigation runs in the background when a run fails or times out, when it raises a high or critical anomaly, or when someone asks for one. Facts and confirmed root causes come from deterministic code.
+- **Replays** run in the agent's own process too: a replay worker (part of the SDK) claims a requested replay from the API, runs the agent again against the recorded run and sends the result back.
+- **The dashboard** (Next.js) reads everything through the same API.
+
+Nothing but the backend touches the database. The full diagram and the reasons behind each choice are in [PROJECT_PLAN.md](PROJECT_PLAN.md#1-architecture).
+
 ## What you need
 
 - Docker (for Postgres 16)
 - [uv](https://docs.astral.sh/uv/) and Python 3.12
+- Node.js and npm, for the dashboard (the CI uses Node.js 24)
 
 ## Run it
 
@@ -41,7 +51,19 @@ Run one scenario live and see what Ghostwatch recorded (`list` shows them all):
 cd demo && uv run python run_scenario.py schema-change
 ```
 
-That run fails with `KeyError: 'results'`, and Ghostwatch confirms the root cause from the evidence. To replay it, start a replay worker in one terminal:
+That run fails with `KeyError: 'results'`, and Ghostwatch confirms the root cause from the evidence. Every scenario runs the same way:
+
+| Command | Agent | What happens |
+|---|---|---|
+| `run_scenario.py healthy <agent>` | any of the three | A normal run |
+| `run_scenario.py schema-change` | research-assistant | The search API changed its answer's shape; the run fails, and the investigation is `confirmed` |
+| `run_scenario.py ghost-invoice` | invoice-processor | The validation service is down, and the agent swallows the error and reports success; Ghostwatch raises a critical `ghost_completion` anomaly and confirms why |
+| `run_scenario.py rate-limit` | support-triage | The knowledge base answers HTTP 429 twice before it succeeds; the run is flagged for `excessive_retries` |
+| `run_scenario.py slow` | support-triage | The knowledge base takes about 6 seconds, so the run can be watched while it is still running |
+
+The three agents are `research-assistant`, `invoice-processor` and `support-triage`. [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) is the full demo, step by step.
+
+To replay the schema-change run, start a replay worker in one terminal:
 
 ```bash
 cd demo && uv run python replay.py worker --fixed
@@ -144,4 +166,5 @@ The backend tests need the compose Postgres running; they use a separate `ghostw
 ## Limits to know about
 
 - Authentication is a single ingestion key for the endpoints the SDK writes to. Read endpoints are unauthenticated and meant for localhost.
+- Nothing is labelled "Not implemented": every endpoint in the contract is built, and no dashboard page needs the label.
 - `cost_usd` uses Anthropic's published list prices for models in the price table and is unknown (`null`) for anything else, including the demo's fake model.
